@@ -1,0 +1,36 @@
+{
+  "paciente": {
+    "nombre": "",
+    "run": "",
+    "edad":"",
+    "fecha-nacto":"",
+    "telefono":"",
+    "direccion":"",
+    "comuna":""
+  },
+  "signos-vitales":[{
+    "hora-registro":"",
+    "pas":"",
+    "pad":"",
+    "pam":"",
+    "freq-card":"",
+    "sat02":"",
+    "temp":"",
+    "observaciones":""
+  }],
+  "pre-informe":{
+    "pre-info":"",
+    "motivo-llamado":"",
+    "condicion-px":""
+  },
+  "cronologia":{
+    "hora-llamado":"",
+    "hora-envio-despacho":"",
+    "llegada-qth1":"",
+    "salida-qth1":"",
+    "llegada-qth2":"",
+    "salida-qth2":"",
+    "tipo-movil":"",
+    "categorizacion":""
+  }
+}
