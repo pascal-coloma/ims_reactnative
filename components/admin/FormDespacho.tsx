@@ -1,10 +1,11 @@
-import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { FormCompleta } from '../../../shared/types/types';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Touchable } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { CATEGORIAS_EMERGENCIA, mockAmbulancias } from '@/constants/mockAmbulancia';
-import styles from '@/styles/globalStyles';
 import { usePersonal } from '@/context/PersonalContext';
+import { CATEGORIAS_EMERGENCIA, mockAmbulancias } from '@/data/constants/mockAmbulancia';
+import { FormCompleta } from '@/data/types/types';
+import styles from '@/styles/globalStyles';
+import { traducirRol } from '@/utils/labels';
+import { Picker } from '@react-native-picker/picker';
+import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type FormDespachoProps = {
   control: Control<FormCompleta>;
@@ -123,7 +124,7 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
                     }}
                   >
                     <Text style={seleccionado && { color: 'white' }}>
-                      {p.first_name} {p.last_name} — {p.rol__nombre_rol}
+                      {p.first_name} {p.last_name} — {traducirRol(p.rol__nombre_rol)}
                     </Text>
                   </TouchableOpacity>
                 );

@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FormUsuario } from '../../../shared/types/types';
+import { FormUsuario } from '@/data/types/types';
 
 type FormPacienteProps = {
   control: Control<FormUsuario>;

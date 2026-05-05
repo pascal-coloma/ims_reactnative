@@ -1,14 +1,14 @@
-import {
-  Animated,
-  Dimensions,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import mockNotificaciones from '@/data/constants/mockNotificaciones';
 import { useEffect, useRef } from 'react';
-import mockNotificaciones from '@/constants/mockNotificaciones';
+import {
+    Animated,
+    Dimensions,
+    Modal,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import NotificationCard from './NotificationCard';
 
 type Props = {

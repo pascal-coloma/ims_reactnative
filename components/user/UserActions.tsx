@@ -20,7 +20,7 @@ const UserActions = () => {
           </Link>
           <Link href={'/(user)/RegistrarAtencion'} style={style.linkStyle}>
             <View style={style.attentionCard}>
-              <MaterialIcons name="person" size={50} color="#130b0b" />
+              <MaterialIcons name="checklist" size={50} color="#130b0b" />
               <View>
                 <Text style={[style.cardTitle, { color: '#130b0b' }]}>Registrar Atencion</Text>
                 <Text style={[style.cardSubtitle, { color: '#130b0b' }]}>

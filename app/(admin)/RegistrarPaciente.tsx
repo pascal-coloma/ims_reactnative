@@ -1,17 +1,17 @@
 import FormDespacho from '@/components/admin/FormDespacho';
 import FormPaciente from '@/components/admin/FormPaciente';
-import { FormCompleta } from '../../../shared/types/types';
-import { useForm } from 'react-hook-form';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { router } from 'expo-router';
-import { Despacho } from '@/constants/mockDespachos';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDespachos } from '@/context/DespachosContext';
-import DEFAULT_VALUES from '@/constants/defaultValues';
-import { Paciente } from '@/constants/mockPaciente';
 import { usePacientes } from '@/context/PacienteContext';
 import { usePersonal } from '@/context/PersonalContext';
-import { generatePDF } from '@/constants/generatePDF';
+import DEFAULT_VALUES from '@/data/constants/defaultValues';
+import { generatePDF } from '@/data/constants/generatePDF';
+import { Despacho } from '@/data/constants/mockDespachos';
+import { Paciente } from '@/data/constants/mockPaciente';
+import { FormCompleta } from '@/data/types/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import { useForm } from 'react-hook-form';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarPaciente = () => {
   const { agregarDespacho, despachos } = useDespachos();

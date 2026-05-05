@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Notificacion } from '@/data/constants/mockNotificaciones';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Notificacion } from '@/constants/mockNotificaciones';
+import { StyleSheet, Text, View } from 'react-native';
 
 const tipoConfig: Record<Notificacion['tipo'], { icon: string; color: string; bg: string }> = {
   despacho: { icon: 'airport-shuttle', color: '#2563eb', bg: '#eff6ff' },

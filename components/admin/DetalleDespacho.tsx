@@ -1,9 +1,9 @@
+import { Despacho } from '@/data/constants/mockDespachos';
 import styles from '@/styles/globalStyles';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Despacho } from '@/constants/mockDespachos';
-import { useState } from 'react';
-import AsignarPersonalModal from './AsignarPersonalModal';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AsignarPersonalModal from './AsignarPersonalModal';
 
 const estadoColors: Record<Despacho['estado'], string> = {
   activo: '#22c55e',

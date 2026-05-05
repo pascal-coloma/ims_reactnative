@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Control, Controller, FieldErrors, useFieldArray, useWatch } from 'react-hook-form';
 import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FormUsuario } from '../../../shared/types/types';
+import { FormUsuario } from '@/data/types/types';
 
 const { width } = Dimensions.get('window');
 

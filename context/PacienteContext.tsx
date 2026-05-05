@@ -1,5 +1,5 @@
-import mockPacientes, { Paciente } from '@/constants/mockPaciente';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import mockPacientes, { Paciente } from '@/data/constants/mockPaciente';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 type PacienteContextType = {
   pacientes: Paciente[];

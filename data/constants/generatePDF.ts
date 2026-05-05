@@ -1,6 +1,6 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { FormCompleta } from '../../shared/types/types';
+import { FormCompleta } from '../types/types';
 
 export const generatePDF = async (data: FormCompleta) => {
   const nombreCompleto = [

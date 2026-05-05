@@ -1,19 +1,19 @@
+import { useInventario } from '@/context/InventoryContext';
+import { Insumo } from '@/data/constants/mockInventario';
 import styles from '@/styles/globalStyles';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import { useInventario } from '@/context/InventoryContext';
-import { router } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Insumo } from '@/constants/mockInventario';
 
 const FILTROS = [
   { label: 'Todos', value: 'todos' },

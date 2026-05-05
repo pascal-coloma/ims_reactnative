@@ -1,4 +1,4 @@
-import { FormCompleta } from '../../shared/types/types';
+import { FormCompleta } from "../types/types";
 
 const DEFAULT_VALUES: FormCompleta = {
   primerNombre: '',

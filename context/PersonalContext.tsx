@@ -1,4 +1,4 @@
-import PERSONAL, { Personal } from '@/constants/mockPersonal';
+import PERSONAL, { Personal } from '@/data/constants/mockPersonal';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 type PersonalContextType = {

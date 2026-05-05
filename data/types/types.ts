@@ -9,7 +9,11 @@ export type FormCompleta = CamposPaciente & {
 
 export type FormUsuario = CamposPaciente & {
   controlSignos: SignosVitales[];
+  preInforme: PreInforme;
+  cronologia: Cronologia;
 };
+
+
 
 export type SignosVitales = {
   hora: string;
@@ -37,3 +41,33 @@ export type CamposPaciente = {
   direccionOrigen: string;
   direccionDestino: string;
 };
+
+export type PreInforme = {
+  preInforme: string;
+  motivoLlamado: string;
+  estadoPaciente: 'estable' | 'inestable';
+};
+
+export type Cronologia = {
+  horaLlamada: string;
+  despachoMovil: string;
+  llegadaQTH1: string;
+  salidaQTH1: string;
+  llegadaQTH2: string;
+  salidaQTH2: string;
+  categoria: string;
+};
+
+export type Atencion = {
+  id: string;
+  despachoId: string;
+  fechaRegistro: string;
+  paciente: CamposPaciente;
+  controlSignos: SignosVitales[];
+  preInforme: PreInforme;
+  cronologia: Cronologia;
+};
+
+
+
+

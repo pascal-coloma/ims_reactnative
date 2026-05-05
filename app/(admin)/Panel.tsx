@@ -1,10 +1,10 @@
+import { useDespachos } from '@/context/DespachosContext';
+import { usePersonal } from '@/context/PersonalContext';
+import { mockAmbulancias } from '@/data/constants/mockAmbulancia';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-import { mockAmbulancias } from '@/constants/mockAmbulancia';
-import { useDespachos } from '@/context/DespachosContext';
-import { usePersonal } from '@/context/PersonalContext';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const Panel = () => {
   const { despachos } = useDespachos();

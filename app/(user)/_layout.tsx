@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import DespachosProvider from '@/context/DespachosContext';
 import PacienteProvider from '@/context/PacienteContext';
+import { AtencionProvider } from '@/context/AtencionContext';
 
 const UserLayout = () => {
   const { user } = useAuth();
@@ -13,35 +14,46 @@ const UserLayout = () => {
   return (
     <DespachosProvider>
       <PacienteProvider>
-        <Tabs screenOptions={tabBarOptions}>
-          <Tabs.Screen
-            name="UserDashboard"
-            options={{
-              title: 'Home',
-              tabBarIcon: ({ color, size }) => (
-                <MaterialIcons name="home" size={size} color={color} />
-              ),
-            }}
-          ></Tabs.Screen>
-          <Tabs.Screen
-            name="Despachos"
-            options={{
-              title: 'Despachos',
-              tabBarIcon: ({ color, size }) => (
-                <MaterialIcons name="airport-shuttle" size={size} color={color} />
-              ),
-            }}
-          ></Tabs.Screen>
-          <Tabs.Screen
-            name="RegistrarAtencion"
-            options={{
-              title: 'Registrar Atencion',
-              tabBarIcon: ({ color, size }) => (
-                <MaterialIcons name="person" size={size} color={color} />
-              ),
-            }}
-          ></Tabs.Screen>
-        </Tabs>
+        <AtencionProvider>
+          <Tabs screenOptions={tabBarOptions}>
+            <Tabs.Screen
+              name="UserDashboard"
+              options={{
+                title: 'Home',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialIcons name="home" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="Despachos"
+              options={{
+                title: 'Despachos',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialIcons name="airport-shuttle" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="RegistrarAtencion"
+              options={{
+                title: 'Registrar Atencion',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialIcons name="checklist" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="ListaPacientes"
+              options={{
+                title: 'Lista Pacientes',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialIcons name="person" size={size} color={color} />
+                ),
+              }}
+            />
+          </Tabs>
+        </AtencionProvider>
       </PacienteProvider>
     </DespachosProvider>
   );

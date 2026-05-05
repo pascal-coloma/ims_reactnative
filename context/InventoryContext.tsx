@@ -1,4 +1,4 @@
-import mockInsumos, { Insumo } from '@/constants/mockInventario';
+import mockInsumos, { Insumo } from '@/data/constants/mockInventario';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 type InventarioContextType = {
