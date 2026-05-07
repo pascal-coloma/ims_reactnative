@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FormCompleta } from '../../../shared/types/types';
+import { FormCompleta } from '@/data/types/types';
 
 type FormPacienteProps = {
   control: Control<FormCompleta>;
@@ -185,6 +185,24 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
             )}
           </View>
         </View>
+        <Controller
+          control={control}
+          rules={{ required: false }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <>
+              <Text style={style.label}>Número de teléfono</Text>
+              <TextInput
+                placeholder="Número telefónico"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                style={style.input}
+                keyboardType="numeric"
+              />
+            </>
+          )}
+          name="telefono"
+        />
         <Controller
           control={control}
           rules={{ required: true }}

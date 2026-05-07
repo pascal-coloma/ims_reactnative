@@ -56,7 +56,6 @@ const PreInformeForm = ({ control, errors }: PreInformeProps) => {
       {errors.preInforme?.motivoLlamado && (
         <Text style={local.error}>{errors.preInforme.motivoLlamado.message}</Text>
       )}
-
       <Text style={local.label}>Estado del paciente</Text>
       <Controller
         control={control}

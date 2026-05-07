@@ -1,8 +1,8 @@
+import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DetalleDespacho from './DetalleDespacho';
-import { useDespachos } from '@/context/DespachosContext';
 
 const FILTROS = [
   { label: 'Todos', value: 'todos' },
@@ -13,57 +13,94 @@ const FILTROS = [
 
 const ListaDespachos = () => {
   const { despachos } = useDespachos();
-  const [activeFilter, setActiveFilter] = useState('todos');
-  const despachosFiltrados =
-    activeFilter === 'todos' ? despachos : despachos.filter((d) => d.estado === activeFilter);
+  const [filtroActivo, setFiltroActivo] = useState('todos');
+  const [busqueda, setBusqueda] = useState('');
+
+  const despachosFiltrados = despachos
+    .filter((d) => filtroActivo === 'todos' || d.estado === filtroActivo)
+    .filter((d) => {
+      if (!busqueda.trim()) return true;
+      const q = busqueda.toLowerCase();
+      return (
+        d.rut.toLowerCase().includes(q) ||
+        d.primerNombre.toLowerCase().includes(q) ||
+        d.apellidoPaterno.toLowerCase().includes(q) ||
+        d.id.toLowerCase().includes(q)
+      );
+    });
 
   return (
     <>
       <View style={styles.container}>
-        <View style={style.filtros}>
+        <TextInput
+          style={local.buscador}
+          placeholder="Buscar por RUT, nombre o ID..."
+          value={busqueda}
+          onChangeText={setBusqueda}
+        />
+        <View style={local.filtros}>
           {FILTROS.map((filtro) => (
-            <TouchableOpacity key={filtro.label} onPress={() => setActiveFilter(filtro.value)}>
+            <TouchableOpacity key={filtro.value} onPress={() => setFiltroActivo(filtro.value)}>
               <View>
-                <Text style={activeFilter === filtro.value ? style.pillActive : style.pillInactive}>
+                <Text
+                  style={filtroActivo === filtro.value ? local.pillActive : local.pillInactive}
+                >
                   {filtro.label}
                 </Text>
-                {filtro.value === activeFilter && <View style={style.underline} />}
+                {filtroActivo === filtro.value && <View style={local.underline} />}
               </View>
             </TouchableOpacity>
           ))}
         </View>
-        <View style={style.divisor}></View>
+        <View style={local.divisorHeader} />
       </View>
+
       <ScrollView>
-        <View>
-          {despachosFiltrados.map((desp) => (
-            <DetalleDespacho key={desp.id} despacho={desp} />
-          ))}
-        </View>
+        {despachosFiltrados.length === 0 ? (
+          <View style={styles.container}>
+            <Text style={styles.subtitle}>Sin despachos</Text>
+          </View>
+        ) : (
+          despachosFiltrados.map((d) => <DetalleDespacho key={d.id} despacho={d} />)
+        )}
       </ScrollView>
     </>
   );
 };
 
-const style = StyleSheet.create({
+const local = StyleSheet.create({
+  buscador: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 15,
+    marginBottom: 12,
+    width: '100%',
+
+  },
   filtros: {
     flexDirection: 'row',
-    gap: 10,
     width: '100%',
+    gap: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 5,
+    justifyContent: 'space-evenly',
+    paddingVertical: 4,
   },
-  divisor: {
+  divisorHeader: {
     height: 1,
     width: '100%',
-    backgroundColor: '#5a444452',
+    backgroundColor: '#eee',
+    marginTop: 8,
   },
   pillActive: {
     color: '#E53935',
+    fontWeight: '600',
+    fontSize: 14,
   },
   pillInactive: {
-    color: 'grey',
+    color: '#999',
+    fontSize: 14,
   },
   underline: {
     height: 2,

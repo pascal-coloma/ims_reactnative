@@ -2,21 +2,20 @@ import { Redirect, Tabs } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import PersonalProvider from '@/context/PersonalContext';
-import DespachosProvider from '@/context/DespachosContext';
 import PacienteProvider from '@/context/PacienteContext';
 import InventarioProvider from '@/context/InventoryContext';
+import { AmbulanciaProvider } from '@/context/AmbulanciaContext';
 
 export default function AdminLayout() {
   const { user } = useAuth();
-  if (!user || user.role !== 'admin') {
-    return <Redirect href={'/(auth)/login'} />;
-  }
+  if (!user || user.role !== 'control') return <Redirect href={'/(auth)/login'} />;
+
 
   return (
-    <DespachosProvider>
-      <PersonalProvider>
-        <PacienteProvider>
-          <InventarioProvider>
+    <PersonalProvider>
+      <PacienteProvider>
+        <InventarioProvider>
+          <AmbulanciaProvider>
             <Tabs screenOptions={tabBarOptions}>
               <Tabs.Screen
                 name="AdminDashboard"
@@ -67,10 +66,10 @@ export default function AdminLayout() {
                 }}
               ></Tabs.Screen>
             </Tabs>
-          </InventarioProvider>
-        </PacienteProvider>
-      </PersonalProvider>
-    </DespachosProvider>
+          </AmbulanciaProvider>
+        </InventarioProvider>
+      </PacienteProvider>
+    </PersonalProvider>
   );
 }
 

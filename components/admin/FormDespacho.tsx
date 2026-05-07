@@ -1,3 +1,4 @@
+import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { usePersonal } from '@/context/PersonalContext';
 import { CATEGORIAS_EMERGENCIA, mockAmbulancias } from '@/data/constants/mockAmbulancia';
 import { FormCompleta } from '@/data/types/types';
@@ -14,6 +15,7 @@ type FormDespachoProps = {
 
 const FormDespacho = ({ control, errors }: FormDespachoProps) => {
   const { personal } = usePersonal();
+  const { ambulancias } = useAmbulancias();
   return (
     <View style={style.formulario}>
       <Controller
@@ -65,12 +67,12 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
             <View style={style.pickerContainer}>
               <Picker selectedValue={value} onValueChange={onChange}>
                 <Picker.Item label="Seleccione unidad" value="" enabled={false} />
-                {mockAmbulancias
-                  .filter((a) => a.disponible)
+                {ambulancias
+                  .filter((a) => a.estado_disponibilidad === 'disponible')
                   .map((a) => (
                     <Picker.Item
                       key={a.id}
-                      label={`${a.numeroMovil} - ${a.patente} (${a.tipo})`}
+                      label={`${a.patente} — ${a.modelo}`}
                       value={a.id}
                     />
                   ))}

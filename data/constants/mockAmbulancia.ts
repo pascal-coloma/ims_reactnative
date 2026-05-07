@@ -1,20 +1,21 @@
 export type Ambulancia = {
   id: string;
-  numeroMovil: string;
   patente: string;
-  tipo: 'basica' | 'avanzada';
-  disponible: boolean;
+  modelo: string;
+  estado_disponibilidad: 'disponible' | 'en_despacho' | 'mantencion' | 'fuera_servicio';
 };
+
 export const mockAmbulancias: Ambulancia[] = [
-  { id: '1', numeroMovil: 'M-01', patente: 'AB1234', tipo: 'basica', disponible: true },
-  { id: '2', numeroMovil: 'M-02', patente: 'CD5678', tipo: 'avanzada', disponible: true },
-  { id: '3', numeroMovil: 'M-03', patente: 'EF9012', tipo: 'basica', disponible: false },
+  { id: '1', patente: 'AMB-001', modelo: 'Mercedes Sprinter 2022', estado_disponibilidad: 'disponible' },
+  { id: '2', patente: 'AMB-002', modelo: 'Ford Transit 2021', estado_disponibilidad: 'disponible' },
+  { id: '3', patente: 'AMB-003', modelo: 'Iveco Daily 2020', estado_disponibilidad: 'mantencion' },
+  { id: '4', patente: 'AMB-004', modelo: 'Renault Master 2023', estado_disponibilidad: 'disponible' },
 ];
 
 export const CATEGORIAS_EMERGENCIA = [
-  { label: 'C1 - Emergencia vital', value: 'C1' },
-  { label: 'C2 - Emergencia evidente', value: 'C2' },
-  { label: 'C3 - Urgencia', value: 'C3' },
-  { label: 'C4 - Urgencia mediata', value: 'C4' },
-  { label: 'C5 - Sin urgencia', value: 'C5' },
+  { label: 'C1 - Gravedad Extrema', value: 'C1' },
+  { label: 'C2 - Gravedad Severa', value: 'C2' },
+  { label: 'C3 - Gravedad Mediana', value: 'C3' },
+  { label: 'C4 - Gravedad Leve', value: 'C4' },
+  { label: 'C5 - Gravedad No Pertinente', value: 'C5' },
 ];

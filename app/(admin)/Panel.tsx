@@ -1,3 +1,4 @@
+import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { usePersonal } from '@/context/PersonalContext';
 import { mockAmbulancias } from '@/data/constants/mockAmbulancia';
@@ -9,8 +10,9 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 const Panel = () => {
   const { despachos } = useDespachos();
   const { personal } = usePersonal();
+  const { ambulancias } = useAmbulancias();
   const totalDespachos = despachos.length;
-  const movilesActivos = mockAmbulancias.filter((p) => p.disponible).length;
+  const movilesActivos = ambulancias.filter((p) => p.estado_disponibilidad == "disponible").length;
   const personalActivo = personal.filter((p) => p.is_active).length;
 
   return (

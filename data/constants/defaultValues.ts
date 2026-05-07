@@ -1,6 +1,6 @@
-import { FormCompleta } from "../types/types";
+import { FormCompleta, FormUsuario } from "../types/types";
 
-const DEFAULT_VALUES: FormCompleta = {
+export const DEFAULT_VALUES_ADMIN: FormCompleta = {
   primerNombre: '',
   segundoNombre: '',
   apellidoPaterno: '',
@@ -18,4 +18,30 @@ const DEFAULT_VALUES: FormCompleta = {
   estadoUnidad: '',
 };
 
-export default DEFAULT_VALUES;
+export const DEFAULT_VALUES_USUARIO: FormUsuario = {
+  primerNombre: '',
+  segundoNombre: '',
+  apellidoPaterno: '',
+  apellidoMaterno: '',
+  telefono: '',
+  rut: '',
+  edad: 0,
+  direccionOrigen: '',
+  direccionDestino: '',
+  controlSignos: [],
+  preInforme: {
+    preInforme: '',
+    motivoLlamado: '',
+    estadoPaciente: 'estable',
+  },
+  cronologia: {
+    horaLlamada: '',
+    despachoMovil: '',
+    llegadaQTH1: '',
+    salidaQTH1: '',
+    llegadaQTH2: '',
+    salidaQTH2: '',
+    categoria: '',
+  },
+};
+

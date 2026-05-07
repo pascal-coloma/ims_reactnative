@@ -2,10 +2,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import NotificationDrawer from '../NotificationDrawer';
 import { useState } from 'react';
+import SettingsDrawer from '../SettingsDrawer';
+import { useAuth } from '@/context/AuthContext';
 
 const AdminHeader = () => {
-  const [drawerVisible, setDrawerVisible] = useState(false);
-
+  const [notifVisible, setNotifVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const { user } = useAuth();
   return (
     <>
       <View style={style.container}>
@@ -14,20 +17,25 @@ const AdminHeader = () => {
             <Text style={style.avatarText}>A</Text>
           </View>
           <View>
-            <Text style={style.welcome}>Bienvenido,</Text>
-            <Text style={style.role}>Administrador</Text>
+            <Text style={style.welcome}>Bienvenido/a,</Text>
+            <Text style={style.role}>{user?.firstName}</Text>
           </View>
         </View>
         <View style={{ flex: 1 }} />
         <View style={style.right}>
-          <TouchableOpacity onPress={() => setDrawerVisible(true)}>
+          <TouchableOpacity onPress={() => setNotifVisible(true)}>
             <MaterialIcons name="notifications-none" size={24} color="#000" />
           </TouchableOpacity>
           <NotificationDrawer
-            visible={drawerVisible}
-            onClose={() => setDrawerVisible(false)}
-          ></NotificationDrawer>
-          <MaterialIcons name="settings" size={24} color="#000" />
+            visible={notifVisible}
+            onClose={() => setNotifVisible(false)}
+          />
+          <TouchableOpacity onPress={() => setSettingsVisible(true)}>
+            <MaterialIcons name="settings" size={24} color="#000" />
+          </TouchableOpacity>
+          <SettingsDrawer
+            visible={settingsVisible}
+            onClose={() => setSettingsVisible(false)} />
         </View>
       </View>
     </>

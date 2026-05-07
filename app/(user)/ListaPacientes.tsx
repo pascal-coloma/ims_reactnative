@@ -1,17 +1,21 @@
-import { useAtenciones } from '@/context/AtencionContext';
+import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const ListaPacientes = () => {
-  const { atenciones } = useAtenciones();
+  const { despachos } = useDespachos();
   const [busqueda, setBusqueda] = useState('');
 
-  const pacientesFiltrados = busqueda.trim()
-    ? atenciones.filter((a) => a.paciente.rut.toLowerCase().includes(busqueda.toLowerCase()))
-    : atenciones;
+  const despachosFiltrados = busqueda.trim()
+    ? despachos.filter(
+      (d) =>
+        d.rut.toLowerCase().includes(busqueda.toLowerCase()) ||
+        `${d.primerNombre} ${d.apellidoPaterno}`.toLowerCase().includes(busqueda.toLowerCase())
+    )
+    : despachos;
 
   return (
     <View style={{ flex: 1 }}>
@@ -24,29 +28,29 @@ const ListaPacientes = () => {
         </View>
         <TextInput
           style={local.buscador}
-          placeholder="Buscar por RUT..."
+          placeholder="Buscar por RUT o nombre..."
           value={busqueda}
           onChangeText={setBusqueda}
         />
       </View>
 
       <ScrollView>
-        {pacientesFiltrados.length === 0 ? (
+        {despachosFiltrados.length === 0 ? (
           <View style={styles.container}>
             <Text style={styles.subtitle}>No hay pacientes registrados</Text>
           </View>
         ) : (
-          pacientesFiltrados.map((a) => (
-            <View key={a.id} style={styles.container}>
+          despachosFiltrados.map((d) => (
+            <View key={d.id} style={styles.container}>
               <Text style={styles.title}>
-                {a.paciente.primerNombre} {a.paciente.apellidoPaterno} {a.paciente.apellidoMaterno}
+                {d.primerNombre} {d.segundoNombre ? `${d.segundoNombre} ` : ''}
+                {d.apellidoPaterno} {d.apellidoMaterno}
               </Text>
-              <Text style={styles.subtitle}>RUT: {a.paciente.rut}</Text>
-              <Text style={styles.subtitle}>Edad: {a.paciente.edad} años</Text>
-              <Text style={styles.subtitle}>Teléfono: {a.paciente.telefono}</Text>
-              <Text style={styles.subtitle}>
-                Registrado: {new Date(a.fechaRegistro).toLocaleDateString('es-CL')}
-              </Text>
+              <Text style={styles.subtitle}>RUT: {d.rut}</Text>
+              <Text style={styles.subtitle}>Edad: {d.edad} años</Text>
+              <Text style={styles.subtitle}>Teléfono: {d.telefono}</Text>
+              <Text style={styles.subtitle}>Origen: {d.direccionOrigen}</Text>
+              <Text style={styles.subtitle}>Destino: {d.direccionDestino}</Text>
               <View style={local.divisor} />
             </View>
           ))
@@ -64,7 +68,7 @@ const local = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     marginTop: 8,
-    width: '100%'
+    width: '100%',
   },
   divisor: {
     height: 1,

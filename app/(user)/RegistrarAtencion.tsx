@@ -3,49 +3,59 @@ import Cronologia from '@/components/user/Cronologia';
 import FormPaciente from '@/components/user/FormPaciente';
 import PreInformeForm from '@/components/user/PreInforme';
 import { useAtenciones } from '@/context/AtencionContext';
-import DEFAULT_VALUES from '@/data/constants/defaultValues';
+import { useDespachos } from '@/context/DespachosContext';
+import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types/types';
 import styles from '@/styles/globalStyles';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarAtencion = () => {
   const { agregarAtencion } = useAtenciones();
+  const { despachoActivo } = useDespachos();
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormUsuario>({
-    defaultValues: DEFAULT_VALUES,
+  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormUsuario>({
+    defaultValues: despachoActivo
+      ? {
+        ...DEFAULT_VALUES_USUARIO,
+        primerNombre: despachoActivo.primerNombre,
+        segundoNombre: despachoActivo.segundoNombre ?? '',
+        apellidoPaterno: despachoActivo.apellidoPaterno,
+        apellidoMaterno: despachoActivo.apellidoMaterno,
+        rut: despachoActivo.rut,
+        edad: despachoActivo.edad,
+        telefono: despachoActivo.telefono,
+        direccionOrigen: despachoActivo.direccionOrigen,
+        direccionDestino: despachoActivo.direccionDestino,
+      }
+      : DEFAULT_VALUES_USUARIO,
   });
 
-  const onSubmit = (data: FormUsuario) => {
-    agregarAtencion({
-      id: Date.now().toString(),
-      despachoId: 'demo',
-      fechaRegistro: new Date().toISOString(),
-      paciente: {
-        primerNombre: data.primerNombre,
-        segundoNombre: data.segundoNombre,
-        apellidoPaterno: data.apellidoPaterno,
-        apellidoMaterno: data.apellidoMaterno,
-        rut: data.rut,
-        edad: data.edad,
-        telefono: data.telefono,
-        direccionOrigen: data.direccionOrigen,
-        direccionDestino: data.direccionDestino,
-      },
-      controlSignos: data.controlSignos,
-      preInforme: data.preInforme,
-      cronologia: data.cronologia,
-    });
-    reset();
+  const onSubmit = async (data: FormUsuario) => {
+    if (!despachoActivo) {
+      Alert.alert('Error', 'No tienes un despacho activo asignado');
+      return;
+    }
+    try {
+      const { controlSignos, preInforme, cronologia, ...camposPaciente } = data;
+      await agregarAtencion({
+        id: Date.now().toString(),
+        despachoId: despachoActivo.id,
+        fechaRegistro: new Date().toISOString(),
+        paciente: camposPaciente,
+        controlSignos,
+        preInforme,
+        cronologia,
+      });
+      reset();
+    } catch {
+      // error manejado en el contexto
+    }
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
         <FormPaciente control={control} errors={errors} />
         <ControlVitales control={control} errors={errors} />

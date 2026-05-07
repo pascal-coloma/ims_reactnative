@@ -14,7 +14,6 @@ export type FormUsuario = CamposPaciente & {
 };
 
 
-
 export type SignosVitales = {
   hora: string;
   pas: number;

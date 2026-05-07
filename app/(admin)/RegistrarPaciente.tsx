@@ -1,22 +1,22 @@
 import FormDespacho from '@/components/admin/FormDespacho';
 import FormPaciente from '@/components/admin/FormPaciente';
+import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
-import { usePacientes } from '@/context/PacienteContext';
 import { usePersonal } from '@/context/PersonalContext';
-import DEFAULT_VALUES from '@/data/constants/defaultValues';
+import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
 import { generatePDF } from '@/data/constants/generatePDF';
+import { mockAmbulancias } from '@/data/constants/mockAmbulancia';
 import { Despacho } from '@/data/constants/mockDespachos';
-import { Paciente } from '@/data/constants/mockPaciente';
 import { FormCompleta } from '@/data/types/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { traducirRol } from '@/utils/labels';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarPaciente = () => {
   const { agregarDespacho, despachos } = useDespachos();
-  const { agregarPaciente, pacientes } = usePacientes();
   const { actualizarDisponilidad, personal } = usePersonal();
+  const { ambulancias } = useAmbulancias();
 
   const {
     control,
@@ -24,75 +24,72 @@ const RegistrarPaciente = () => {
     reset,
     formState: { errors },
   } = useForm<FormCompleta>({
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: DEFAULT_VALUES_ADMIN,
   });
 
-  const storeData = async (data: FormCompleta) => {
-    try {
-      const content = JSON.stringify(data);
-      await AsyncStorage.setItem('key', content);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const checkStorage = async () => {
-    const raw = await AsyncStorage.getItem('key');
-    console.log('stored:', raw ? JSON.parse(raw) : null);
-  };
-
-  const handlerPdf = async (data: FormCompleta) => {
-    generatePDF(data);
-  };
+  const construirDespacho = (data: FormCompleta): Despacho => ({
+    primerNombre: data.primerNombre,
+    segundoNombre: data.segundoNombre,
+    apellidoPaterno: data.apellidoPaterno,
+    apellidoMaterno: data.apellidoMaterno,
+    rut: data.rut,
+    edad: data.edad,
+    telefono: data.telefono,
+    direccionOrigen: data.direccionOrigen,
+    direccionDestino: data.direccionDestino,
+    id: `DSP-${despachos.length + 1}`,
+    estado: 'activo',
+    prioridad: data.prioridad as Despacho['prioridad'],
+    tipoEmergencia: data.tipoEmergencia,
+    unidad: data.unidad,
+    personalIds: data.equipoAsignado,
+    ambulancia: ambulancias.find((a) => a.id === data.unidad),
+    observaciones: data.observaciones,
+  });
 
   const onSubmit = (data: FormCompleta) => {
-    const nuevoDespacho: Despacho = {
-      id: String(despachos.length + 1),
-      rutPaciente: data.rut,
-      nombrePaciente:
-        `${data.primerNombre} ${data.segundoNombre ?? ''} ${data.apellidoPaterno} ${data.apellidoMaterno}`.trim(),
-      edad: data.edad,
-      destino: data.direccionDestino,
-      origen: data.direccionOrigen,
-      estado: 'pendiente',
-      prioridad: data.prioridad as Despacho['prioridad'],
-      tipoEmergencia: data.tipoEmergencia,
-      unidad: data.unidad,
-      personal: personal.filter((p) => data.equipoAsignado.includes(p.id)),
-      observaciones: data.observaciones,
-    };
+    const nuevoDespacho = construirDespacho(data);
     data.equipoAsignado.forEach((id) => actualizarDisponilidad(id));
     agregarDespacho(nuevoDespacho);
-
-    const nuevoPaciente: Paciente = {
-      rut: data.rut,
-      pnombre: data.primerNombre,
-      snombre: data.segundoNombre,
-      apaterno: data.apellidoPaterno,
-      amaterno: data.apellidoMaterno,
-      edad: data.edad,
-      telefono: data.telefono,
-    };
-    agregarPaciente(nuevoPaciente);
-    storeData(data);
-    generatePDF(data);
-    checkStorage();
     reset();
-
     router.back();
   };
+
+  const onGenerarPDF = (data: FormCompleta) => {
+    const equipoConNombres = personal
+      .filter((p) => data.equipoAsignado.includes(p.id))
+      .map((p) => `${p.first_name} ${p.last_name} — ${traducirRol(p.rol__nombre_rol)}`);
+
+    const ambulancia = ambulancias.find((a) => a.id === data.unidad);
+    const unidadLabel = ambulancia
+      ? `${ambulancia.patente} — ${ambulancia.modelo}`
+      : data.unidad;
+
+
+    generatePDF({ ...data, equipoAsignado: equipoConNombres, unidad: unidadLabel});
+  };
+
   return (
     <ScrollView>
       <FormPaciente control={control} errors={errors} />
       <FormDespacho control={control} errors={errors} />
       <View style={style.rowBotones}>
-        <TouchableOpacity style={style.btnCancelar} onPress={() => handlerPdf}>
-          <Text>Generar PDF</Text>
+        <TouchableOpacity
+          style={style.btnCancelar}
+          onPress={handleSubmit(onGenerarPDF)}
+        >
+          <Text style={style.btnTextDark}>Generar PDF</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
-          <Text style={style.btnText}>Cancelar</Text>
+        <TouchableOpacity
+          style={style.btnCancelar}
+          onPress={() => router.back()}
+        >
+          <Text style={style.btnTextDark}>Cancelar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={style.btnSubmit} onPress={handleSubmit(onSubmit)}>
+        <TouchableOpacity
+          style={style.btnSubmit}
+          onPress={handleSubmit(onSubmit)}
+        >
           <Text style={style.btnText}>Enviar despacho</Text>
         </TouchableOpacity>
       </View>
@@ -104,24 +101,34 @@ const style = StyleSheet.create({
   rowBotones: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 30,
+    gap: 12,
     padding: 20,
   },
   btnSubmit: {
-    backgroundColor: '#e60303',
-    padding: 14,
-    borderRadius: 10,
+    flex: 2,
+    backgroundColor: '#E53935',
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    borderRadius: 24,
     alignItems: 'center',
   },
   btnCancelar: {
+    flex: 1,
     backgroundColor: '#f1bebe',
-    padding: 14,
-    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 24,
     alignItems: 'center',
   },
   btnText: {
     color: 'white',
     fontWeight: 'bold',
+    fontSize: 14,
+  },
+  btnTextDark: {
+    color: '#E53935',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

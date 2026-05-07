@@ -43,7 +43,7 @@ const TimePickerField = ({ label, value, onChange }: TimePickerFieldProps) => {
           value={parsed}
           is24Hour
           display={Platform.OS === 'ios' ? 'spinner' : 'clock'}
-          onChange={(_, date) => {
+          onValueChange={(_, date) => {
             setShow(false);
             if (!date) return;
             const hh = date.getHours().toString().padStart(2, '0');

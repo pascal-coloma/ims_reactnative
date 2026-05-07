@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
+import { usePersonal } from '@/context/PersonalContext';
 
 const estadoColors: Record<string, string> = {
   activo: '#22c55e',
@@ -19,7 +20,10 @@ const prioridadColors: Record<string, string> = {
 const DetalleDespachoScreen = () => {
   const { id } = useLocalSearchParams();
   const { despachos } = useDespachos();
+  const { personal } = usePersonal();
   const despacho = despachos.find((d) => d.id === id);
+
+  const equipoDespacho = personal.filter((p) => despacho?.personalIds.includes(p.id));
 
   if (!despacho) {
     return (
@@ -29,6 +33,8 @@ const DetalleDespachoScreen = () => {
     );
   }
 
+  const nombreCompleto = despacho.primerNombre + ' ' + despacho.segundoNombre + ' ' + despacho.apellidoPaterno + ' ' + despacho.apellidoMaterno;
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -36,7 +42,7 @@ const DetalleDespachoScreen = () => {
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={22} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.title}>DSP-{despacho.id}</Text>
+          <Text style={styles.title}>{despacho.id}</Text>
           <View
             style={[
               style.estadoPill,
@@ -53,11 +59,11 @@ const DetalleDespachoScreen = () => {
         <Text style={style.seccionTitulo}>Datos del Paciente</Text>
         <View style={style.campo}>
           <Text style={style.campoLabel}>Nombre</Text>
-          <Text style={style.campoValor}>{despacho.nombrePaciente}</Text>
+          <Text style={style.campoValor}>{nombreCompleto}</Text>
         </View>
         <View style={style.campo}>
           <Text style={style.campoLabel}>RUT</Text>
-          <Text style={style.campoValor}>{despacho.rutPaciente}</Text>
+          <Text style={style.campoValor}>{despacho.rut}</Text>
         </View>
         <View style={style.campo}>
           <Text style={style.campoLabel}>Edad</Text>
@@ -68,11 +74,11 @@ const DetalleDespachoScreen = () => {
         <Text style={style.seccionTitulo}>Ubicación</Text>
         <View style={style.campo}>
           <Text style={style.campoLabel}>QTH1 — Origen</Text>
-          <Text style={style.campoValor}>{despacho.origen}</Text>
+          <Text style={style.campoValor}>{despacho.direccionOrigen}</Text>
         </View>
         <View style={style.campo}>
           <Text style={style.campoLabel}>QTH2 — Destino</Text>
-          <Text style={style.campoValor}>{despacho.destino}</Text>
+          <Text style={style.campoValor}>{despacho.direccionDestino}</Text>
         </View>
       </View>
       <View style={style.seccion}>
@@ -100,13 +106,15 @@ const DetalleDespachoScreen = () => {
       </View>
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Equipo Asignado</Text>
-        {despacho.personal.length === 0 ? (
+        {equipoDespacho.length === 0 ? (
           <Text style={{ color: '#888', fontStyle: 'italic' }}>Sin personal asignado</Text>
         ) : (
-          despacho.personal.map((p) => (
+          equipoDespacho.map((p) => (
             <View key={p.id} style={style.personalItem}>
               <View>
-                <Text style={style.personalNombre}>{p.first_name}</Text>
+                <Text style={style.personalNombre}>
+                  {p.first_name} {p.last_name}
+                </Text>
                 <Text style={style.personalRol}>{p.rol__nombre_rol}</Text>
               </View>
               <View

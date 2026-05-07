@@ -2,21 +2,45 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
+import { useDespachos } from '@/context/DespachosContext';
 
 export default function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
+  const { setDespachoActivoPorUsuario } = useDespachos();
   const [email, setEmail] = useState('');
   const [passw, setPassw] = useState('');
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleLogin() {
-    const role = login(email, passw);
-    if (role === 'admin') {
-      router.navigate('/(admin)/AdminDashboard');
-    } else if (role === 'user') {
-      router.navigate('/(user)/UserDashboard');
-    } else {
-      alert('Credenciales incorrectas');
+
+  async function handleLogin() {
+    if (!email || !passw) {
+      setError('Ingresa tus credenciales');
+      return;
+    }
+    setCargando(true);
+    setError(null);
+
+    try {
+      const result = await login(email, passw);
+      if (!result) {
+        setError('Credenciales incorrectas');
+        return;
+      }
+
+      if (result.role === 'medic' || result.role === 'nurse') {
+        if (result.personalId) setDespachoActivoPorUsuario(result.personalId);
+        router.navigate('/(user)/UserDashboard');
+      } else if (result.role === 'control') {
+        router.navigate('/(admin)/AdminDashboard');
+      } else {
+        setError('Rol no reconocido');
+      }
+    } catch (e) {
+      setError('Error de conexión');
+    } finally {
+      setCargando(false);
     }
   }
 
@@ -25,39 +49,46 @@ export default function LoginForm() {
       <Text style={styles.title}>Bienvenido</Text>
       <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
 
+      {error && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorTexto}>{error}</Text>
+        </View>
+      )}
+
       <TextInput
         style={styles.input}
-        placeholder="Ingresa tu correo"
+        placeholder="Usuario"
         value={email}
-        keyboardType="email-address"
         autoCapitalize="none"
-        onChangeText={(newEmail) => setEmail(newEmail)}
+        onChangeText={setEmail}
+        editable={!cargando}
       />
       <TextInput
         style={styles.input}
-        placeholder="Ingresa tu contraseña"
+        placeholder="Contraseña"
         value={passw}
-        onChangeText={(newPassw) => setPassw(newPassw)}
+        onChangeText={setPassw}
         secureTextEntry
+        editable={!cargando}
       />
 
-      <TouchableOpacity>
-        <Text
-          style={styles.forgotPassword}
-          onPress={() => {
-            router.navigate('/(auth)/recuperacion');
-          }}
-        >
-          Olvidé mi contraseña
-        </Text>
+      <TouchableOpacity onPress={() => router.navigate('/(auth)/recuperacion')}>
+        <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Iniciar sesión</Text>
+      <TouchableOpacity
+        style={[styles.button, cargando && styles.buttonDisabled]}
+        onPress={handleLogin}
+        disabled={cargando}
+      >
+        <Text style={styles.buttonText}>
+          {cargando ? 'Ingresando...' : 'Iniciar sesión'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -72,6 +103,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 24,
+  },
+  errorBanner: {
+    backgroundColor: '#FFEBEE',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderLeftWidth: 3,
+    borderLeftColor: '#E53935',
+  },
+  errorTexto: {
+    color: '#E53935',
+    fontSize: 13,
+    fontWeight: '500',
   },
   input: {
     borderWidth: 1,
@@ -91,6 +135,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 24,
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#EF9A9A',
   },
   buttonText: {
     color: '#fff',
