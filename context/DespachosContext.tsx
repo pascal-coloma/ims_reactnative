@@ -55,17 +55,19 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         direccionOrigen: d.direccionOrigen,
         direccionDestino: d.direccionDestino,
         estado: d.estado === 'asignado' ? 'activo' : d.estado,
-        prioridad: 'alta', 
+        prioridad: 'alta',
         tipoEmergencia: d.descripcionLlamado,
         unidad: d.ambulancia?.id ?? '',
         personalIds: d.personalIds,
-        ambulancia: d.ambulancia ? {
-          id: d.ambulancia.id,
-          numeroMovil: d.ambulancia.id,
-          patente: d.ambulancia.patente,
-          tipo: 'basica',
-          disponible: d.ambulancia.estado === 'disponible',
-        } : undefined,
+        ambulancia: d.ambulancia
+          ? {
+              id: d.ambulancia.id,
+              numeroMovil: d.ambulancia.id,
+              patente: d.ambulancia.patente,
+              tipo: 'basica',
+              disponible: d.ambulancia.estado === 'disponible',
+            }
+          : undefined,
         observaciones: d.descripcionLlamado,
       }));
 
@@ -93,14 +95,12 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const despachosPorPersonal = (personalId: string) => {
-    return despachos.filter(
-      (d) => d.personalIds?.includes(personalId) && d.estado === 'activo'
-    );
+    return despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo');
   };
 
   const setDespachoActivoPorUsuario = (personalId: string) => {
     const despacho = despachos.find(
-      (d) => d.personalIds?.includes(personalId) && d.estado === 'activo'
+      (d) => d.personalIds?.includes(personalId) && d.estado === 'activo',
     );
     setDespachoActivo(despacho ?? null);
   };

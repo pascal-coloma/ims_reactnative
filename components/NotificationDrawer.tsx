@@ -1,13 +1,13 @@
 import mockNotificaciones from '@/data/constants/mockNotificaciones';
 import { useEffect, useRef } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import NotificationCard from './NotificationCard';
 

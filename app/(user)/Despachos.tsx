@@ -20,10 +20,11 @@ const MisDespachos = () => {
   const misDespachos = despachosPorPersonal(user?.personalId ?? '');
 
   const despachosFiltrados = busqueda.trim()
-    ? misDespachos.filter((d) =>
-      d.primerNombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      d.rut.toLowerCase().includes(busqueda.toLowerCase())
-    )
+    ? misDespachos.filter(
+        (d) =>
+          d.primerNombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+          d.rut.toLowerCase().includes(busqueda.toLowerCase()),
+      )
     : misDespachos;
 
   return (
@@ -63,7 +64,7 @@ const MisDespachos = () => {
                   {[d.primerNombre, d.segundoNombre, d.apellidoPaterno, d.apellidoMaterno]
                     .filter(Boolean)
                     .join(' ')}
-                </Text>                
+                </Text>
                 <View style={[local.badge, { backgroundColor: PRIORIDAD_COLOR[d.prioridad] }]}>
                   <Text style={local.badgeTexto}>{d.prioridad.toUpperCase()}</Text>
                 </View>
@@ -82,9 +83,7 @@ const MisDespachos = () => {
                 </Text>
               )}
 
-              {d.observaciones && (
-                <Text style={styles.subtitle}>Obs: {d.observaciones}</Text>
-              )}
+              {d.observaciones && <Text style={styles.subtitle}>Obs: {d.observaciones}</Text>}
 
               <View style={local.divisor} />
             </TouchableOpacity>

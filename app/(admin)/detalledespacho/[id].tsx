@@ -33,7 +33,14 @@ const DetalleDespachoScreen = () => {
     );
   }
 
-  const nombreCompleto = despacho.primerNombre + ' ' + despacho.segundoNombre + ' ' + despacho.apellidoPaterno + ' ' + despacho.apellidoMaterno;
+  const nombreCompleto =
+    despacho.primerNombre +
+    ' ' +
+    despacho.segundoNombre +
+    ' ' +
+    despacho.apellidoPaterno +
+    ' ' +
+    despacho.apellidoMaterno;
 
   return (
     <ScrollView>

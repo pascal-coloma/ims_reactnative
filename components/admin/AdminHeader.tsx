@@ -26,16 +26,11 @@ const AdminHeader = () => {
           <TouchableOpacity onPress={() => setNotifVisible(true)}>
             <MaterialIcons name="notifications-none" size={24} color="#000" />
           </TouchableOpacity>
-          <NotificationDrawer
-            visible={notifVisible}
-            onClose={() => setNotifVisible(false)}
-          />
+          <NotificationDrawer visible={notifVisible} onClose={() => setNotifVisible(false)} />
           <TouchableOpacity onPress={() => setSettingsVisible(true)}>
             <MaterialIcons name="settings" size={24} color="#000" />
           </TouchableOpacity>
-          <SettingsDrawer
-            visible={settingsVisible}
-            onClose={() => setSettingsVisible(false)} />
+          <SettingsDrawer visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
         </View>
       </View>
     </>

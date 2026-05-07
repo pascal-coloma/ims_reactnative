@@ -6,10 +6,20 @@ export type Ambulancia = {
 };
 
 export const mockAmbulancias: Ambulancia[] = [
-  { id: '1', patente: 'AMB-001', modelo: 'Mercedes Sprinter 2022', estado_disponibilidad: 'disponible' },
+  {
+    id: '1',
+    patente: 'AMB-001',
+    modelo: 'Mercedes Sprinter 2022',
+    estado_disponibilidad: 'disponible',
+  },
   { id: '2', patente: 'AMB-002', modelo: 'Ford Transit 2021', estado_disponibilidad: 'disponible' },
   { id: '3', patente: 'AMB-003', modelo: 'Iveco Daily 2020', estado_disponibilidad: 'mantencion' },
-  { id: '4', patente: 'AMB-004', modelo: 'Renault Master 2023', estado_disponibilidad: 'disponible' },
+  {
+    id: '4',
+    patente: 'AMB-004',
+    modelo: 'Renault Master 2023',
+    estado_disponibilidad: 'disponible',
+  },
 ];
 
 export const CATEGORIAS_EMERGENCIA = [

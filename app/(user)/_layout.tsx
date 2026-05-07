@@ -6,8 +6,8 @@ import { AtencionProvider } from '@/context/AtencionContext';
 
 const UserLayout = () => {
   const { user } = useAuth();
-  if (!user || (user.role !== 'medic' && user.role !== 'nurse')) return <Redirect href={'/(auth)/login'} />;
-
+  if (!user || (user.role !== 'medic' && user.role !== 'nurse'))
+    return <Redirect href={'/(auth)/login'} />;
 
   return (
     <PacienteProvider>

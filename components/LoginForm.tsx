@@ -13,7 +13,6 @@ export default function LoginForm() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
   async function handleLogin() {
     if (!email || !passw) {
       setError('Ingresa tus credenciales');
@@ -81,14 +80,11 @@ export default function LoginForm() {
         onPress={handleLogin}
         disabled={cargando}
       >
-        <Text style={styles.buttonText}>
-          {cargando ? 'Ingresando...' : 'Iniciar sesión'}
-        </Text>
+        <Text style={styles.buttonText}>{cargando ? 'Ingresando...' : 'Iniciar sesión'}</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

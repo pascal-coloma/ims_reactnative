@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 
 const ListaAtenciones = () => {
-  const { resumenAtenciones, fetchAtenciones, fetchAtencionDetalle, loading, error } = useAtenciones();
+  const { resumenAtenciones, fetchAtenciones, fetchAtencionDetalle, loading, error } =
+    useAtenciones();
   const [generando, setGenerando] = useState<number | null>(null);
 
   useEffect(() => {
@@ -68,14 +69,21 @@ const ListaAtenciones = () => {
           <View key={a.id} style={styles.container}>
             <View style={local.rowHeader}>
               <Text style={styles.title}>Atención #{a.id}</Text>
-              <View style={[local.badge, {
-                backgroundColor: a.estado_sello === 'Pendiente' ? '#FEF9C3' : '#DCFCE7'
-              }]}>
-                <Text style={{
-                  fontSize: 11,
-                  fontWeight: 'bold',
-                  color: a.estado_sello === 'Pendiente' ? '#854D0E' : '#15803D'
-                }}>
+              <View
+                style={[
+                  local.badge,
+                  {
+                    backgroundColor: a.estado_sello === 'Pendiente' ? '#FEF9C3' : '#DCFCE7',
+                  },
+                ]}
+              >
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    color: a.estado_sello === 'Pendiente' ? '#854D0E' : '#15803D',
+                  }}
+                >
                   {a.estado_sello}
                 </Text>
               </View>

@@ -12,7 +12,7 @@ const Panel = () => {
   const { personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
   const totalDespachos = despachos.length;
-  const movilesActivos = ambulancias.filter((p) => p.estado_disponibilidad == "disponible").length;
+  const movilesActivos = ambulancias.filter((p) => p.estado_disponibilidad == 'disponible').length;
   const personalActivo = personal.filter((p) => p.is_active).length;
 
   return (

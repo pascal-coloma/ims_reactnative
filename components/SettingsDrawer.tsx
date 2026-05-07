@@ -33,9 +33,13 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
 
   const iniciales = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
   const rolLabel =
-    user?.role === 'medic' ? 'Médico' :
-      user?.role === 'nurse' ? 'Enfermero/a' :
-        user?.role === 'control' ? 'Control' : 'Usuario';
+    user?.role === 'medic'
+      ? 'Médico'
+      : user?.role === 'nurse'
+        ? 'Enfermero/a'
+        : user?.role === 'control'
+          ? 'Control'
+          : 'Usuario';
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
@@ -54,7 +58,7 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
           </View>
           <Text style={local.nombreTexto}>
             {user?.firstName} {user?.lastName}
-          </Text>          
+          </Text>
           <View style={local.rolBadge}>
             <Text style={local.rolTexto}>{rolLabel}</Text>
           </View>

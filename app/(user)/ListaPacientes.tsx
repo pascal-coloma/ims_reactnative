@@ -11,10 +11,10 @@ const ListaPacientes = () => {
 
   const despachosFiltrados = busqueda.trim()
     ? despachos.filter(
-      (d) =>
-        d.rut.toLowerCase().includes(busqueda.toLowerCase()) ||
-        `${d.primerNombre} ${d.apellidoPaterno}`.toLowerCase().includes(busqueda.toLowerCase())
-    )
+        (d) =>
+          d.rut.toLowerCase().includes(busqueda.toLowerCase()) ||
+          `${d.primerNombre} ${d.apellidoPaterno}`.toLowerCase().includes(busqueda.toLowerCase()),
+      )
     : despachos;
 
   return (

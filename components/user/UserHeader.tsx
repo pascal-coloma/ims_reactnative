@@ -10,7 +10,6 @@ const UserHeader = () => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const { user } = useAuth();
 
-
   return (
     <>
       <View style={style.container}>
@@ -20,7 +19,9 @@ const UserHeader = () => {
           </View>
           <View>
             <Text style={style.welcome}>Bienvenido,</Text>
-            <Text style={style.role}>{user?.firstName} {user?.lastName}</Text>
+            <Text style={style.role}>
+              {user?.firstName} {user?.lastName}
+            </Text>
           </View>
         </View>
         <View style={{ flex: 1 }} />
@@ -35,10 +36,7 @@ const UserHeader = () => {
           <TouchableOpacity onPress={() => setSettingsVisible(true)}>
             <MaterialIcons name="settings" size={24} color="#000" />
           </TouchableOpacity>
-          <SettingsDrawer
-            visible={settingsVisible}
-            onClose={() => setSettingsVisible(false)}
-          />
+          <SettingsDrawer visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
         </View>
       </View>
     </>

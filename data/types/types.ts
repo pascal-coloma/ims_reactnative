@@ -13,7 +13,6 @@ export type FormUsuario = CamposPaciente & {
   cronologia: Cronologia;
 };
 
-
 export type SignosVitales = {
   hora: string;
   pas: number;
@@ -66,7 +65,3 @@ export type Atencion = {
   preInforme: PreInforme;
   cronologia: Cronologia;
 };
-
-
-
-

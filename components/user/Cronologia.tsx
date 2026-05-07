@@ -5,14 +5,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import {
-    FlatList,
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 type CronologiaProps = {

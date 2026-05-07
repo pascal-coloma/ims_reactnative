@@ -61,12 +61,9 @@ const RegistrarPaciente = () => {
       .map((p) => `${p.first_name} ${p.last_name} — ${traducirRol(p.rol__nombre_rol)}`);
 
     const ambulancia = ambulancias.find((a) => a.id === data.unidad);
-    const unidadLabel = ambulancia
-      ? `${ambulancia.patente} — ${ambulancia.modelo}`
-      : data.unidad;
+    const unidadLabel = ambulancia ? `${ambulancia.patente} — ${ambulancia.modelo}` : data.unidad;
 
-
-    generatePDF({ ...data, equipoAsignado: equipoConNombres, unidad: unidadLabel});
+    generatePDF({ ...data, equipoAsignado: equipoConNombres, unidad: unidadLabel });
   };
 
   return (
@@ -74,22 +71,13 @@ const RegistrarPaciente = () => {
       <FormPaciente control={control} errors={errors} />
       <FormDespacho control={control} errors={errors} />
       <View style={style.rowBotones}>
-        <TouchableOpacity
-          style={style.btnCancelar}
-          onPress={handleSubmit(onGenerarPDF)}
-        >
+        <TouchableOpacity style={style.btnCancelar} onPress={handleSubmit(onGenerarPDF)}>
           <Text style={style.btnTextDark}>Generar PDF</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={style.btnCancelar}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
           <Text style={style.btnTextDark}>Cancelar</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={style.btnSubmit}
-          onPress={handleSubmit(onSubmit)}
-        >
+        <TouchableOpacity style={style.btnSubmit} onPress={handleSubmit(onSubmit)}>
           <Text style={style.btnText}>Enviar despacho</Text>
         </TouchableOpacity>
       </View>

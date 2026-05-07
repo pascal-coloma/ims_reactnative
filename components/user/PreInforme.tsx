@@ -1,5 +1,14 @@
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, FlatList, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  FlatList,
+  Pressable,
+} from 'react-native';
 import styles from '@/styles/globalStyles';
 import { FormUsuario } from '@/data/types/types';
 
@@ -27,7 +36,7 @@ const PreInformeForm = ({ control, errors }: PreInformeProps) => {
               value={value}
               placeholder="Ingrese pre informe de rescate..."
             />
-            <Text style={local.contador}>{(value?.length ?? 0)}/650</Text>
+            <Text style={local.contador}>{value?.length ?? 0}/650</Text>
           </>
         )}
       />
@@ -49,7 +58,7 @@ const PreInformeForm = ({ control, errors }: PreInformeProps) => {
               value={value}
               placeholder="Ingrese motivo de llamado..."
             />
-            <Text style={local.contador}>{(value?.length ?? 0)}/650</Text>
+            <Text style={local.contador}>{value?.length ?? 0}/650</Text>
           </>
         )}
       />
@@ -143,7 +152,7 @@ const local = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     fontSize: 16,
-    width: '100%'
+    width: '100%',
   },
   title: {
     fontSize: 20,

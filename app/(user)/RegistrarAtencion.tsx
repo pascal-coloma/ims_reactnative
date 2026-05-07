@@ -15,20 +15,25 @@ const RegistrarAtencion = () => {
   const { agregarAtencion } = useAtenciones();
   const { despachoActivo } = useDespachos();
 
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormUsuario>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-        ...DEFAULT_VALUES_USUARIO,
-        primerNombre: despachoActivo.primerNombre,
-        segundoNombre: despachoActivo.segundoNombre ?? '',
-        apellidoPaterno: despachoActivo.apellidoPaterno,
-        apellidoMaterno: despachoActivo.apellidoMaterno,
-        rut: despachoActivo.rut,
-        edad: despachoActivo.edad,
-        telefono: despachoActivo.telefono,
-        direccionOrigen: despachoActivo.direccionOrigen,
-        direccionDestino: despachoActivo.direccionDestino,
-      }
+          ...DEFAULT_VALUES_USUARIO,
+          primerNombre: despachoActivo.primerNombre,
+          segundoNombre: despachoActivo.segundoNombre ?? '',
+          apellidoPaterno: despachoActivo.apellidoPaterno,
+          apellidoMaterno: despachoActivo.apellidoMaterno,
+          rut: despachoActivo.rut,
+          edad: despachoActivo.edad,
+          telefono: despachoActivo.telefono,
+          direccionOrigen: despachoActivo.direccionOrigen,
+          direccionDestino: despachoActivo.direccionDestino,
+        }
       : DEFAULT_VALUES_USUARIO,
   });
 

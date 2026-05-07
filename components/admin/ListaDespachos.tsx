@@ -42,9 +42,7 @@ const ListaDespachos = () => {
           {FILTROS.map((filtro) => (
             <TouchableOpacity key={filtro.value} onPress={() => setFiltroActivo(filtro.value)}>
               <View>
-                <Text
-                  style={filtroActivo === filtro.value ? local.pillActive : local.pillInactive}
-                >
+                <Text style={filtroActivo === filtro.value ? local.pillActive : local.pillInactive}>
                   {filtro.label}
                 </Text>
                 {filtroActivo === filtro.value && <View style={local.underline} />}
@@ -77,7 +75,6 @@ const local = StyleSheet.create({
     fontSize: 15,
     marginBottom: 12,
     width: '100%',
-
   },
   filtros: {
     flexDirection: 'row',

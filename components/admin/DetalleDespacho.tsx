@@ -21,9 +21,7 @@ const PRIORIDAD_COLOR: Record<string, string> = {
 
 const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
   const { personal } = usePersonal();
-  const equipoDespacho = personal.filter((p) =>
-    despacho.personalIds.includes(p.id)
-  );
+  const equipoDespacho = personal.filter((p) => despacho.personalIds.includes(p.id));
 
   const nombreCompleto = [
     despacho.primerNombre,
@@ -36,9 +34,7 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
 
   return (
     <>
-      <TouchableOpacity
-        onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}
-      >
+      <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
         <View style={styles.container}>
           <View style={local.headerRow}>
             <Text style={local.idTexto}>{despacho.id}</Text>
@@ -87,11 +83,9 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
             </View>
           ))}
 
-
           <View style={local.divisor} />
         </View>
       </TouchableOpacity>
-
     </>
   );
 };

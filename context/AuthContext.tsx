@@ -29,7 +29,6 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
   const sessionid = cookies['sessionid']?.value;
   const csrftoken = cookies['csrftoken']?.value;
 
-
   return fetch(`${BASE_URL}${url}`, {
     ...options,
     credentials: 'include',
@@ -71,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(
     username: string,
-    password: string
+    password: string,
   ): Promise<{ role: Role; personalId: string } | null> {
     try {
       await fetch(`${BASE_URL}/ims/api/login/`, {
@@ -85,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('csrftoken:', csrftoken); // verificar que llega
       const response = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken ?? '', },
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken ?? '' },
         credentials: 'include',
         body: JSON.stringify({ username, password }),
       });
@@ -118,9 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>
   );
 }
 

@@ -11,7 +11,6 @@ type FormPacienteProps = {
   errors: FieldErrors<FormUsuario>;
 };
 
-
 const CampoReadonly = ({ label, value }: { label: string; value: string | number }) => (
   <View style={style.campoWrapper}>
     <Text style={style.label}>{label}</Text>
@@ -89,7 +88,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
         {esPrecargado ? (
           <>
             <CampoReadonly label="Primer Nombre" value={despachoActivo.primerNombre} />
-            <CampoReadonly label="Segundo Nombre (opcional)" value={despachoActivo.segundoNombre ?? '—'} />
+            <CampoReadonly
+              label="Segundo Nombre (opcional)"
+              value={despachoActivo.segundoNombre ?? '—'}
+            />
             <CampoReadonly label="Apellido Paterno" value={despachoActivo.apellidoPaterno} />
             <CampoReadonly label="Apellido Materno" value={despachoActivo.apellidoMaterno} />
             <View style={style.fila}>
@@ -152,7 +154,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               />
             </CampoEditable>
 
-            <CampoEditable label="Apellido Paterno" error={errors.apellidoPaterno && 'Campo requerido'}>
+            <CampoEditable
+              label="Apellido Paterno"
+              error={errors.apellidoPaterno && 'Campo requerido'}
+            >
               <Controller
                 control={control}
                 name="apellidoPaterno"
@@ -169,7 +174,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               />
             </CampoEditable>
 
-            <CampoEditable label="Apellido Materno" error={errors.apellidoMaterno && 'Campo requerido'}>
+            <CampoEditable
+              label="Apellido Materno"
+              error={errors.apellidoMaterno && 'Campo requerido'}
+            >
               <Controller
                 control={control}
                 name="apellidoMaterno"
@@ -188,7 +196,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
 
             <View style={style.fila}>
               <View style={{ flex: 2 }}>
-                <CampoEditable label="RUT" error={errors.rut?.message || (errors.rut && 'Campo requerido')}>
+                <CampoEditable
+                  label="RUT"
+                  error={errors.rut?.message || (errors.rut && 'Campo requerido')}
+                >
                   <Controller
                     control={control}
                     name="rut"
@@ -208,11 +219,18 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               </View>
               <View style={style.separador} />
               <View style={{ flex: 1 }}>
-                <CampoEditable label="Edad" error={errors.edad?.message || (errors.edad && 'Campo requerido')}>
+                <CampoEditable
+                  label="Edad"
+                  error={errors.edad?.message || (errors.edad && 'Campo requerido')}
+                >
                   <Controller
                     control={control}
                     name="edad"
-                    rules={{ required: true, min: { value: 0, message: 'Inválida' }, max: { value: 120, message: 'Inválida' } }}
+                    rules={{
+                      required: true,
+                      min: { value: 0, message: 'Inválida' },
+                      max: { value: 120, message: 'Inválida' },
+                    }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
                         placeholder="50"
@@ -246,7 +264,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               />
             </CampoEditable>
 
-            <CampoEditable label="Dirección de Origen" error={errors.direccionOrigen && 'Campo requerido'}>
+            <CampoEditable
+              label="Dirección de Origen"
+              error={errors.direccionOrigen && 'Campo requerido'}
+            >
               <Controller
                 control={control}
                 name="direccionOrigen"
@@ -263,7 +284,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               />
             </CampoEditable>
 
-            <CampoEditable label="Dirección de Destino" error={errors.direccionDestino && 'Campo requerido'}>
+            <CampoEditable
+              label="Dirección de Destino"
+              error={errors.direccionDestino && 'Campo requerido'}
+            >
               <Controller
                 control={control}
                 name="direccionDestino"

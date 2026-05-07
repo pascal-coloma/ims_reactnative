@@ -10,7 +10,6 @@ export default function AdminLayout() {
   const { user } = useAuth();
   if (!user || user.role !== 'control') return <Redirect href={'/(auth)/login'} />;
 
-
   return (
     <PersonalProvider>
       <PacienteProvider>

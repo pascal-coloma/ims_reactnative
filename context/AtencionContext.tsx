@@ -56,7 +56,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         console.log(`[${key}]`, JSON.stringify(payload, null, 2));
       }
 
-      setAtenciones(prev => [...prev, atencion]);
+      setAtenciones((prev) => [...prev, atencion]);
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
       throw e;
@@ -92,20 +92,22 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const buscarPorDespacho = (despachoId: string) => {
-    return atenciones.find(a => a.despachoId === despachoId);
+    return atenciones.find((a) => a.despachoId === despachoId);
   };
 
   return (
-    <AtencionContext.Provider value={{
-      atenciones,
-      resumenAtenciones,
-      agregarAtencion,
-      fetchAtenciones,
-      fetchAtencionDetalle,
-      buscarPorDespacho,
-      loading,
-      error,
-    }}>
+    <AtencionContext.Provider
+      value={{
+        atenciones,
+        resumenAtenciones,
+        agregarAtencion,
+        fetchAtenciones,
+        fetchAtencionDetalle,
+        buscarPorDespacho,
+        loading,
+        error,
+      }}
+    >
       {children}
     </AtencionContext.Provider>
   );
