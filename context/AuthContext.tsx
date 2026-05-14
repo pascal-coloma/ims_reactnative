@@ -26,19 +26,31 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const fetchConSesion = async (url: string, options: RequestInit = {}) => {
   const cookies = await CookieManager.get(BASE_URL);
+  console.log(cookies);
   const sessionid = cookies['sessionid']?.value;
   const csrftoken = cookies['csrftoken']?.value;
 
-  return fetch(`${BASE_URL}${url}`, {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(sessionid ? { Cookie: `sessionid=${sessionid}; csrftoken=${csrftoken ?? ''}` } : {}),
+    // Siempre enviamos el CSRF header — Django lo ignora en GET/HEAD, pero lo exige en POST/PATCH
+    ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
+    ...(options.headers as Record<string, string>),
+  };
+
+  const response = await fetch(`${BASE_URL}${url}`, {
     ...options,
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(sessionid ? { Cookie: `sessionid=${sessionid}` } : {}),
-      ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
-      ...options.headers,
-    },
+    headers,
   });
+
+  // Persistir cookies que Django devuelva (sessionid nuevo, rotación de csrf, etc.)
+  const setCookie = response.headers.get('set-cookie');
+  if (setCookie) {
+    await CookieManager.setFromResponse(BASE_URL, setCookie);
+  }
+
+  return response;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -68,27 +80,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     restore();
   }, []);
 
-  async function login(
-    username: string,
-    password: string,
-  ): Promise<{ role: Role; personalId: string } | null> {
+  // AuthContext.tsx — función login()
+  async function login(username: string, password: string) {
     try {
-      await fetch(`${BASE_URL}/ims/api/login/`, {
+      const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'GET',
         credentials: 'include',
       });
+      const setCookieGet = getResp.headers.get('set-cookie');
+      if (setCookieGet) {
+        await CookieManager.setFromResponse(BASE_URL, setCookieGet);
+      }
 
       const cookies = await CookieManager.get(BASE_URL);
       const csrftoken = cookies['csrftoken']?.value;
 
-      console.log('csrftoken:', csrftoken); // verificar que llega
       const response = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken ?? '' },
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken ?? '',
+        },
         body: JSON.stringify({ username, password }),
       });
+
+      const setCookiePost = response.headers.get('set-cookie');
+      if (setCookiePost) {
+        await CookieManager.setFromResponse(BASE_URL, setCookiePost); // ← awaited
+      }
+
+      // ✅ Verificar que la cookie quedó antes de setUser
+      const cookiesPost = await CookieManager.get(BASE_URL);
+      if (!cookiesPost['sessionid']?.value) {
+        console.error('sessionid no persistido después del login');
+        return null;
+      }
+
       if (!response.ok) return null;
+
       const data = await response.json();
       const loggedUser: User = {
         username,
@@ -97,8 +127,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstName: data.first_name ?? '',
         lastName: data.last_name ?? '',
       };
-      setUser(loggedUser);
+
       await AsyncStorage.setItem('user', JSON.stringify(loggedUser));
+      setUser(loggedUser); // ← recién acá, cuando todo está listo
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
       console.error('Error login:', e);

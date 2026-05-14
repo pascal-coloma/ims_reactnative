@@ -5,70 +5,73 @@ import PersonalProvider from '@/context/PersonalContext';
 import PacienteProvider from '@/context/PacienteContext';
 import InventarioProvider from '@/context/InventoryContext';
 import { AmbulanciaProvider } from '@/context/AmbulanciaContext';
+import DespachosProvider from '@/context/DespachosContext';
 
 export default function AdminLayout() {
   const { user } = useAuth();
   if (!user || user.role !== 'control') return <Redirect href={'/(auth)/login'} />;
 
   return (
-    <PersonalProvider>
-      <PacienteProvider>
-        <InventarioProvider>
-          <AmbulanciaProvider>
-            <Tabs screenOptions={tabBarOptions}>
-              <Tabs.Screen
-                name="AdminDashboard"
-                options={{
-                  title: 'Home',
-                  tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="home" size={size} color={color} />
-                  ),
-                }}
-              ></Tabs.Screen>
-              <Tabs.Screen
-                name="Despachos"
-                options={{
-                  title: 'Despachos',
-                  tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="airport-shuttle" size={size} color={color} />
-                  ),
-                }}
-              ></Tabs.Screen>
-              <Tabs.Screen
-                name="Panel"
-                options={{
-                  title: 'Panel',
-                  tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="admin-panel-settings" size={size} color={color} />
-                  ),
-                }}
-              ></Tabs.Screen>
-              <Tabs.Screen
-                name="RegistrarPaciente"
-                options={{
-                  href: null,
-                  title: 'RegistrarPaciente',
-                }}
-              ></Tabs.Screen>
-              <Tabs.Screen
-                name="detalledespacho"
-                options={{
-                  href: null,
-                  title: 'detalledespacho',
-                }}
-              ></Tabs.Screen>
-              <Tabs.Screen
-                name="Inventario"
-                options={{
-                  href: null,
-                  title: 'Inventario',
-                }}
-              ></Tabs.Screen>
-            </Tabs>
-          </AmbulanciaProvider>
-        </InventarioProvider>
-      </PacienteProvider>
-    </PersonalProvider>
+    <DespachosProvider>
+      <PersonalProvider>
+        <PacienteProvider>
+          <InventarioProvider>
+            <AmbulanciaProvider>
+              <Tabs screenOptions={tabBarOptions}>
+                <Tabs.Screen
+                  name="AdminDashboard"
+                  options={{
+                    title: 'Home',
+                    tabBarIcon: ({ color, size }) => (
+                      <MaterialIcons name="home" size={size} color={color} />
+                    ),
+                  }}
+                ></Tabs.Screen>
+                <Tabs.Screen
+                  name="Despachos"
+                  options={{
+                    title: 'Despachos',
+                    tabBarIcon: ({ color, size }) => (
+                      <MaterialIcons name="airport-shuttle" size={size} color={color} />
+                    ),
+                  }}
+                ></Tabs.Screen>
+                <Tabs.Screen
+                  name="Panel"
+                  options={{
+                    title: 'Panel',
+                    tabBarIcon: ({ color, size }) => (
+                      <MaterialIcons name="admin-panel-settings" size={size} color={color} />
+                    ),
+                  }}
+                ></Tabs.Screen>
+                <Tabs.Screen
+                  name="RegistrarPaciente"
+                  options={{
+                    href: null,
+                    title: 'RegistrarPaciente',
+                  }}
+                ></Tabs.Screen>
+                <Tabs.Screen
+                  name="detalledespacho"
+                  options={{
+                    href: null,
+                    title: 'detalledespacho',
+                  }}
+                ></Tabs.Screen>
+                <Tabs.Screen
+                  name="Inventario"
+                  options={{
+                    href: null,
+                    title: 'Inventario',
+                  }}
+                ></Tabs.Screen>
+              </Tabs>
+            </AmbulanciaProvider>
+          </InventarioProvider>
+        </PacienteProvider>
+      </PersonalProvider>
+    </DespachosProvider>
   );
 }
 

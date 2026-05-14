@@ -22,9 +22,7 @@ function RootContent() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <DespachosProvider>
         <RootContent />
-      </DespachosProvider>
     </AuthProvider>
   );
 }

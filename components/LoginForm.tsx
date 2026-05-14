@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
-import { useDespachos } from '@/context/DespachosContext';
 
 export default function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
-  const { setDespachoActivoPorUsuario } = useDespachos();
   const [email, setEmail] = useState('');
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -29,7 +27,6 @@ export default function LoginForm() {
       }
 
       if (result.role === 'medic' || result.role === 'nurse') {
-        if (result.personalId) setDespachoActivoPorUsuario(result.personalId);
         router.navigate('/(user)/UserDashboard');
       } else if (result.role === 'control') {
         router.navigate('/(admin)/AdminDashboard');

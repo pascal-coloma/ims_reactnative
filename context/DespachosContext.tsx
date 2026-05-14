@@ -15,6 +15,7 @@ type DespachosContextType = {
   limpiarDespachoActivo: () => void;
   loading: boolean;
   error: string | null;
+  fetchDespachos: () => Promise<void>;
 };
 
 const DespachosContext = createContext<DespachosContextType | null>(null);
@@ -40,6 +41,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await fetchConSesion('/ims/api/despachos/');
+      console.log(response);
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
 
@@ -120,6 +122,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         limpiarDespachoActivo,
         loading,
         error,
+        fetchDespachos
       }}
     >
       {children}

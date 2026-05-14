@@ -1,27 +1,28 @@
 import PERSONAL, { Personal } from '@/data/constants/mockPersonal';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { fetchConSesion } from './AuthContext';
 
 type PersonalContextType = {
   personal: Personal[];
   actualizarDisponilidad: (id: string) => void;
 };
 
+// funcionamiento del retorno de los permisos adquiridos por el endpoint dentro de la clase DataPersonal.
+// Uso del serializer como
 const PersonalContext = createContext<PersonalContextType | null>(null);
 
 const PersonalProvider = ({ children }: { children: ReactNode }) => {
   const [personal, setPersonal] = useState<Personal[]>(PERSONAL);
-
+  // Revision de la autenticcion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
     const fetchPersonal = async () => {
       try {
-        const response = await fetch('http://52.91.220.207/ims/api/allpersonal/');
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-        const personal = await response.json();
-        setPersonal(personal);
+        const response = await fetchConSesion('/ims/api/allpersonal/');
+        if (!response.ok) throw new Error(`Error ${response.status}`);
+        const data = await response.json();
+        setPersonal(data);
       } catch (error: any) {
-        console.error(error.message);
+        console.error('Error fetching personal:', error.message);
       }
     };
     fetchPersonal();

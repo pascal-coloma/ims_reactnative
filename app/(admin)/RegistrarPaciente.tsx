@@ -5,7 +5,6 @@ import { useDespachos } from '@/context/DespachosContext';
 import { usePersonal } from '@/context/PersonalContext';
 import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
 import { generatePDF } from '@/data/constants/generatePDF';
-import { mockAmbulancias } from '@/data/constants/mockAmbulancia';
 import { Despacho } from '@/data/constants/mockDespachos';
 import { FormCompleta } from '@/data/types/types';
 import { traducirRol } from '@/utils/labels';
@@ -41,7 +40,6 @@ const RegistrarPaciente = () => {
     estado: 'activo',
     prioridad: data.prioridad as Despacho['prioridad'],
     tipoEmergencia: data.tipoEmergencia,
-    unidad: data.unidad,
     personalIds: data.equipoAsignado,
     ambulancia: ambulancias.find((a) => a.id === data.unidad),
     observaciones: data.observaciones,
