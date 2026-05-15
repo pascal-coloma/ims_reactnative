@@ -26,11 +26,10 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await fetchConSesion('/ims/api/ambulancias/');
-      console.log(response);
+
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-      console.log(data.role);
-      // mapear id a string para consistencia
+
       setAmbulancias(data.map((a: any) => ({ ...a, id: String(a.id) })));
     } catch (e: any) {
       console.error('Error fetching ambulancias:', e);

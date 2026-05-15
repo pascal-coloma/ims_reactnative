@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-const BASE_URL = 'http://3.84.131.141';
+const BASE_URL = 'http://18.212.226.172';
 const BACKEND_READY = true;
 
 type Role = 'control' | 'medic' | 'nurse' | null;
@@ -26,14 +26,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const fetchConSesion = async (url: string, options: RequestInit = {}) => {
   const cookies = await CookieManager.get(BASE_URL);
-  console.log(cookies);
+
   const sessionid = cookies['sessionid']?.value;
   const csrftoken = cookies['csrftoken']?.value;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(sessionid ? { Cookie: `sessionid=${sessionid}; csrftoken=${csrftoken ?? ''}` } : {}),
-    // Siempre enviamos el CSRF header — Django lo ignora en GET/HEAD, pero lo exige en POST/PATCH
     ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
     ...(options.headers as Record<string, string>),
   };
@@ -80,7 +79,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     restore();
   }, []);
 
-  // AuthContext.tsx — función login()
   async function login(username: string, password: string) {
     try {
       const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
@@ -88,9 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: 'include',
       });
       const setCookieGet = getResp.headers.get('set-cookie');
-      if (setCookieGet) {
-        await CookieManager.setFromResponse(BASE_URL, setCookieGet);
-      }
+      if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
 
       const cookies = await CookieManager.get(BASE_URL);
       const csrftoken = cookies['csrftoken']?.value;
@@ -106,11 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       const setCookiePost = response.headers.get('set-cookie');
-      if (setCookiePost) {
-        await CookieManager.setFromResponse(BASE_URL, setCookiePost); // ← awaited
-      }
+      if (setCookiePost) await CookieManager.setFromResponse(BASE_URL, setCookiePost);
 
-      // ✅ Verificar que la cookie quedó antes de setUser
       const cookiesPost = await CookieManager.get(BASE_URL);
       if (!cookiesPost['sessionid']?.value) {
         console.error('sessionid no persistido después del login');
@@ -118,18 +111,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (!response.ok) return null;
-
       const data = await response.json();
+
+      // ── Fetch personal para completar los datos del usuario ──
+      let firstName = '';
+      let lastName = '';
+      let personalId = '';
+
+      try {
+        const personalResp = await fetchConSesion('/ims/api/allpersonal/');
+        if (personalResp.ok) {
+          const personalData: any[] = await personalResp.json();
+          const match = personalData.find((p) => p.username === username);
+          if (match) {
+            firstName = match.first_name ?? '';
+            lastName = match.last_name ?? '';
+            personalId = match.id?.toString() ?? '';
+          }
+        }
+      } catch (e) {
+        console.warn('No se pudo obtener datos de personal, usando defaults:', e);
+      }
+      // ────────────────────────────────────────────────────────
+
       const loggedUser: User = {
         username,
         role: data.role as Role,
-        personalId: data.id?.toString() ?? '',
-        firstName: data.first_name ?? '',
-        lastName: data.last_name ?? '',
+        personalId,
+        firstName,
+        lastName,
       };
 
       await AsyncStorage.setItem('user', JSON.stringify(loggedUser));
-      setUser(loggedUser); // ← recién acá, cuando todo está listo
+      setUser(loggedUser);
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
       console.error('Error login:', e);

@@ -43,11 +43,11 @@ const Panel = () => {
           </View>
         </View>
         <Text style={[style.title, { backgroundColor: 'white' }]}>Acciones Rapidas</Text>
-        <Link href={'/(admin)/RegistrarPaciente'}>
+        <Link href={'/(admin)/RegistrarDespacho'}>
           <View style={style.patientCard}>
             <MaterialIcons name="person" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
-              <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Paciente</Text>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Despacho</Text>
               <Text>Nuevo llamado - crear despacho</Text>
             </View>
           </View>

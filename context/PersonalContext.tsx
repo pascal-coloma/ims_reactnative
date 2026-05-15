@@ -12,8 +12,8 @@ type PersonalContextType = {
 const PersonalContext = createContext<PersonalContextType | null>(null);
 
 const PersonalProvider = ({ children }: { children: ReactNode }) => {
-  const [personal, setPersonal] = useState<Personal[]>(PERSONAL);
-  // Revision de la autenticcion y el uso de cookies para el fetch del personal en base a sus credenciales.
+  const [personal, setPersonal] = useState<Personal[]>([]);
+  // Revision de la autenticacion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
     const fetchPersonal = async () => {
       try {

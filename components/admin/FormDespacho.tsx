@@ -105,7 +105,7 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
             <Text style={style.title}>Asignar Equipo</Text>
             {personal
               .filter((p) => p.is_active)
-              .filter((p) => p.rol__nombre_rol != 'control')
+              .filter((p) => p.rol_nombre != 'control')
               .map((p) => {
                 const seleccionado = value?.includes(p.id);
                 return (
@@ -122,7 +122,7 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
                     }}
                   >
                     <Text style={seleccionado && { color: 'white' }}>
-                      {p.first_name} {p.last_name} — {traducirRol(p.rol__nombre_rol)}
+                      {p.first_name} {p.last_name} — {traducirRol(p.rol_nombre ?? '')}
                     </Text>
                   </TouchableOpacity>
                 );

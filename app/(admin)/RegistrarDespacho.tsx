@@ -12,8 +12,8 @@ import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const RegistrarPaciente = () => {
-  const { agregarDespacho, despachos } = useDespachos();
+const RegistrarDespacho = () => {
+  const { agregarDespacho, despachos, loading } = useDespachos();
   const { actualizarDisponilidad, personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
 
@@ -26,37 +26,26 @@ const RegistrarPaciente = () => {
     defaultValues: DEFAULT_VALUES_ADMIN,
   });
 
-  const construirDespacho = (data: FormCompleta): Despacho => ({
-    primerNombre: data.primerNombre,
-    segundoNombre: data.segundoNombre,
-    apellidoPaterno: data.apellidoPaterno,
-    apellidoMaterno: data.apellidoMaterno,
-    rut: data.rut,
-    edad: data.edad,
-    telefono: data.telefono,
-    direccionOrigen: data.direccionOrigen,
-    direccionDestino: data.direccionDestino,
-    id: `DSP-${despachos.length + 1}`,
-    estado: 'activo',
-    prioridad: data.prioridad as Despacho['prioridad'],
-    tipoEmergencia: data.tipoEmergencia,
-    personalIds: data.equipoAsignado,
-    ambulancia: ambulancias.find((a) => a.id === data.unidad),
-    observaciones: data.observaciones,
-  });
-
-  const onSubmit = (data: FormCompleta) => {
-    const nuevoDespacho = construirDespacho(data);
-    data.equipoAsignado.forEach((id) => actualizarDisponilidad(id));
-    agregarDespacho(nuevoDespacho);
-    reset();
-    router.back();
+  const onSubmit = async (data: FormCompleta) => {
+    console.log('direccionOrigen:', data.direccionOrigen);
+    console.log('direccionDestino:', data.direccionDestino);
+    console.log('equipoAsignado:', data.equipoAsignado);
+    console.log('unidad:', data.unidad);
+    try {
+      await agregarDespacho(data); // ahora maneja los 3 pasos
+      data.equipoAsignado.forEach((id) => actualizarDisponilidad(id));
+      reset();
+      router.back();
+    } catch (e) {
+      // el error ya está en el estado del contexto
+      console.error('Falló el envío del despacho');
+    }
   };
 
   const onGenerarPDF = (data: FormCompleta) => {
     const equipoConNombres = personal
       .filter((p) => data.equipoAsignado.includes(p.id))
-      .map((p) => `${p.first_name} ${p.last_name} — ${traducirRol(p.rol__nombre_rol)}`);
+      .map((p) => `${p.first_name} ${p.last_name} — ${traducirRol(p.rol_nombre)}`);
 
     const ambulancia = ambulancias.find((a) => a.id === data.unidad);
     const unidadLabel = ambulancia ? `${ambulancia.patente} — ${ambulancia.modelo}` : data.unidad;
@@ -75,8 +64,14 @@ const RegistrarPaciente = () => {
         <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
           <Text style={style.btnTextDark}>Cancelar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={style.btnSubmit} onPress={handleSubmit(onSubmit)}>
-          <Text style={style.btnText}>Enviar despacho</Text>
+        <TouchableOpacity
+          style={[style.btnSubmit, loading && { opacity: 0.6 }]}
+          onPress={handleSubmit(onSubmit)}
+          disabled={loading}
+        >
+          <Text style={style.btnText}>
+            {loading ? 'Enviando...' : 'Enviar despacho'}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -118,4 +113,4 @@ const style = StyleSheet.create({
   },
 });
 
-export default RegistrarPaciente;
+export default RegistrarDespacho;

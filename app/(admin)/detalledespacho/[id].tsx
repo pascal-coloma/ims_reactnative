@@ -4,6 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { usePersonal } from '@/context/PersonalContext';
+import { traducirRol } from '@/utils/labels';
+import { useAmbulancias } from '@/context/AmbulanciaContext';
 
 const estadoColors: Record<string, string> = {
   activo: '#22c55e',
@@ -22,8 +24,13 @@ const DetalleDespachoScreen = () => {
   const { despachos } = useDespachos();
   const { personal } = usePersonal();
   const despacho = despachos.find((d) => d.id === id);
+  const { ambulancias } = useAmbulancias();
 
-  const equipoDespacho = personal.filter((p) => despacho?.personalIds.includes(p.id));
+  const equipoDespacho = personal.filter((p) =>
+    despacho?.personalIds?.includes(String(p.id))
+  );
+    const ambulancia = ambulancias.find((a) => a.id === despacho?.unidad);
+
 
   if (!despacho) {
     return (
@@ -102,7 +109,9 @@ const DetalleDespachoScreen = () => {
         </View>
         <View style={style.campo}>
           <Text style={style.campoLabel}>Unidad</Text>
-          <Text style={style.campoValor}>{despacho.unidad}</Text>
+          <Text style={style.campoValor}>
+            {ambulancia ? `${ambulancia.patente} — ${ambulancia.modelo}` : 'Sin unidad asignada'}
+          </Text>
         </View>
         {despacho.observaciones && (
           <View style={style.campo}>
@@ -122,7 +131,7 @@ const DetalleDespachoScreen = () => {
                 <Text style={style.personalNombre}>
                   {p.first_name} {p.last_name}
                 </Text>
-                <Text style={style.personalRol}>{p.rol__nombre_rol}</Text>
+                <Text style={style.personalRol}>{traducirRol(p.rol_nombre)}</Text>
               </View>
               <View
                 style={[

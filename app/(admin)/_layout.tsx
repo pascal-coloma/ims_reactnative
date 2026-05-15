@@ -46,10 +46,10 @@ export default function AdminLayout() {
                   }}
                 ></Tabs.Screen>
                 <Tabs.Screen
-                  name="RegistrarPaciente"
+                  name="RegistrarDespacho"
                   options={{
                     href: null,
-                    title: 'RegistrarPaciente',
+                    title: 'RegistrarDespacho',
                   }}
                 ></Tabs.Screen>
                 <Tabs.Screen
