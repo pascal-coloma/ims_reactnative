@@ -4,44 +4,31 @@ import styles from '@/styles/globalStyles';
 import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useAmbulancias } from '@/context/AmbulanciaContext';
+
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const ESTADO_COLOR: Record<Despacho['estado'], string> = {
+  recibido: '#FB8C00',
+  asignado: '#1976D2',
   activo: '#22c55e',
-  pendiente: '#FB8C00',
-  completado: '#1976D2',
-};
-
-const PRIORIDAD_COLOR: Record<string, string> = {
-  alta: '#E53935',
-  media: '#FB8C00',
-  baja: '#43A047',
+  finalizado: '#22c55e',
+  cancelado: '#9E9E9E',
 };
 
 const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
   const { personal } = usePersonal();
-  const equipoDespacho = personal.filter((p) => despacho.personalIds.includes(p.id));
-
-  const nombreCompleto = [
-    despacho.primerNombre,
-    despacho.segundoNombre,
-    despacho.apellidoPaterno,
-    despacho.apellidoMaterno,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const { ambulancias } = useAmbulancias();
+  const equipoDespacho = personal.filter((p) => despacho.personalIds.includes(String(p.id)));
+  const ambulancia = ambulancias.find((a) => a.id === despacho.ambulancia?.id);
 
   return (
     <>
       <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
         <View style={styles.container}>
           <View style={local.headerRow}>
-            <Text style={local.idTexto}>{despacho.id}</Text>
+            <Text style={local.idTexto}>Despacho {despacho.id}</Text>
             <View style={local.badgeRow}>
-              <View style={[local.badge, { backgroundColor: PRIORIDAD_COLOR[despacho.prioridad] }]}>
-                <Text style={local.badgeTexto}>{despacho.prioridad.toUpperCase()}</Text>
-              </View>
               <View style={[local.badge, { backgroundColor: ESTADO_COLOR[despacho.estado] }]}>
                 <Text style={local.badgeTexto}>
                   {despacho.estado[0].toUpperCase() + despacho.estado.slice(1)}
@@ -49,9 +36,6 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
               </View>
             </View>
           </View>
-
-          <Text style={local.pacienteNombre}>{nombreCompleto}</Text>
-          <Text style={local.dato}>RUT: {despacho.rut}</Text>
 
           <View style={local.rutaRow}>
             <MaterialIcons name="place" size={14} color="#888" />
@@ -66,20 +50,20 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
             </Text>
           </View>
 
-          <Text style={local.dato}>Emergencia: {despacho.tipoEmergencia}</Text>
+          <Text style={local.dato}>Emergencia: {despacho.descripcionLlamado}</Text>
 
-          {despacho.ambulancia && (
+          {ambulancia && (
             <Text style={local.dato}>
-              Unidad: {despacho.ambulancia.modelo} — {despacho.ambulancia.patente}
+              Unidad: {ambulancia.modelo} — {ambulancia.patente}
             </Text>
           )}
 
           {equipoDespacho.map((p) => (
             <View key={p.id} style={local.equipoItem}>
               <Text style={local.dato}>
-                {p.first_name} {p.last_name}
+                {p.first_name} {p.last_name}{' '}
               </Text>
-              <Text style={local.equipoRol}>{traducirRol(p.rol__nombre_rol)}</Text>
+              <Text style={local.equipoRol}>{traducirRol(p.rol_nombre)}</Text>
             </View>
           ))}
 

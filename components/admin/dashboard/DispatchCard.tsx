@@ -5,8 +5,8 @@ import { useDespachos } from '@/context/DespachosContext';
 const DispatchCard = () => {
   const { despachos } = useDespachos();
 
-  const activos = despachos.length;
-  const pendientes = despachos.filter((d) => d.estado === 'pendiente').length;
+  const activos = despachos.filter((d) => d.estado === 'activo' || d.estado === 'asignado').length;
+  const recibidos = despachos.filter((d) => d.estado === 'recibido').length;
   const enCurso = despachos.filter((d) => d.estado === 'activo').length;
 
   return (
@@ -15,7 +15,7 @@ const DispatchCard = () => {
         <Text style={styles.redCardTitle}>Despachos Activos</Text>
         <Text style={styles.dispNumb}>{activos}</Text>
         <View style={styles.redCardPills}>
-          <Text style={styles.pill}>{pendientes} pendientes</Text>
+          <Text style={styles.pill}>{recibidos} recibidos</Text>
           <Text style={styles.pill}>{enCurso} en curso</Text>
         </View>
       </View>

@@ -90,7 +90,18 @@ const ListaAtenciones = () => {
             </View>
 
             <Text style={styles.subtitle}>
-              {new Date(a.fecha_registro).toLocaleDateString('es-CL', {
+              {new Date(a.hora_salida).toLocaleDateString('es-CL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Text>
+
+            <Text style={styles.title}>{a.paciente__nombre_completo ?? `Atención #${a.id}`}</Text>
+            <Text style={styles.subtitle}>
+              {new Date(a.hora_salida).toLocaleDateString('es-CL', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',

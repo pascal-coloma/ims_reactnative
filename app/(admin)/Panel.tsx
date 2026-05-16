@@ -119,7 +119,7 @@ const style = StyleSheet.create({
     padding: 10,
   },
   personalCard: {
-    backgroundColor: '#87a4cacb',
+    backgroundColor: '#0b61d1cb',
     borderRadius: 20,
     gap: 10,
     padding: 10,

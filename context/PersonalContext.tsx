@@ -17,7 +17,7 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchPersonal = async () => {
       try {
-        const response = await fetchConSesion('/ims/api/allpersonal/');
+        const response = await fetchConSesion('/ims/api/personal/');
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
         setPersonal(data);

@@ -1,7 +1,8 @@
 import mockDespachos, { Despacho } from '@/data/constants/mockDespachos';
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { FormCompleta } from '@/data/types/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BACKEND_READY = true;
 
@@ -33,6 +34,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const [despachoActivo, setDespachoActivo] = useState<Despacho | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pacienteRutMap = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (BACKEND_READY) fetchDespachos();
@@ -42,45 +44,51 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const endpoint = user?.role === 'control'
-        ? '/ims/api/despachos/getall/'
-        : '/ims/api/despachos/';
+      const esControl = user?.role === 'control';
+      const endpoint = esControl ? '/ims/api/despachos/getall/' : '/ims/api/despachos/get/';
 
       const response = await fetchConSesion(endpoint);
-      console.log('data despachos raw:', await response.clone().json());
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
 
-      const mapped: Despacho[] = data.map((d: any) => ({
+      const mapearControl = (d: any): Despacho => ({
         id: String(d.id),
-        primerNombre: '',
-        segundoNombre: '',
-        apellidoPaterno: '',
-        apellidoMaterno: '',
-        rut: '',
-        edad: 0,
-        telefono: '',
         direccionOrigen: d.direccion_origen,
         direccionDestino: d.direccion_destino,
+        descripcionLlamado: d.descripcion_llamado,
         estado: d.estado === 'asignado' ? 'activo' : d.estado,
-        prioridad: 'alta',
-        tipoEmergencia: d.descripcion_llamado,
-        unidad: d.ambulancia_id ? String(d.ambulancia_id) : '',
-        personalIds: d.personal
-          ? d.personal.map((p: any) => String(p.personal__id))
-          : [],
+        fechaLlamado: d.fecha_llamado,
+        fechaAsignacion: d.fecha_asignacion,
+        personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
         ambulancia: d.ambulancia_id
           ? {
-            id: String(d.ambulancia_id),
-            numeroMovil: String(d.ambulancia_id),
-            patente: '',
-            tipo: 'basica',
-            disponible: false,
-          }
+              id: String(d.ambulancia_id),
+              patente: '',
+              modelo: '',
+              estado_disponibilidad: 'disponible',
+            }
           : undefined,
-        observaciones: d.descripcion_llamado,
-      }));
-      console.log('personal sample:', JSON.stringify(data[0]?.personal, null, 2));
+      });
+
+      const mapearWorker = (d: any): Despacho => ({
+        id: String(d.id),
+        direccionOrigen: d.direccionOrigen,
+        direccionDestino: d.direccionDestino,
+        descripcionLlamado: d.descripcionLlamado,
+        estado: d.estado === 'asignado' ? 'activo' : d.estado,
+        fechaLlamado: d.fechaLlamado,
+        personalIds: d.personalIds ?? [],
+        rutPaciente: d.paciente?.rut ?? undefined,
+        ambulancia: d.ambulancia
+          ? {
+              id: String(d.ambulancia.id),
+              patente: d.ambulancia.patente ?? '',
+              modelo: d.ambulancia.modelo ?? '',
+              estado_disponibilidad: d.ambulancia.estado ?? 'disponible',
+            }
+          : undefined,
+      });
+      const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
 
       setDespachos(mapped);
     } catch (e: any) {
@@ -93,55 +101,57 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const agregarDespacho = async (data: FormCompleta): Promise<void> => {
+    console.log('agregarDespacho llamado');
+    console.log('data:', JSON.stringify(data, null, 2));
+    const rutLimpio = data.rut.replace(/\./g, '');
+    console.log('rutLimpio:', rutLimpio);
+
     setLoading(true);
     setError(null);
     try {
-      const grupoResp = await fetchConSesion('/ims/api/suscribirAgrupo/', {
+      const despachoResp = await fetchConSesion('/ims/api/despachos/add/', {
         method: 'POST',
         body: JSON.stringify({
-          nombre_grupo: `Despacho-${Date.now()}`,
-          personal: data.equipoAsignado.map(Number), 
+          direccion_origen: data.direccionOrigen,
+          direccion_destino: data.direccionDestino,
+          descripcion_llamado: data.descripcionLlamado,
+          paciente_rut: rutLimpio,
         }),
       });
-      if (!grupoResp.ok) throw new Error(`Error creando grupo: ${grupoResp.status}`);
-      const grupoData = await grupoResp.json();
-      console.log('Paso 1 - grupo:', grupoData);
-      const grupo_id: number = grupoData.group_id;
+      console.log('Paso 1 status:', despachoResp.status);
 
-      // Paso 2 — crear el despacho
-      const despachoResp = await fetchConSesion('/ims/api/despachos/create/', {
-        method: 'POST',
-        body: JSON.stringify({
-          d_o: data.direccionOrigen,
-          d_d: data.direccionDestino,
-          d_llamado: data.tipoEmergencia, 
-        }),
-      });
       if (!despachoResp.ok) {
         const errorText = await despachoResp.text().catch(() => 'no body');
-        console.log('Paso 2 - error raw:', errorText);
+        console.log('Error despacho body:', errorText);
         throw new Error(`Error creando despacho: ${despachoResp.status}`);
       }
+      console.log(despachoResp);
       const despachoData = await despachoResp.json();
-      console.log('Paso 2 - despacho:', despachoData);
-      const despacho_id: number = despachoData.despacho_id;
+      console.log('Paso 1 - despacho:', despachoData);
 
       const asignarResp = await fetchConSesion('/ims/api/despachos/asignar/', {
         method: 'PATCH',
         body: JSON.stringify({
           amb_id: Number(data.unidad),
-          d_id: despacho_id,
-          grupo_id,
+          despacho_id: despachoData.despacho.id,
+          grupo_id: Number(data.grupoAsignado),
         }),
       });
-      console.log('Paso 3 - asignado');
-      if (!asignarResp.ok) throw new Error(`Error asignando despacho: ${asignarResp.status}`);
-
-      await fetchDespachos();
+      if (!asignarResp.ok) {
+        const errorText = await asignarResp.text().catch(() => 'no body');
+        console.log('Error asignar body:', errorText);
+        throw new Error(`Error asignando despacho: ${asignarResp.status}`);
+      }
+      console.log('Paso 2 - asignado');
+      try {
+        await fetchDespachos();
+      } catch (e) {
+        console.warn('fetchDespachos falló pero el despacho fue creado');
+      }
     } catch (e: any) {
       console.error('Error en agregarDespacho:', e);
       setError(e.message ?? 'Error desconocido');
-      throw e; // re-lanzar para que el componente pueda reaccionar
+      throw e;
     } finally {
       setLoading(false);
     }
@@ -182,7 +192,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         limpiarDespachoActivo,
         loading,
         error,
-        fetchDespachos
+        fetchDespachos,
       }}
     >
       {children}

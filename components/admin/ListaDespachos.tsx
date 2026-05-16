@@ -21,12 +21,7 @@ const ListaDespachos = () => {
     .filter((d) => {
       if (!busqueda.trim()) return true;
       const q = busqueda.toLowerCase();
-      return (
-        d.rut.toLowerCase().includes(q) ||
-        d.primerNombre.toLowerCase().includes(q) ||
-        d.apellidoPaterno.toLowerCase().includes(q) ||
-        d.id.toLowerCase().includes(q)
-      );
+      return d.rutPaciente?.toLowerCase().includes(q) || d.id.toLowerCase().includes(q);
     });
 
   return (

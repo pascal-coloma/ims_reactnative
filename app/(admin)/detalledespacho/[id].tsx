@@ -8,29 +8,21 @@ import { traducirRol } from '@/utils/labels';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 
 const estadoColors: Record<string, string> = {
+  recibido: '#FB8C00',
+  asignado: '#1976D2',
   activo: '#22c55e',
-  pendiente: '#ef4444',
-  completado: '#eab308',
-};
-
-const prioridadColors: Record<string, string> = {
-  alta: '#ef4444',
-  media: '#f97316',
-  baja: '#22c55e',
+  finalizado: '#22c55e',
+  cancelado: '#9E9E9E',
 };
 
 const DetalleDespachoScreen = () => {
   const { id } = useLocalSearchParams();
   const { despachos } = useDespachos();
   const { personal } = usePersonal();
-  const despacho = despachos.find((d) => d.id === id);
   const { ambulancias } = useAmbulancias();
-
-  const equipoDespacho = personal.filter((p) =>
-    despacho?.personalIds?.includes(String(p.id))
-  );
-    const ambulancia = ambulancias.find((a) => a.id === despacho?.unidad);
-
+  const despacho = despachos.find((d) => d.id === id);
+  const ambulancia = ambulancias.find((a) => a.id === despacho?.ambulancia?.id);
+  const equipoDespacho = personal.filter((p) => despacho?.personalIds?.includes(String(p.id)));
 
   if (!despacho) {
     return (
@@ -40,15 +32,6 @@ const DetalleDespachoScreen = () => {
     );
   }
 
-  const nombreCompleto =
-    despacho.primerNombre +
-    ' ' +
-    despacho.segundoNombre +
-    ' ' +
-    despacho.apellidoPaterno +
-    ' ' +
-    despacho.apellidoMaterno;
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -56,34 +39,15 @@ const DetalleDespachoScreen = () => {
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={22} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.title}>{despacho.id}</Text>
-          <View
-            style={[
-              style.estadoPill,
-              { backgroundColor: estadoColors[despacho.estado], alignItems: 'center' },
-            ]}
-          >
+          <Text style={styles.title}>Despacho {despacho.id}</Text>
+          <View style={[style.estadoPill, { backgroundColor: estadoColors[despacho.estado] }]}>
             <Text style={style.estadoPillText}>
               {despacho.estado[0].toUpperCase() + despacho.estado.slice(1)}
             </Text>
           </View>
         </View>
       </View>
-      <View style={style.seccion}>
-        <Text style={style.seccionTitulo}>Datos del Paciente</Text>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Nombre</Text>
-          <Text style={style.campoValor}>{nombreCompleto}</Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>RUT</Text>
-          <Text style={style.campoValor}>{despacho.rut}</Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Edad</Text>
-          <Text style={style.campoValor}>{despacho.edad} años</Text>
-        </View>
-      </View>
+
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Ubicación</Text>
         <View style={style.campo}>
@@ -95,31 +59,21 @@ const DetalleDespachoScreen = () => {
           <Text style={style.campoValor}>{despacho.direccionDestino}</Text>
         </View>
       </View>
+
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Detalles del Despacho</Text>
         <View style={style.campo}>
-          <Text style={style.campoLabel}>Tipo de Emergencia</Text>
-          <Text style={style.campoValor}>{despacho.tipoEmergencia}</Text>
+          <Text style={style.campoLabel}>Descripción</Text>
+          <Text style={style.campoValor}>{despacho.descripcionLlamado}</Text>
         </View>
         <View style={style.campo}>
-          <Text style={style.campoLabel}>Prioridad</Text>
-          <Text style={[style.campoValor, { color: prioridadColors[despacho.prioridad] }]}>
-            {despacho.prioridad[0].toUpperCase() + despacho.prioridad.slice(1)}
-          </Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Unidad</Text>
+          <Text style={style.campoLabel}>Ambulancia</Text>
           <Text style={style.campoValor}>
             {ambulancia ? `${ambulancia.patente} — ${ambulancia.modelo}` : 'Sin unidad asignada'}
           </Text>
         </View>
-        {despacho.observaciones && (
-          <View style={style.campo}>
-            <Text style={style.campoLabel}>Observaciones</Text>
-            <Text style={style.campoValor}>{despacho.observaciones}</Text>
-          </View>
-        )}
       </View>
+
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Equipo Asignado</Text>
         {equipoDespacho.length === 0 ? (
@@ -164,6 +118,7 @@ const style = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
+    alignItems: 'center',
   },
   estadoPillText: {
     color: 'white',

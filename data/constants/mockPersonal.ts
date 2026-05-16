@@ -1,10 +1,10 @@
 export type Personal = {
-   id: string;
+  id: string;
   first_name: string;
   last_name: string;
-  username: string;   
-  rut: string;        
-  rol_nombre: string; 
+  username: string;
+  rut: string;
+  rol_nombre: string;
   is_active: boolean;
 };
 

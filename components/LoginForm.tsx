@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 export default function LoginForm() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, setPendingCredentials } = useAuth();
   const [email, setEmail] = useState('');
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -20,21 +20,8 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      const result = await login(email, passw);
-      if (!result) {
-        setError('Credenciales incorrectas');
-        return;
-      }
-
-      if (result.role === 'medic' || result.role === 'nurse') {
-        router.navigate('/(user)/UserDashboard');
-      } else if (result.role === 'control') {
-        router.navigate('/(admin)/AdminDashboard');
-      } else {
-        setError('Rol no reconocido');
-      }
-    } catch (e) {
-      setError('Error de conexión');
+      setPendingCredentials({ username: email, password: passw });
+      router.push('/(auth)/totp');
     } finally {
       setCargando(false);
     }

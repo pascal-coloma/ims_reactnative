@@ -2,19 +2,15 @@ import FormDespacho from '@/components/admin/FormDespacho';
 import FormPaciente from '@/components/admin/FormPaciente';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
-import { usePersonal } from '@/context/PersonalContext';
 import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
 import { generatePDF } from '@/data/constants/generatePDF';
-import { Despacho } from '@/data/constants/mockDespachos';
 import { FormCompleta } from '@/data/types/types';
-import { traducirRol } from '@/utils/labels';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarDespacho = () => {
   const { agregarDespacho, despachos, loading } = useDespachos();
-  const { actualizarDisponilidad, personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
 
   const {
@@ -27,58 +23,60 @@ const RegistrarDespacho = () => {
   });
 
   const onSubmit = async (data: FormCompleta) => {
-    console.log('direccionOrigen:', data.direccionOrigen);
-    console.log('direccionDestino:', data.direccionDestino);
-    console.log('equipoAsignado:', data.equipoAsignado);
-    console.log('unidad:', data.unidad);
+    console.log('data submit:', JSON.stringify(data, null, 2));
+
     try {
-      await agregarDespacho(data); // ahora maneja los 3 pasos
-      data.equipoAsignado.forEach((id) => actualizarDisponilidad(id));
+      await agregarDespacho(data);
       reset();
       router.back();
     } catch (e) {
-      // el error ya está en el estado del contexto
       console.error('Falló el envío del despacho');
     }
   };
 
   const onGenerarPDF = (data: FormCompleta) => {
-    const equipoConNombres = personal
-      .filter((p) => data.equipoAsignado.includes(p.id))
-      .map((p) => `${p.first_name} ${p.last_name} — ${traducirRol(p.rol_nombre)}`);
-
     const ambulancia = ambulancias.find((a) => a.id === data.unidad);
     const unidadLabel = ambulancia ? `${ambulancia.patente} — ${ambulancia.modelo}` : data.unidad;
+    const grupoLabel =
+      data.grupoAsignado === '1' ? 'Alpha' : data.grupoAsignado === '2' ? 'Bravo' : 'Charlie';
 
-    generatePDF({ ...data, equipoAsignado: equipoConNombres, unidad: unidadLabel });
+    generatePDF({ ...data, grupoAsignado: grupoLabel, unidad: unidadLabel });
   };
 
   return (
-    <ScrollView>
-      <FormPaciente control={control} errors={errors} />
-      <FormDespacho control={control} errors={errors} />
-      <View style={style.rowBotones}>
-        <TouchableOpacity style={style.btnCancelar} onPress={handleSubmit(onGenerarPDF)}>
-          <Text style={style.btnTextDark}>Generar PDF</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
-          <Text style={style.btnTextDark}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[style.btnSubmit, loading && { opacity: 0.6 }]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={loading}
-        >
-          <Text style={style.btnText}>
-            {loading ? 'Enviando...' : 'Enviar despacho'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    <>
+      <ScrollView>
+        <FormPaciente control={control} errors={errors} />
+        <FormDespacho control={control} errors={errors} />
+        <View style={style.rowBotones}>
+          <TouchableOpacity style={style.btnCancelar} onPress={handleSubmit(onGenerarPDF)}>
+            <Text style={style.btnTextDark}>Generar PDF</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
+            <Text style={style.btnTextDark}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[style.btnSubmit, loading && { opacity: 0.6 }]}
+            onPress={handleSubmit(onSubmit, (errors) =>
+              console.log('Errores validación:', JSON.stringify(errors, null, 2)),
+            )}
+            disabled={loading}
+          >
+            <Text style={style.btnText}>{loading ? 'Enviando...' : 'Enviar despacho'}</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
 const style = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    gap: 20,
+    alignItems: 'center',
+    padding: 10,
+  },
   rowBotones: {
     flexDirection: 'row',
     justifyContent: 'center',

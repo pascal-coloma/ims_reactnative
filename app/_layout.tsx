@@ -1,5 +1,4 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import DespachosProvider from '@/context/DespachosContext';
 import { Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -22,7 +21,7 @@ function RootContent() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-        <RootContent />
+      <RootContent />
     </AuthProvider>
   );
 }

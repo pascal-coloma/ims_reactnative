@@ -7,7 +7,6 @@ import { useDespachos } from '@/context/DespachosContext';
 import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types/types';
 import styles from '@/styles/globalStyles';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -24,15 +23,9 @@ const RegistrarAtencion = () => {
     defaultValues: despachoActivo
       ? {
           ...DEFAULT_VALUES_USUARIO,
-          primerNombre: despachoActivo.primerNombre,
-          segundoNombre: despachoActivo.segundoNombre ?? '',
-          apellidoPaterno: despachoActivo.apellidoPaterno,
-          apellidoMaterno: despachoActivo.apellidoMaterno,
-          rut: despachoActivo.rut,
-          edad: despachoActivo.edad,
-          telefono: despachoActivo.telefono,
           direccionOrigen: despachoActivo.direccionOrigen,
           direccionDestino: despachoActivo.direccionDestino,
+          rut: despachoActivo.rutPaciente ?? '',
         }
       : DEFAULT_VALUES_USUARIO,
   });
@@ -44,21 +37,24 @@ const RegistrarAtencion = () => {
     }
     try {
       const { controlSignos, preInforme, cronologia, ...camposPaciente } = data;
-      await agregarAtencion({
-        id: Date.now().toString(),
-        despachoId: despachoActivo.id,
-        fechaRegistro: new Date().toISOString(),
-        paciente: camposPaciente,
-        controlSignos,
-        preInforme,
-        cronologia,
-      });
+      await agregarAtencion(
+        {
+          id: Date.now().toString(),
+          despachoId: despachoActivo.id,
+          fechaRegistro: new Date().toISOString(),
+          paciente: camposPaciente,
+          controlSignos,
+          preInforme,
+          cronologia,
+        },
+        despachoActivo.ambulancia?.id ?? '',
+        despachoActivo.direccionOrigen, // ← direccion_despacho
+      );
       reset();
-    } catch {
-      // error manejado en el contexto
+    } catch (e: any) {
+      console.error('Error en onSubmit:', e?.message);
     }
   };
-
   return (
     <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>

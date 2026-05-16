@@ -5,6 +5,8 @@ export default function AuthLayout() {
     <>
       <Stack>
         <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="totp" options={{ headerShown: false }} />
+
         <Stack.Screen
           name="recuperacion"
           options={{

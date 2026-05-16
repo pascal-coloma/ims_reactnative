@@ -20,6 +20,8 @@ type AuthContextType = {
   login: (username: string, password: string) => Promise<{ role: Role; personalId: string } | null>;
   logout: () => Promise<void>;
   loading: boolean;
+  pendingCredentials: { username: string; password: string } | null;
+  setPendingCredentials: (creds: { username: string; password: string } | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -43,7 +45,6 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
     headers,
   });
 
-  // Persistir cookies que Django devuelva (sessionid nuevo, rotación de csrf, etc.)
   const setCookie = response.headers.get('set-cookie');
   if (setCookie) {
     await CookieManager.setFromResponse(BASE_URL, setCookie);
@@ -55,6 +56,10 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
+  const [pendingCredentials, setPendingCredentials] = useState<{
+    username: string;
+    password: string;
+  } | null>(null);
 
   useEffect(() => {
     const restore = async () => {
@@ -113,13 +118,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) return null;
       const data = await response.json();
 
-      // ── Fetch personal para completar los datos del usuario ──
       let firstName = '';
       let lastName = '';
       let personalId = '';
 
       try {
-        const personalResp = await fetchConSesion('/ims/api/allpersonal/');
+        const personalResp = await fetchConSesion('/ims/api/personal/');
         if (personalResp.ok) {
           const personalData: any[] = await personalResp.json();
           const match = personalData.find((p) => p.username === username);
@@ -132,7 +136,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (e) {
         console.warn('No se pudo obtener datos de personal, usando defaults:', e);
       }
-      // ────────────────────────────────────────────────────────
 
       const loggedUser: User = {
         username,
@@ -162,7 +165,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{ user, login, logout, loading, pendingCredentials, setPendingCredentials }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 }
 

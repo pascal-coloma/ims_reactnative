@@ -1,4 +1,5 @@
 import { useDespachos } from '@/context/DespachosContext';
+import { usePacientes } from '@/context/PacienteContext';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -6,16 +7,8 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const ListaPacientes = () => {
-  const { despachos } = useDespachos();
+  const { pacientes } = usePacientes();
   const [busqueda, setBusqueda] = useState('');
-
-  const despachosFiltrados = busqueda.trim()
-    ? despachos.filter(
-        (d) =>
-          d.rut.toLowerCase().includes(busqueda.toLowerCase()) ||
-          `${d.primerNombre} ${d.apellidoPaterno}`.toLowerCase().includes(busqueda.toLowerCase()),
-      )
-    : despachos;
 
   return (
     <View style={{ flex: 1 }}>
@@ -35,22 +28,17 @@ const ListaPacientes = () => {
       </View>
 
       <ScrollView>
-        {despachosFiltrados.length === 0 ? (
+        {pacientes.length === 0 ? (
           <View style={styles.container}>
             <Text style={styles.subtitle}>No hay pacientes registrados</Text>
           </View>
         ) : (
-          despachosFiltrados.map((d) => (
-            <View key={d.id} style={styles.container}>
-              <Text style={styles.title}>
-                {d.primerNombre} {d.segundoNombre ? `${d.segundoNombre} ` : ''}
-                {d.apellidoPaterno} {d.apellidoMaterno}
-              </Text>
+          pacientes.map((d) => (
+            <View key={d.rut} style={styles.container}>
+              <Text style={styles.title}>{d.nombre_completo}</Text>
               <Text style={styles.subtitle}>RUT: {d.rut}</Text>
-              <Text style={styles.subtitle}>Edad: {d.edad} años</Text>
+              <Text style={styles.subtitle}>Fecha Nacimiento: {d.fecha_nacimiento}</Text>
               <Text style={styles.subtitle}>Teléfono: {d.telefono}</Text>
-              <Text style={styles.subtitle}>Origen: {d.direccionOrigen}</Text>
-              <Text style={styles.subtitle}>Destino: {d.direccionDestino}</Text>
               <View style={local.divisor} />
             </View>
           ))

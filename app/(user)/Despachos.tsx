@@ -6,10 +6,12 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const PRIORIDAD_COLOR: Record<string, string> = {
-  alta: '#E53935',
-  media: '#FB8C00',
-  baja: '#43A047',
+const ESTADO_COLOR: Record<string, string> = {
+  recibido: '#FB8C00',
+  asignado: '#1976D2',
+  activo: '#22c55e',
+  finalizado: '#22c55e',
+  cancelado: '#9E9E9E',
 };
 
 const MisDespachos = () => {
@@ -22,8 +24,8 @@ const MisDespachos = () => {
   const despachosFiltrados = busqueda.trim()
     ? misDespachos.filter(
         (d) =>
-          d.primerNombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-          d.rut.toLowerCase().includes(busqueda.toLowerCase()),
+          d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
+          d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
       )
     : misDespachos;
 
@@ -38,7 +40,7 @@ const MisDespachos = () => {
         </View>
         <TextInput
           style={local.buscador}
-          placeholder="Buscar por paciente o RUT..."
+          placeholder="Buscar por descripción o dirección..."
           value={busqueda}
           onChangeText={setBusqueda}
         />
@@ -60,30 +62,24 @@ const MisDespachos = () => {
               }}
             >
               <View style={local.rowHeader}>
-                <Text style={styles.title}>
-                  {[d.primerNombre, d.segundoNombre, d.apellidoPaterno, d.apellidoMaterno]
-                    .filter(Boolean)
-                    .join(' ')}
-                </Text>
-                <View style={[local.badge, { backgroundColor: PRIORIDAD_COLOR[d.prioridad] }]}>
-                  <Text style={local.badgeTexto}>{d.prioridad.toUpperCase()}</Text>
+                <Text style={styles.title}>Despacho {d.id}{' '}</Text>
+                <View style={[local.badge, { backgroundColor: ESTADO_COLOR[d.estado] }]}>
+                  <Text style={local.badgeTexto}>
+                    {d.estado[0].toUpperCase() + d.estado.slice(1)}
+                  </Text>
                 </View>
               </View>
 
-              <Text style={styles.subtitle}>RUT: {d.rut}</Text>
-              <Text style={styles.subtitle}>Edad: {d.edad} años</Text>
               <Text style={styles.subtitle}>
                 {d.direccionOrigen} → {d.direccionDestino}
               </Text>
-              <Text style={styles.subtitle}>Emergencia: {d.tipoEmergencia}</Text>
+              <Text style={styles.subtitle}>Descripción: {d.descripcionLlamado}</Text>
 
               {d.ambulancia && (
                 <Text style={styles.subtitle}>
                   Unidad: {d.ambulancia.modelo} — {d.ambulancia.patente}
                 </Text>
               )}
-
-              {d.observaciones && <Text style={styles.subtitle}>Obs: {d.observaciones}</Text>}
 
               <View style={local.divisor} />
             </TouchableOpacity>

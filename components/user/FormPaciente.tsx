@@ -1,24 +1,17 @@
-import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FormUsuario } from '@/data/types/types';
+import { useDespachos } from '@/context/DespachosContext';
+import { useEffect, useState } from 'react';
+import { fetchConSesion } from '@/context/AuthContext';
 
 type FormPacienteProps = {
   control: Control<FormUsuario>;
   errors: FieldErrors<FormUsuario>;
 };
-
-const CampoReadonly = ({ label, value }: { label: string; value: string | number }) => (
-  <View style={style.campoWrapper}>
-    <Text style={style.label}>{label}</Text>
-    <View style={style.inputReadonly}>
-      <Text style={style.inputReadonlyTexto}>{value || '—'}</Text>
-    </View>
-  </View>
-);
 
 const CampoEditable = ({
   label,
@@ -38,7 +31,8 @@ const CampoEditable = ({
 
 const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   const { despachoActivo } = useDespachos();
-  const esPrecargado = !!despachoActivo;
+  const [paciente, setPaciente] = useState<any>(null);
+  const [buscando, setBuscando] = useState(false);
 
   const formatearRut = (rut: string): string => {
     const clean = rut.replace(/[^0-9kK]/g, '');
@@ -49,301 +43,212 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
     return `${cuerpoFormateado}-${dv}`;
   };
 
-  const validarRut = (rut: string): boolean => {
-    const clean = rut.replace(/[^0-9kK]/g, '');
-    const cuerpo = clean.slice(0, -1);
-    const dv = clean.slice(-1).toLowerCase();
-    let suma = 0;
-    let multiplo = 2;
-    for (let i = cuerpo.length - 1; i >= 0; i--) {
-      suma += parseInt(cuerpo[i]) * multiplo;
-      multiplo = multiplo === 7 ? 2 : multiplo + 1;
-    }
-    const dvEsperado = 11 - (suma % 11);
-    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'k' : String(dvEsperado);
-    return dv === dvCalculado;
-  };
-
+  useEffect(() => {
+    const buscar = async () => {
+      if (!despachoActivo?.rutPaciente) return;
+      setBuscando(true);
+      try {
+        const resp = await fetchConSesion(
+          `/ims/api/pacientes/?rut=${encodeURIComponent(despachoActivo.rutPaciente)}`,
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          setPaciente(data);
+        }
+      } catch (e) {
+        console.error('Error buscando paciente:', e);
+      } finally {
+        setBuscando(false);
+      }
+    };
+    buscar();
+  }, [despachoActivo?.rutPaciente]);
   return (
     <>
-      <View style={styles.container}>
-        <View style={style.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={22} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Registrar Atención</Text>
-        </View>
-      </View>
-
       <View style={style.formulario}>
         <Text style={style.sectionTitle}>Datos del Paciente</Text>
 
-        {esPrecargado && (
+        {buscando && <Text style={{ color: '#888', marginBottom: 12 }}>Cargando datos...</Text>}
+
+        {paciente && (
           <View style={style.banner}>
             <MaterialIcons name="info-outline" size={15} color="#1565C0" />
             <Text style={style.bannerTexto}>Datos cargados desde el despacho activo</Text>
           </View>
         )}
 
-        {esPrecargado ? (
-          <>
-            <CampoReadonly label="Primer Nombre" value={despachoActivo.primerNombre} />
-            <CampoReadonly
-              label="Segundo Nombre (opcional)"
-              value={despachoActivo.segundoNombre ?? '—'}
-            />
-            <CampoReadonly label="Apellido Paterno" value={despachoActivo.apellidoPaterno} />
-            <CampoReadonly label="Apellido Materno" value={despachoActivo.apellidoMaterno} />
-            <View style={style.fila}>
-              <View style={{ flex: 2 }}>
-                <CampoReadonly label="RUT" value={despachoActivo.rut} />
-              </View>
-              <View style={style.separador} />
-              <View style={{ flex: 1 }}>
-                <CampoReadonly label="Edad" value={`${despachoActivo.edad} años`} />
-              </View>
-            </View>
-            <CampoReadonly label="Teléfono" value={despachoActivo.telefono} />
-            <CampoReadonly label="Dirección de Origen" value={despachoActivo.direccionOrigen} />
-            <CampoReadonly label="Dirección de Destino" value={despachoActivo.direccionDestino} />
-
-            <View style={{ display: 'none' }}>
-              <Controller control={control} name="primerNombre" render={() => <></>} />
-              <Controller control={control} name="segundoNombre" render={() => <></>} />
-              <Controller control={control} name="apellidoPaterno" render={() => <></>} />
-              <Controller control={control} name="apellidoMaterno" render={() => <></>} />
-              <Controller control={control} name="rut" render={() => <></>} />
-              <Controller control={control} name="edad" render={() => <></>} />
-              <Controller control={control} name="telefono" render={() => <></>} />
-              <Controller control={control} name="direccionOrigen" render={() => <></>} />
-              <Controller control={control} name="direccionDestino" render={() => <></>} />
-            </View>
-          </>
-        ) : (
-          <>
-            <CampoEditable label="Primer Nombre" error={errors.primerNombre && 'Campo requerido'}>
-              <Controller
-                control={control}
-                name="primerNombre"
-                rules={{ required: true }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    placeholder="Ingrese primer nombre"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    style={style.input}
-                  />
-                )}
+        <CampoEditable label="Primer Nombre" error={errors.primerNombre && 'Campo requerido'}>
+          <Controller
+            control={control}
+            name="primerNombre"
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="Ingrese primer nombre"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={paciente?.nombre_completo?.split(' ')[0] ?? value}
+                style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                editable={!paciente}
               />
-            </CampoEditable>
+            )}
+          />
+        </CampoEditable>
 
-            <CampoEditable label="Segundo Nombre (opcional)">
-              <Controller
-                control={control}
-                name="segundoNombre"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    placeholder="Ingrese segundo nombre"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    style={style.input}
-                  />
-                )}
+        <CampoEditable label="Apellido Paterno" error={errors.apellidoPaterno && 'Campo requerido'}>
+          <Controller
+            control={control}
+            name="apellidoPaterno"
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="Ingrese apellido paterno"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={paciente?.nombre_completo?.split(' ')[1] ?? value}
+                style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                editable={!paciente}
               />
-            </CampoEditable>
+            )}
+          />
+        </CampoEditable>
 
+        <View style={style.fila}>
+          <View style={{ flex: 1 }}>
             <CampoEditable
-              label="Apellido Paterno"
-              error={errors.apellidoPaterno && 'Campo requerido'}
+              label="RUT"
+              error={errors.rut?.message || (errors.rut && 'Campo requerido')}
             >
               <Controller
                 control={control}
-                name="apellidoPaterno"
+                name="rut"
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Ingrese primer apellido"
+                    placeholder="12.345.678-9"
                     onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    style={style.input}
+                    onChangeText={(text) => onChange(formatearRut(text))}
+                    value={paciente?.rut ?? value}
+                    style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                    editable={!paciente}
+                    keyboardType="default"
                   />
                 )}
               />
             </CampoEditable>
-
-            <CampoEditable
-              label="Apellido Materno"
-              error={errors.apellidoMaterno && 'Campo requerido'}
-            >
+          </View>
+          <View style={style.separador} />
+          <View style={{ flex: 2 }}>
+            <CampoEditable label="Fecha de nacimiento">
               <Controller
                 control={control}
-                name="apellidoMaterno"
+                name="fechaNacimiento"
                 rules={{ required: true }}
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { onChange, value } }) => (
                   <TextInput
-                    placeholder="Ingrese segundo apellido"
-                    onBlur={onBlur}
+                    placeholder="AAAA-MM-DD"
                     onChangeText={onChange}
-                    value={value}
-                    style={style.input}
-                  />
-                )}
-              />
-            </CampoEditable>
-
-            <View style={style.fila}>
-              <View style={{ flex: 2 }}>
-                <CampoEditable
-                  label="RUT"
-                  error={errors.rut?.message || (errors.rut && 'Campo requerido')}
-                >
-                  <Controller
-                    control={control}
-                    name="rut"
-                    rules={{ required: true, validate: (v) => validarRut(v) || 'RUT inválido' }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <TextInput
-                        placeholder="12.345.678-9"
-                        onBlur={onBlur}
-                        onChangeText={(text) => onChange(formatearRut(text))}
-                        value={value}
-                        style={style.input}
-                        keyboardType="default"
-                      />
-                    )}
-                  />
-                </CampoEditable>
-              </View>
-              <View style={style.separador} />
-              <View style={{ flex: 1 }}>
-                <CampoEditable
-                  label="Edad"
-                  error={errors.edad?.message || (errors.edad && 'Campo requerido')}
-                >
-                  <Controller
-                    control={control}
-                    name="edad"
-                    rules={{
-                      required: true,
-                      min: { value: 0, message: 'Inválida' },
-                      max: { value: 120, message: 'Inválida' },
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <TextInput
-                        placeholder="50"
-                        onBlur={onBlur}
-                        onChangeText={(v) => onChange(Number(v))}
-                        value={value?.toString()}
-                        style={style.input}
-                        keyboardType="numeric"
-                      />
-                    )}
-                  />
-                </CampoEditable>
-              </View>
-            </View>
-
-            <CampoEditable label="Teléfono" error={errors.telefono && 'Campo requerido'}>
-              <Controller
-                control={control}
-                name="telefono"
-                rules={{ required: true }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    placeholder="Teléfono de contacto"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    style={style.input}
+                    value={paciente?.fecha_nacimiento ?? value}
+                    style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                    editable={!paciente}
                     keyboardType="numeric"
                   />
                 )}
               />
             </CampoEditable>
+          </View>
+        </View>
 
-            <CampoEditable
-              label="Dirección de Origen"
-              error={errors.direccionOrigen && 'Campo requerido'}
-            >
-              <Controller
-                control={control}
-                name="direccionOrigen"
-                rules={{ required: true }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    placeholder="Ingrese dirección de origen"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    style={style.input}
-                  />
-                )}
+        <CampoEditable label="Teléfono">
+          <Controller
+            control={control}
+            name="telefono"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="Teléfono de contacto"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={paciente?.telefono ?? value}
+                style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                editable={!paciente}
+                keyboardType="numeric"
               />
-            </CampoEditable>
+            )}
+          />
+        </CampoEditable>
 
-            <CampoEditable
-              label="Dirección de Destino"
-              error={errors.direccionDestino && 'Campo requerido'}
-            >
-              <Controller
-                control={control}
-                name="direccionDestino"
-                rules={{ required: true }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    placeholder="Ingrese dirección de destino"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    style={style.input}
-                  />
-                )}
+        <CampoEditable label="Condición del paciente">
+          <Controller
+            control={control}
+            name="condicionPaciente"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="Describe la condición del paciente"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={paciente?.condicion_paciente ?? value}
+                style={[
+                  style.input,
+                  { height: 80, textAlignVertical: 'top' },
+                  paciente && { backgroundColor: '#F7F7F7' },
+                ]}
+                editable={!paciente}
+                multiline
               />
-            </CampoEditable>
-          </>
-        )}
+            )}
+          />
+        </CampoEditable>
+
+        <CampoEditable
+          label="Dirección de Origen"
+          error={errors.direccionOrigen && 'Campo requerido'}
+        >
+          <Controller
+            control={control}
+            name="direccionOrigen"
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="Ingrese dirección de origen"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={paciente?.direccion ?? value}
+                style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                editable={!paciente}
+              />
+            )}
+          />
+        </CampoEditable>
+
+        <CampoEditable
+          label="Dirección de Destino"
+          error={errors.direccionDestino && 'Campo requerido'}
+        >
+          <Controller
+            control={control}
+            name="direccionDestino"
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                placeholder="Ingrese dirección de destino"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                style={style.input}
+              />
+            )}
+          />
+        </CampoEditable>
       </View>
     </>
   );
 };
 
 const style = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    padding: 10,
-  },
-  formulario: {
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#111',
-  },
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#E3F2FD',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
-  },
-  bannerTexto: {
-    fontSize: 13,
-    color: '#1565C0',
-    fontWeight: '500',
-  },
-  campoWrapper: {
-    marginBottom: 16,
-  },
+  header: { flexDirection: 'row', gap: 20, alignItems: 'center', padding: 10 },
+  formulario: { padding: 20, backgroundColor: 'white' },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 12, color: '#111' },
+  campoWrapper: { marginBottom: 16 },
   label: {
     fontSize: 13,
     fontWeight: '500',
@@ -361,30 +266,22 @@ const style = StyleSheet.create({
     color: '#111',
     backgroundColor: '#fff',
   },
-  inputReadonly: {
-    borderWidth: 1,
-    borderColor: '#E8E8E8',
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: '#F7F7F7',
-  },
-  inputReadonlyTexto: {
-    fontSize: 15,
-    color: '#333',
-    fontWeight: '500',
-  },
-  campoRequerido: {
-    color: '#E53935',
-    fontSize: 12,
-    textAlign: 'right',
-    marginTop: 3,
-  },
-  fila: {
+  campoRequerido: { color: '#E53935', fontSize: 12, textAlign: 'right', marginTop: 3 },
+  fila: { flexDirection: 'row', alignItems: 'flex-start' },
+  separador: { width: 12 },
+  banner: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#E3F2FD',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 20,
   },
-  separador: {
-    width: 12,
+  bannerTexto: {
+    fontSize: 13,
+    color: '#1565C0',
+    fontWeight: '500',
   },
 });
 

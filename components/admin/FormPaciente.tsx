@@ -19,6 +19,28 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
     const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     return `${cuerpoFormateado}-${dv}`;
   };
+
+  const formatearFecha = (fechaNacimiento: string): string => {
+    const limpiar = fechaNacimiento.replace(/[^0-9]/g, '');
+    if (limpiar.length <= 1) return limpiar;
+    const dia = limpiar.slice(0, 2);
+    const mes = limpiar.slice(2, 4);
+    const anno = limpiar.slice(4, 8);
+    return limpiar.length < 3
+      ? dia
+      : limpiar.length < 5
+        ? dia + '-' + mes
+        : dia + '-' + mes + '-' + anno;
+  };
+
+  const formatearTelefono = (telefono: string): string => {
+    const limpio = telefono
+      .replace('+569', '')
+      .replace(/[^0-9]/g, '')
+      .slice(0, 8);
+    return '+569 ' + limpio;
+  };
+
   const validarRut = (rut: string): boolean => {
     const clean = rut.replace(/[^0-9kK]/g, '');
     const cuerpo = clean.slice(0, -1);
@@ -45,7 +67,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={22} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.title}>Registrar Paciente</Text>
+          <Text style={styles.title}>Registrar Despacho</Text>
         </View>
       </View>
       <View style={style.formulario}>
@@ -137,7 +159,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               name="rut"
               rules={{
                 required: true,
-                validate: (value) => validarRut(value) || 'RUT inválido',
+                validate: (value) => {
+                  if (!value) return 'Campo requerido';
+                  return true;
+                },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <>
@@ -145,7 +170,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                   <TextInput
                     placeholder="12.345.678-9"
                     onBlur={onBlur}
-                    onChangeText={(text) => onChange(formatearRut(text))}
+                    onChangeText={(text) => onChange(text)}
                     value={value}
                     style={style.input}
                     keyboardType="default"
@@ -157,31 +182,28 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
             )}
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 2 }}>
             <Controller
               control={control}
-              name="edad"
-              rules={{
-                required: true,
-                min: { value: 0, message: 'Edad inválida' },
-                max: { value: 120, message: 'Edad inválida' },
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              name="fechaNacimiento"
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
                 <>
-                  <Text style={style.label}>Edad</Text>
+                  <Text style={style.label}>Fecha de nacimiento</Text>
                   <TextInput
-                    placeholder="54"
-                    onBlur={onBlur}
-                    onChangeText={(edad) => onChange(Number(edad))}
-                    value={value?.toString()}
+                    placeholder="DD-MM-AAAA"
+                    onChangeText={(text) => onChange(formatearFecha(text))}
+                    value={value}
                     style={style.input}
                     keyboardType="numeric"
                   />
                 </>
               )}
             />
-            {errors.edad && (
-              <Text style={style.campoRequerido}>{errors.edad.message || 'Campo requerido'}</Text>
+            {errors.fechaNacimiento && (
+              <Text style={style.campoRequerido}>
+                {errors.fechaNacimiento.message || 'Campo requerido'}
+              </Text>
             )}
           </View>
         </View>
@@ -192,9 +214,9 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
             <>
               <Text style={style.label}>Número de teléfono</Text>
               <TextInput
-                placeholder="Número telefónico"
+                placeholder="+569"
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(text) => onChange(formatearTelefono(text))}
                 value={value}
                 style={style.input}
                 keyboardType="numeric"
@@ -203,43 +225,23 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           )}
           name="telefono"
         />
+        <Text style={style.label}>Condición del paciente</Text>
         <Controller
           control={control}
+          name="condicionPaciente"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={style.label}>Dirección de origen</Text>
-              <TextInput
-                placeholder="Ingrese dirección de origen"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={style.input}
-              />
-            </>
+            <TextInput
+              placeholder="Describe la condición del paciente"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={[style.input, { height: 80, textAlignVertical: 'top' }]}
+              multiline
+            />
           )}
-          name="direccionOrigen"
         />
-        {errors.direccionOrigen && <Text style={style.campoRequerido}>Campo requerido</Text>}
-
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={style.label}>Dirección de destino</Text>
-              <TextInput
-                placeholder="Ingrese dirección de destino"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={style.input}
-              />
-            </>
-          )}
-          name="direccionDestino"
-        />
-        {errors.direccionDestino && <Text style={style.campoRequerido}>Campo requerido</Text>}
+        {errors.condicionPaciente && <Text style={style.campoRequerido}>Campo requerido</Text>}
       </View>
     </>
   );
@@ -250,7 +252,6 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     gap: 20,
     alignItems: 'center',
-    padding: 10,
   },
   formulario: {
     padding: 20,

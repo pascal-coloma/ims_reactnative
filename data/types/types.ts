@@ -1,9 +1,19 @@
-export type FormCompleta = CamposPaciente & {
-  prioridad: string;
-  tipoEmergencia: string;
-  equipoAsignado: string[];
-  estadoUnidad: string;
-  observaciones?: string;
+export type FormCompleta = {
+  // Paciente
+  primerNombre: string;
+  segundoNombre?: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  rut: string;
+  fechaNacimiento: string;
+  telefono?: string;
+  condicionPaciente: string;
+  comuna?: string;
+  // Despacho
+  direccionOrigen: string;
+  direccionDestino: string;
+  descripcionLlamado: string;
+  grupoAsignado: string;
   unidad: string;
 };
 
@@ -14,18 +24,18 @@ export type FormUsuario = CamposPaciente & {
 };
 
 export type SignosVitales = {
-  hora: string;
-  pas: number;
-  pad: number;
-  pam: number;
-  fc: number;
-  fr: number;
-  satO2: number;
-  fio2: number;
-  temperatura: number;
-  hgt: number;
-  gcs: number;
-  eva: number;
+  hora: string; // max_length=4, formato "HHMM"
+  pas: number; // presion_sistolica
+  pad: number; // presion_diastolica
+  pam: number; // calculado en front
+  fc: number; // frecuencia_cardiaca
+  fr: number; // fr
+  satO2: number; // saturacion_oxigeno
+  fio2: number; // fio2
+  temperatura: number; // temperatura
+  hgt: number; // hgt
+  gcs: number; // gcs
+  eva: number; // eva
 };
 
 export type CamposPaciente = {
@@ -34,16 +44,18 @@ export type CamposPaciente = {
   apellidoPaterno: string;
   apellidoMaterno: string;
   rut: string;
-  edad: number;
-  telefono: string;
-  direccionOrigen: string;
-  direccionDestino: string;
+  fechaNacimiento: string; // date_birth → YYYY-MM-DD
+  telefono?: string; // null=True en modelo
+  condicionPaciente: string; // requerido en modelo (TextField)
+  comuna?: string; // blank=True en modelo
+  direccionOrigen: string; // direccion en el serializer
+  direccionDestino?: string; // no está en Paciente, viene del Despacho
 };
 
 export type PreInforme = {
-  preInforme: string;
-  motivoLlamado: string;
-  estadoPaciente: 'estable' | 'inestable';
+  preInforme: string; // pre_informe
+  motivoLlamado: string; // motivo_llamado
+  estadoPaciente: string; // estado_paciente (null=True en modelo)
 };
 
 export type Cronologia = {
