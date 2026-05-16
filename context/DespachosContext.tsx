@@ -78,6 +78,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         estado: d.estado === 'asignado' ? 'activo' : d.estado,
         fechaLlamado: d.fechaLlamado,
         personalIds: d.personalIds ?? [],
+        paciente: d.paciente ?? undefined,
         rutPaciente: d.paciente?.rut ?? undefined,
         ambulancia: d.ambulancia
           ? {

@@ -7,28 +7,25 @@ import { useDespachos } from '@/context/DespachosContext';
 import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types/types';
 import styles from '@/styles/globalStyles';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarAtencion = () => {
   const { agregarAtencion } = useAtenciones();
   const { despachoActivo } = useDespachos();
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormUsuario>({
+  const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-          ...DEFAULT_VALUES_USUARIO,
-          direccionOrigen: despachoActivo.direccionOrigen,
-          direccionDestino: despachoActivo.direccionDestino,
-          rut: despachoActivo.rutPaciente ?? '',
-        }
+        ...DEFAULT_VALUES_USUARIO,
+        direccionOrigen: despachoActivo.direccionOrigen,
+        direccionDestino: despachoActivo.direccionDestino,
+        rut: despachoActivo.paciente?.rut ?? '',
+      }
       : DEFAULT_VALUES_USUARIO,
   });
+
+
+  const { handleSubmit, reset, formState: { errors }, control } = methods;
 
   const onSubmit = async (data: FormUsuario) => {
     if (!despachoActivo) {
@@ -56,26 +53,29 @@ const RegistrarAtencion = () => {
     }
   };
   return (
-    <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
-        <FormPaciente control={control} errors={errors} />
-        <ControlVitales control={control} errors={errors} />
-        <PreInformeForm control={control} errors={errors} />
-        <Cronologia control={control} errors={errors} />
-      </ScrollView>
-
-      <View style={local.botonesContainer}>
-        <TouchableOpacity style={local.botonLimpiar} onPress={() => reset()}>
-          <Text style={local.botonLimpiarTexto}>Limpiar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, local.botonEnviar]}
-          onPress={handleSubmit(onSubmit)}
-        >
-          <Text style={styles.buttonText}>Registrar atención</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <>
+      <FormProvider {...methods}>
+        <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
+            <FormPaciente control={methods.control} errors={errors} />
+            <ControlVitales control={methods.control} errors={errors} />
+            <PreInformeForm control={methods.control} errors={errors} />
+            <Cronologia control={methods.control} errors={errors} />
+          </ScrollView>
+          <View style={local.botonesContainer}>
+            <TouchableOpacity style={local.botonLimpiar} onPress={() => reset()}>
+              <Text style={local.botonLimpiarTexto}>Limpiar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, local.botonEnviar]}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text style={styles.buttonText}>Registrar atención</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </FormProvider>
+    </>
   );
 };
 

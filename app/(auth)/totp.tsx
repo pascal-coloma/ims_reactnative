@@ -24,12 +24,13 @@ export default function TOTPScreen() {
     setCargando(true);
     setError(null);
     try {
-      // Por ahora login sin totp — cuando Leo integre el back
-      // se agrega totpCode como parámetro
-      const result = await login(pendingCredentials.username, pendingCredentials.password);
+      const result = await login(pendingCredentials.username,
+        pendingCredentials.password,
+        codeToUse);
       setPendingCredentials(null);
 
       if (!result) {
+
         setError('Error de autenticación');
         return;
       }

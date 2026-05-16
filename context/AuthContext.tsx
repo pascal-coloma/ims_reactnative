@@ -17,7 +17,7 @@ type User = {
 
 type AuthContextType = {
   user: User;
-  login: (username: string, password: string) => Promise<{ role: Role; personalId: string } | null>;
+  login: (username: string, password: string, totpCode?: string) => Promise<{ role: Role; personalId: string } | null>;
   logout: () => Promise<void>;
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     restore();
   }, []);
 
-  async function login(username: string, password: string) {
+  async function login(username: string, password: string, totpCode?: string) {
     try {
       const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'GET',
@@ -103,7 +103,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrftoken ?? '',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username,
+          password,
+          totp_code: totpCode ?? '',
+        }),
       });
 
       const setCookiePost = response.headers.get('set-cookie');
@@ -115,8 +119,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return null;
       }
 
-      if (!response.ok) return null;
-      const data = await response.json();
+      if (!response.ok) {
+        console.log('login response status:', response.status);
+        const errorBody = await response.json().catch(() => ({}));
+        console.log('login error body:', JSON.stringify(errorBody));
+        return null;
+      } const data = await response.json();
 
       let firstName = '';
       let lastName = '';

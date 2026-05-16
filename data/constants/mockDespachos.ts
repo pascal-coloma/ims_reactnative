@@ -3,6 +3,10 @@ import { Ambulancia } from './mockAmbulancia';
 export type Despacho = {
   id: string;
   rutPaciente?: string;
+  paciente?: {
+    nombre_completo: string;
+    rut: string;
+  };
   direccionOrigen: string;
   direccionDestino: string;
   descripcionLlamado: string;

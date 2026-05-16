@@ -1,7 +1,7 @@
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { Control, Controller, FieldErrors, useFormContext } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FormUsuario } from '@/data/types/types';
 import { useDespachos } from '@/context/DespachosContext';
@@ -31,9 +31,10 @@ const CampoEditable = ({
 
 const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   const { despachoActivo } = useDespachos();
-  const [paciente, setPaciente] = useState<any>(null);
+  const paciente = despachoActivo?.paciente ?? null;
+  const { setValue } = useFormContext<FormUsuario>();
+  const [pacienteDetalle, setPacienteDetalle] = useState<any>(null);
   const [buscando, setBuscando] = useState(false);
-
   const formatearRut = (rut: string): string => {
     const clean = rut.replace(/[^0-9kK]/g, '');
     if (clean.length <= 1) return clean;
@@ -45,31 +46,34 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
 
   useEffect(() => {
     const buscar = async () => {
-      if (!despachoActivo?.rutPaciente) return;
-      setBuscando(true);
+      if (!paciente?.rut) return;
       try {
         const resp = await fetchConSesion(
-          `/ims/api/pacientes/?rut=${encodeURIComponent(despachoActivo.rutPaciente)}`,
+          `/ims/api/pacientes/?rut=${encodeURIComponent(paciente.rut)}`
         );
         if (resp.ok) {
           const data = await resp.json();
-          setPaciente(data);
+          setPacienteDetalle(data);
+          // ← sincroniza con el form
+          setValue('rut', data.rut);
+          setValue('primerNombre', data.nombre_completo?.split(' ')[0] ?? '');
+          setValue('apellidoPaterno', data.nombre_completo?.split(' ')[1] ?? '');
+          setValue('fechaNacimiento', data.fecha_nacimiento ?? '');
+          setValue('telefono', data.telefono ?? '');
+          setValue('condicionPaciente', data.condicion_paciente ?? '');
+          setValue('direccionOrigen', despachoActivo?.direccionOrigen ?? '');
+          setValue('direccionDestino', despachoActivo?.direccionDestino ?? '');
         }
       } catch (e) {
         console.error('Error buscando paciente:', e);
-      } finally {
-        setBuscando(false);
       }
     };
     buscar();
-  }, [despachoActivo?.rutPaciente]);
+  }, [paciente?.rut]);
   return (
     <>
       <View style={style.formulario}>
         <Text style={style.sectionTitle}>Datos del Paciente</Text>
-
-        {buscando && <Text style={{ color: '#888', marginBottom: 12 }}>Cargando datos...</Text>}
-
         {paciente && (
           <View style={style.banner}>
             <MaterialIcons name="info-outline" size={15} color="#1565C0" />
@@ -148,7 +152,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                   <TextInput
                     placeholder="AAAA-MM-DD"
                     onChangeText={onChange}
-                    value={paciente?.fecha_nacimiento ?? value}
+                    value={pacienteDetalle?.fecha_nacimiento ?? value}
                     style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
                     editable={!paciente}
                     keyboardType="numeric"
@@ -168,7 +172,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                 placeholder="Teléfono de contacto"
                 onBlur={onBlur}
                 onChangeText={onChange}
-                value={paciente?.telefono ?? value}
+                value={pacienteDetalle?.telefono ?? value}
                 style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
                 editable={!paciente}
                 keyboardType="numeric"
@@ -186,7 +190,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                 placeholder="Describe la condición del paciente"
                 onBlur={onBlur}
                 onChangeText={onChange}
-                value={paciente?.condicion_paciente ?? value}
+                value={pacienteDetalle?.condicion_paciente ?? value}
                 style={[
                   style.input,
                   { height: 80, textAlignVertical: 'top' },
@@ -212,7 +216,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                 placeholder="Ingrese dirección de origen"
                 onBlur={onBlur}
                 onChangeText={onChange}
-                value={paciente?.direccion ?? value}
+                value={pacienteDetalle?.direccion ?? value}
                 style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
                 editable={!paciente}
               />
@@ -233,8 +237,9 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                 placeholder="Ingrese dirección de destino"
                 onBlur={onBlur}
                 onChangeText={onChange}
-                value={value}
-                style={style.input}
+                value={despachoActivo?.direccionDestino ?? value}
+                style={[style.input, { backgroundColor: '#F7F7F7' }]}
+                editable={false}
               />
             )}
           />
