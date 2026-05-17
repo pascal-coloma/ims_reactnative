@@ -30,38 +30,37 @@ const UserLayout = () => {
   };
   return (
     <DespachosProvider>
-        <AtencionProvider>
-          <Tabs screenOptions={tabBarOptions}>
-            <Tabs.Screen
-              name="UserDashboard"
-              options={{
-                title: 'Home',
-                tabBarIcon: ({ color, size }) => (
-                  <MaterialIcons name="home" size={size} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="Despachos"
-              options={{
-                title: 'Despachos',
-                tabBarIcon: ({ color, size }) => (
-                  <MaterialIcons name="airport-shuttle" size={size} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="RegistrarAtencion"
-              options={{
-                title: 'Registrar Atencion',
-                tabBarIcon: ({ color, size }) => (
-                  <MaterialIcons name="checklist" size={size} color={color} />
-                ),
-              }}
-            />
-            
-          </Tabs>
-        </AtencionProvider>
+      <AtencionProvider>
+        <Tabs screenOptions={tabBarOptions}>
+          <Tabs.Screen
+            name="UserDashboard"
+            options={{
+              title: 'Home',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialIcons name="home" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="Despachos"
+            options={{
+              title: 'Despachos',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialIcons name="airport-shuttle" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="RegistrarAtencion"
+            options={{
+              title: 'Registrar Atencion',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialIcons name="checklist" size={size} color={color} />
+              ),
+            }}
+          />
+        </Tabs>
+      </AtencionProvider>
     </DespachosProvider>
   );
 };

@@ -22,15 +22,20 @@ const RegistrarAtencion = () => {
   const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-        ...DEFAULT_VALUES_USUARIO,
-        direccionOrigen: despachoActivo.direccionOrigen,
-        direccionDestino: despachoActivo.direccionDestino,
-        rut: despachoActivo.paciente?.rut ?? '',
-      }
+          ...DEFAULT_VALUES_USUARIO,
+          direccionOrigen: despachoActivo.direccionOrigen,
+          direccionDestino: despachoActivo.direccionDestino,
+          rut: despachoActivo.paciente?.rut ?? '',
+        }
       : DEFAULT_VALUES_USUARIO,
   });
 
-  const { handleSubmit, reset, formState: { errors }, control } = methods;
+  const {
+    handleSubmit,
+    reset,
+    formState: { errors },
+    control,
+  } = methods;
 
   const onSubmit = async (data: FormUsuario) => {
     if (!despachoActivo) {
@@ -64,7 +69,7 @@ const RegistrarAtencion = () => {
     <>
       <FormProvider {...methods}>
         <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
-          <AppHeader title="Registrar Atención" /> 
+          <AppHeader title="Registrar Atención" />
 
           <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
             <FormPaciente control={methods.control} errors={errors} />
@@ -90,7 +95,12 @@ const RegistrarAtencion = () => {
       <Modal visible={exito} transparent animationType="fade">
         <View style={local.modalBackdrop}>
           <View style={local.modalCard}>
-            <MaterialIcons name="check-circle" size={64} color="#22c55e" style={{ marginBottom: 16 }} />
+            <MaterialIcons
+              name="check-circle"
+              size={64}
+              color="#22c55e"
+              style={{ marginBottom: 16 }}
+            />
             <Text style={local.modalTitulo}>¡Atención registrada!</Text>
             <Text style={local.modalSubtitulo}>
               La atención fue registrada y firmada exitosamente.
