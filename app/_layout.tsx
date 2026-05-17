@@ -1,6 +1,7 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 function RootContent() {
   const { loading } = useAuth();
@@ -20,8 +21,10 @@ function RootContent() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootContent />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <RootContent />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
