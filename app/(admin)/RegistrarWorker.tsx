@@ -94,7 +94,12 @@ const RegistrarWorker = () => {
 
                     <Text style={style.resultadoLabel}>Contraseña</Text>
                     <View style={style.resultadoValor}>
-                        <Text style={style.resultadoCodigo}>{resultado.password}</Text>
+                        <TextInput
+                            value={resultado.password}
+                            editable={false}
+                            selectTextOnFocus
+                            style={style.resultadoCodigo}
+                        />
                     </View>
 
                     <Text style={style.resultadoLabel}>QR para Google Authenticator</Text>
