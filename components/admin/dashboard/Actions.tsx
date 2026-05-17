@@ -29,15 +29,6 @@ const Actions = () => {
               </View>
             </View>
           </Link>
-          <Link href={'/(admin)/RegistrarWorker'} style={style.linkStyle}>
-            <View style={[style.attentionCard, { backgroundColor: '#2E7D32' }]}>
-              <MaterialIcons name="person-add" size={50} color="white" />
-              <View>
-                <Text style={style.cardTitle}>Registrar Worker</Text>
-                <Text style={style.cardSubtitle}>Crear nuevo personal</Text>
-              </View>
-            </View>
-          </Link>
         </View>
       </View>
     </>

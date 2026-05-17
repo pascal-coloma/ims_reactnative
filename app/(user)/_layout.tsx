@@ -51,15 +51,7 @@ const UserLayout = () => {
                 ),
               }}
             />
-            <Tabs.Screen
-              name="ListaAtenciones"
-              options={{
-                title: 'Lista Atenciones',
-                tabBarIcon: ({ color, size }) => (
-                  <MaterialIcons name="list" size={size} color={color} />
-                ),
-              }}
-            />
+            
           </Tabs>
         </AtencionProvider>
       </PacienteProvider>

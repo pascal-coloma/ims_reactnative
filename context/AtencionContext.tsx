@@ -2,7 +2,6 @@ import { fetchConSesion } from '@/context/AuthContext';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Atencion } from '@/data/types/types';
 
-const BACKEND_READY = true;
 
 type AtencionResumen = {
   id: number;
@@ -35,10 +34,6 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const formatearHora = (hora: string) => {
-    const nums = hora.replace(/[^0-9]/g, '');
-    return nums.padStart(4, '0').slice(0, 4); // "557" → "0557"
-  };
 
   const agregarAtencion = async (
     atencion: Atencion,

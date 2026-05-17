@@ -42,7 +42,7 @@ const ListaAtenciones = () => {
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={22} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.title}>Mis Atenciones</Text>
+          <Text style={styles.title}>Descargar Atenciones</Text>
         </View>
       </View>
 

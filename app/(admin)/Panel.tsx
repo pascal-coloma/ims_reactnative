@@ -32,7 +32,7 @@ const Panel = () => {
             <Text style={style.cardSubtitle}>{totalDespachos}</Text>
           </View>
           <View style={[style.statCard, { borderLeftColor: '#E53935' }]}>
-            <Text style={style.cardTitle}>Moviles</Text>
+            <Text style={style.cardTitle}>Ambulancias</Text>
             <Text style={style.cardSubtitle}>{movilesActivos}</Text>
           </View>
         </View>
@@ -42,7 +42,7 @@ const Panel = () => {
             <Text style={style.cardSubtitle}>{personalActivo}</Text>
           </View>
         </View>
-        <Text style={[style.title, { backgroundColor: 'white' }]}>Acciones Rapidas</Text>
+        <Text style={[style.title, { backgroundColor: 'white' }]}>Acciones Rápidas</Text>
         <Link href={'/(admin)/RegistrarDespacho'}>
           <View style={style.patientCard}>
             <MaterialIcons name="person" size={40} color="#372121" />
@@ -67,6 +67,15 @@ const Panel = () => {
             <View style={{ padding: 5 }}>
               <Text style={[style.cardTitle, { color: '#372121' }]}>Inventario</Text>
               <Text>Gestión de Inventario</Text>
+            </View>
+          </View>
+        </Link>
+        <Link href={'/(admin)/RegistrarWorker'}>
+          <View style={style.patientCard}>
+            <MaterialIcons name="input" size={40} color="#372121" />
+            <View style={{ padding: 5 }}>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Trabajador</Text>
+              <Text>Crear perfil de usuario</Text>
             </View>
           </View>
         </Link>

@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
+// TODO: revisar id's de roles
 const ROLES = [
     { label: 'Médico', value: 1 },
     { label: 'TENS', value: 2 },
@@ -62,7 +63,7 @@ const RegistrarWorker = () => {
         try {
             const rutLimpio = data.rut.replace(/\./g, '');
             const result = await registrarWorker({ ...data, rut: rutLimpio });
-            if (!result) throw new Error('Error al registrar worker');
+            if (!result) throw new Error('Error al registrar trabajador');
             setResultado(result);
             reset();
         } catch (e: any) {
@@ -79,7 +80,7 @@ const RegistrarWorker = () => {
                     <TouchableOpacity onPress={() => setResultado(null)}>
                         <MaterialIcons name="arrow-back" size={22} color="#000" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Worker Registrado</Text>
+                    <Text style={styles.title}>Trabajador Registrado</Text>
                 </View>
 
                 <View style={style.resultadoCard}>
@@ -89,7 +90,7 @@ const RegistrarWorker = () => {
                         color="#22c55e"
                         style={{ alignSelf: 'center', marginBottom: 16 }}
                     />
-                    <Text style={style.resultadoTitulo}>¡Worker creado exitosamente!</Text>
+                    <Text style={style.resultadoTitulo}>¡Trabajador creado exitosamente!</Text>
 
                     <Text style={style.resultadoLabel}>Contraseña</Text>
                     <View style={style.resultadoValor}>
@@ -98,7 +99,7 @@ const RegistrarWorker = () => {
 
                     <Text style={style.resultadoLabel}>QR para Google Authenticator</Text>
                     <Text style={style.resultadoSubtitulo}>
-                        El worker debe escanear este código con Google Authenticator antes de iniciar sesión.
+                        El trabajador debe escanear este código con Google Authenticator antes de iniciar sesión.
                     </Text>
                     <View style={{ alignItems: 'center', marginBottom: 24 }}>
                         <QRCode value={resultado.totp_uri} size={200} color="#000" backgroundColor="#fff" />
@@ -119,7 +120,7 @@ const RegistrarWorker = () => {
                     <TouchableOpacity onPress={() => router.back()}>
                         <MaterialIcons name="arrow-back" size={22} color="#000" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Registrar Worker</Text>
+                    <Text style={styles.title}>Registrar Trabajador</Text>
                 </View>
             </View>
 
@@ -181,7 +182,7 @@ const RegistrarWorker = () => {
                 />
                 {errors.rut && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-                <Text style={style.label}>Rol</Text>
+                <Text style={style.label}>Cargo</Text>
                 <Controller
                     control={control}
                     name="rol_id"
@@ -192,7 +193,7 @@ const RegistrarWorker = () => {
                             <>
                                 <TouchableOpacity style={style.picker} onPress={() => setRolModalVisible(true)}>
                                     <Text style={seleccionado ? style.pickerTexto : style.pickerPlaceholder}>
-                                        {seleccionado?.label ?? 'Seleccione un rol'}
+                                        {seleccionado?.label ?? 'Seleccione un cargo'}
                                     </Text>
                                     <MaterialIcons name="expand-more" size={20} color="#666" />
                                 </TouchableOpacity>
@@ -200,7 +201,7 @@ const RegistrarWorker = () => {
                                 <Modal visible={rolModalVisible} transparent animationType="fade">
                                     <Pressable style={style.modalBackdrop} onPress={() => setRolModalVisible(false)}>
                                         <View style={style.modalCard}>
-                                            <Text style={style.modalTitulo}>Seleccionar rol</Text>
+                                            <Text style={style.modalTitulo}>Seleccionar cargo</Text>
                                             <FlatList
                                                 data={ROLES}
                                                 keyExtractor={(item) => String(item.value)}
@@ -237,7 +238,7 @@ const RegistrarWorker = () => {
                     onPress={handleSubmit(onSubmit)}
                     disabled={cargando}
                 >
-                    <Text style={styles.buttonText}>{cargando ? 'Registrando...' : 'Registrar Worker'}</Text>
+                    <Text style={styles.buttonText}>{cargando ? 'Registrando...' : 'Registrar'}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
