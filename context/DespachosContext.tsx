@@ -62,11 +62,11 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
         ambulancia: d.ambulancia_id
           ? {
-              id: String(d.ambulancia_id),
-              patente: '',
-              modelo: '',
-              estado_disponibilidad: 'disponible',
-            }
+            id: String(d.ambulancia_id),
+            patente: '',
+            modelo: '',
+            estado_disponibilidad: 'disponible',
+          }
           : undefined,
       });
 
@@ -82,11 +82,11 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         rutPaciente: d.paciente?.rut ?? undefined,
         ambulancia: d.ambulancia
           ? {
-              id: String(d.ambulancia.id),
-              patente: d.ambulancia.patente ?? '',
-              modelo: d.ambulancia.modelo ?? '',
-              estado_disponibilidad: d.ambulancia.estado ?? 'disponible',
-            }
+            id: String(d.ambulancia.id),
+            patente: d.ambulancia.patente ?? '',
+            modelo: d.ambulancia.modelo ?? '',
+            estado_disponibilidad: d.ambulancia.estado ?? 'disponible',
+          }
           : undefined,
       });
       const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
@@ -110,6 +110,53 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
+
+      const buscarResp = await fetchConSesion(
+        `/ims/api/pacientes/?rut=${encodeURIComponent(rutLimpio)}`
+      );
+
+      if (!buscarResp.ok) {
+        const payloadPaciente = {
+          rut: rutLimpio,
+          nombre_completo: [
+            data.primerNombre,
+            data.segundoNombre ?? '',
+            data.apellidoPaterno,
+            data.apellidoMaterno,
+          ].filter(Boolean).join(' '),
+          fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
+          direccion: data.direccionOrigen,
+          condicion_paciente: data.condicionPaciente,
+          telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
+        };
+        console.log('Payload paciente:', JSON.stringify(payloadPaciente, null, 2));
+        // Paciente no existe → crear
+        console.log('Paso 0 - paciente no existe, creando...');
+        const crearResp = await fetchConSesion('/ims/api/pacientes/', {
+          method: 'POST',
+          body: JSON.stringify({
+            rut: rutLimpio,
+            nombre_completo: [
+              data.primerNombre,
+              data.segundoNombre ?? '',
+              data.apellidoPaterno,
+              data.apellidoMaterno,
+            ].filter(Boolean).join(' '),
+            fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
+            direccion: data.direccionOrigen,
+            condicion_paciente: data.condicionPaciente,
+            telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
+          }),
+        });
+        if (!crearResp.ok) {
+          const errorText = await crearResp.text().catch(() => 'no body');
+          console.log('Error creando paciente raw:', errorText);
+          throw new Error(`Error creando paciente: ${crearResp.status}`);
+        }
+        console.log('Paso 0 - paciente creado');
+      } else {
+        console.log('Paso 0 - paciente existente encontrado');
+      }
       const despachoResp = await fetchConSesion('/ims/api/despachos/add/', {
         method: 'POST',
         body: JSON.stringify({
@@ -119,17 +166,15 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
           paciente_rut: rutLimpio,
         }),
       });
-      console.log('Paso 1 status:', despachoResp.status);
-
       if (!despachoResp.ok) {
         const errorText = await despachoResp.text().catch(() => 'no body');
         console.log('Error despacho body:', errorText);
         throw new Error(`Error creando despacho: ${despachoResp.status}`);
       }
-      console.log(despachoResp);
       const despachoData = await despachoResp.json();
       console.log('Paso 1 - despacho:', despachoData);
 
+      // Paso 2 — asignar
       const asignarResp = await fetchConSesion('/ims/api/despachos/asignar/', {
         method: 'PATCH',
         body: JSON.stringify({
@@ -144,6 +189,8 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Error asignando despacho: ${asignarResp.status}`);
       }
       console.log('Paso 2 - asignado');
+
+
       try {
         await fetchDespachos();
       } catch (e) {

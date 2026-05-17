@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 const BASE_URL = 'http://18.212.226.172';
 const BACKEND_READY = true;
 
-type Role = 'control' | 'medic' | 'nurse' | null;
+type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 
 type User = {
   username: string;
@@ -17,7 +17,11 @@ type User = {
 
 type AuthContextType = {
   user: User;
-  login: (username: string, password: string, totpCode?: string) => Promise<{ role: Role; personalId: string } | null>;
+  login: (
+    username: string,
+    password: string,
+    totpCode?: string,
+  ) => Promise<{ role: Role; personalId: string } | null>;
   logout: () => Promise<void>;
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
@@ -124,7 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const errorBody = await response.json().catch(() => ({}));
         console.log('login error body:', JSON.stringify(errorBody));
         return null;
-      } const data = await response.json();
+      }
+      const data = await response.json();
 
       let firstName = '';
       let lastName = '';

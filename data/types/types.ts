@@ -77,3 +77,28 @@ export type Atencion = {
   preInforme: PreInforme;
   cronologia: Cronologia;
 };
+
+export type NuevoWorker = {
+  first_name: string;
+  last_name: string;
+  rut: string;
+  rol_id: number;
+};
+
+export type WorkerCreado = {
+  totp_uri: string;
+  password: string;
+  usuario_id: number;
+};
+
+export type Miembro = {
+  nombre: string;
+  rut: string;
+  rol: string;
+};
+
+export type Grupo = {
+  grupo_id: number;
+  grupo_nombre: string;
+  miembros: Miembro[];
+};

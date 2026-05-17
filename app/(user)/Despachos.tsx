@@ -62,7 +62,7 @@ const MisDespachos = () => {
               }}
             >
               <View style={local.rowHeader}>
-                <Text style={styles.title}>Despacho {d.id}{' '}</Text>
+                <Text style={styles.title}>Despacho {d.id} </Text>
                 <View style={[local.badge, { backgroundColor: ESTADO_COLOR[d.estado] }]}>
                   <Text style={local.badgeTexto}>
                     {d.estado[0].toUpperCase() + d.estado.slice(1)}

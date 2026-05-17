@@ -12,12 +12,11 @@ type FormPacienteProps = {
 
 const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   const formatearRut = (rut: string): string => {
-    const clean = rut.replace(/[^0-9kK]/g, '');
+    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9); // ← máximo 9 caracteres
     if (clean.length <= 1) return clean;
     const cuerpo = clean.slice(0, -1);
     const dv = clean.slice(-1);
-    const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${cuerpoFormateado}-${dv}`;
+    return `${cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`;
   };
 
   const formatearFecha = (fechaNacimiento: string): string => {
@@ -170,7 +169,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                   <TextInput
                     placeholder="12.345.678-9"
                     onBlur={onBlur}
-                    onChangeText={(text) => onChange(text)}
+                    onChangeText={(text) => onChange(formatearRut(text))}
                     value={value}
                     style={style.input}
                     keyboardType="default"

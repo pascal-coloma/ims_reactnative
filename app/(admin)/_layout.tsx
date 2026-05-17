@@ -66,6 +66,13 @@ export default function AdminLayout() {
                     title: 'Inventario',
                   }}
                 ></Tabs.Screen>
+                <Tabs.Screen
+                  name="RegistrarWorker"
+                  options={{
+                    href: null,
+                    title: 'RegistrarWorker',
+                  }}
+                ></Tabs.Screen>
               </Tabs>
             </AmbulanciaProvider>
           </InventarioProvider>

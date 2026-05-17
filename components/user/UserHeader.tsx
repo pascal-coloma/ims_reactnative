@@ -15,7 +15,7 @@ const UserHeader = () => {
       <View style={style.container}>
         <View style={style.left}>
           <View style={style.avatar}>
-            <Text style={style.avatarText}>A</Text>
+            <Text style={style.avatarText}>{user?.firstName?.[0]?.toUpperCase() ?? 'U'}</Text>
           </View>
           <View>
             <Text style={style.welcome}>Bienvenido,</Text>

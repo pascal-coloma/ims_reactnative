@@ -1,11 +1,11 @@
 import { useAmbulancias } from '@/context/AmbulanciaContext';
-import { FormCompleta } from '@/data/types/types';
+import { fetchConSesion } from '@/context/AuthContext';
+import { FormCompleta, Grupo } from '@/data/types/types';
 import styles from '@/styles/globalStyles';
-import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 type FormDespachoProps = {
   control: Control<FormCompleta>;
@@ -14,6 +14,23 @@ type FormDespachoProps = {
 
 const FormDespacho = ({ control, errors }: FormDespachoProps) => {
   const { ambulancias } = useAmbulancias();
+  const [grupos, setGrupos] = useState<Grupo[]>([]);
+  
+
+  useEffect(() => {
+    const fetchGrupos = async () => {
+      try {
+        const resp = await fetchConSesion('/ims/api/grupo/');
+        if (!resp.ok) return;
+        const data = await resp.json();
+        setGrupos(data);
+      } catch (e) {
+        console.error('Error fetching grupos:', e);
+      }
+    };
+    fetchGrupos();
+  }, []);
+
   return (
     <>
       <View style={style.formulario}>
@@ -106,9 +123,13 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
               <View style={style.pickerContainer}>
                 <Picker selectedValue={value} onValueChange={onChange}>
                   <Picker.Item label="Seleccione grupo" value="" enabled={false} />
-                  <Picker.Item label="Alpha" value="1" />
-                  <Picker.Item label="Bravo" value="2" />
-                  <Picker.Item label="Charlie" value="3" />
+                  {grupos.map((g) => (
+                    <Picker.Item
+                      key={g.grupo_id}
+                      label={`${g.grupo_nombre}`}
+                      value={String(g.grupo_id)}
+                    />
+                  ))}
                 </Picker>
               </View>
             </>

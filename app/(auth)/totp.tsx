@@ -24,17 +24,18 @@ export default function TOTPScreen() {
     setCargando(true);
     setError(null);
     try {
-      const result = await login(pendingCredentials.username,
+      const result = await login(
+        pendingCredentials.username,
         pendingCredentials.password,
-        codeToUse);
+        codeToUse,
+      );
       setPendingCredentials(null);
 
       if (!result) {
-
         setError('Error de autenticación');
         return;
       }
-      if (result.role === 'medic' || result.role === 'nurse') {
+      if (result.role === 'medic' || result.role === 'nurse' || result.role === 'driver') {
         router.replace('/(user)/UserDashboard');
       } else if (result.role === 'control') {
         router.replace('/(admin)/AdminDashboard');

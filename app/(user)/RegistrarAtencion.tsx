@@ -16,16 +16,20 @@ const RegistrarAtencion = () => {
   const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-        ...DEFAULT_VALUES_USUARIO,
-        direccionOrigen: despachoActivo.direccionOrigen,
-        direccionDestino: despachoActivo.direccionDestino,
-        rut: despachoActivo.paciente?.rut ?? '',
-      }
+          ...DEFAULT_VALUES_USUARIO,
+          direccionOrigen: despachoActivo.direccionOrigen,
+          direccionDestino: despachoActivo.direccionDestino,
+          rut: despachoActivo.paciente?.rut ?? '',
+        }
       : DEFAULT_VALUES_USUARIO,
   });
 
-
-  const { handleSubmit, reset, formState: { errors }, control } = methods;
+  const {
+    handleSubmit,
+    reset,
+    formState: { errors },
+    control,
+  } = methods;
 
   const onSubmit = async (data: FormUsuario) => {
     if (!despachoActivo) {

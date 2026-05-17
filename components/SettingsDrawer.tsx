@@ -39,7 +39,9 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
         ? 'Enfermero/a'
         : user?.role === 'control'
           ? 'Control'
-          : 'Usuario';
+          : user?.role === 'driver'
+            ? 'Conductor'
+            : 'Usuario';
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>

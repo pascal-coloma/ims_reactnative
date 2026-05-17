@@ -6,13 +6,22 @@ import { useRouter } from 'expo-router';
 export default function LoginForm() {
   const router = useRouter();
   const { login, setPendingCredentials } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const formatearRut = (rut: string): string => {
+    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9); 
+    if (clean.length <= 1) return clean;
+    const cuerpo = clean.slice(0, -1);
+    const dv = clean.slice(-1);
+    return `${cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`;
+  };
+
+
   async function handleLogin() {
-    if (!email || !passw) {
+    if (!username || !passw) {
       setError('Ingresa tus credenciales');
       return;
     }
@@ -20,7 +29,7 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      setPendingCredentials({ username: email, password: passw });
+      setPendingCredentials({ username: username.replace(/\./g, ''), password: passw });
       router.push('/(auth)/totp');
     } finally {
       setCargando(false);
@@ -40,11 +49,12 @@ export default function LoginForm() {
 
       <TextInput
         style={styles.input}
-        placeholder="Usuario"
-        value={email}
+        placeholder="RUT (12.345.678-9)"
+        value={username}
         autoCapitalize="none"
-        onChangeText={setEmail}
+        onChangeText={(text) => setUsername((text))}
         editable={!cargando}
+        keyboardType="default"
       />
       <TextInput
         style={styles.input}

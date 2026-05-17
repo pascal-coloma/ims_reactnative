@@ -7,7 +7,7 @@ const BACKEND_READY = true;
 type AtencionResumen = {
   id: number;
   hora_salida: string;
-  hora_llegada: string;
+  hora_llegada: string | null;
   estado_sello: string;
   paciente__nombre_completo: string;
 };
@@ -131,7 +131,14 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetchConSesion('/ims/api/atenciones/');
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-      setResumenAtenciones(data);
+      const mapped = data.map((a: any) => ({
+        id: a.atencion_id,
+        hora_salida: a.hora_salida,
+        hora_llegada: a.hora_llegada,
+        estado_sello: a.estado_sello,
+        paciente__nombre_completo: a.despacho?.paciente?.nombre ?? 'Sin paciente',
+      }));
+      setResumenAtenciones(mapped);
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
     } finally {
@@ -141,10 +148,19 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchAtencionDetalle = async (id: number) => {
     try {
-      const response = await fetchConSesion(`/ims/api/atenciones/${id}/`);
+      // Paso 1 — obtener URL presignada de S3
+      const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-      return data.datos_atencion;
+      const s3Url = data.success;
+      console.log('S3 URL:', s3Url);
+
+      // Paso 2 — fetch del documento desde S3
+      const s3Resp = await fetch(s3Url);
+      if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
+      const documento = await s3Resp.json();
+      console.log('Documento S3:', JSON.stringify(documento, null, 2));
+      return documento;
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
       return null;

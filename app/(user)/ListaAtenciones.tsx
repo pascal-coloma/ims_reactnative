@@ -68,7 +68,7 @@ const ListaAtenciones = () => {
         {resumenAtenciones.map((a) => (
           <View key={a.id} style={styles.container}>
             <View style={local.rowHeader}>
-              <Text style={styles.title}>Atención #{a.id}</Text>
+              <Text style={styles.title}>Atención #{a.id}{' '}</Text>
               <View
                 style={[
                   local.badge,
@@ -89,15 +89,7 @@ const ListaAtenciones = () => {
               </View>
             </View>
 
-            <Text style={styles.subtitle}>
-              {new Date(a.hora_salida).toLocaleDateString('es-CL', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </Text>
+
 
             <Text style={styles.title}>{a.paciente__nombre_completo ?? `Atención #${a.id}`}</Text>
             <Text style={styles.subtitle}>

@@ -49,7 +49,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
       if (!paciente?.rut) return;
       try {
         const resp = await fetchConSesion(
-          `/ims/api/pacientes/?rut=${encodeURIComponent(paciente.rut)}`
+          `/ims/api/pacientes/?rut=${encodeURIComponent(paciente.rut)}`,
         );
         if (resp.ok) {
           const data = await resp.json();

@@ -1,10 +1,12 @@
 import PERSONAL, { Personal } from '@/data/constants/mockPersonal';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { fetchConSesion } from './AuthContext';
+import { NuevoWorker, WorkerCreado } from '@/data/types/types';
 
 type PersonalContextType = {
   personal: Personal[];
   actualizarDisponilidad: (id: string) => void;
+  registrarWorker: (data: NuevoWorker) => Promise<WorkerCreado | null>;
 };
 
 // funcionamiento del retorno de los permisos adquiridos por el endpoint dentro de la clase DataPersonal.
@@ -13,6 +15,20 @@ const PersonalContext = createContext<PersonalContextType | null>(null);
 
 const PersonalProvider = ({ children }: { children: ReactNode }) => {
   const [personal, setPersonal] = useState<Personal[]>([]);
+
+  const registrarWorker = async (data: NuevoWorker): Promise<WorkerCreado | null> => {
+    try {
+      const response = await fetchConSesion('/ims/api/personal/', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      return await response.json();
+    } catch (e: any) {
+      console.error('Error registrando worker:', e.message);
+      return null;
+    }
+  };
   // Revision de la autenticacion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
     const fetchPersonal = async () => {
@@ -32,7 +48,7 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
     setPersonal((prev) => prev.map((p) => (p.id === id ? { ...p, is_active: false } : p)));
   }
   return (
-    <PersonalContext.Provider value={{ personal, actualizarDisponilidad }}>
+    <PersonalContext.Provider value={{ personal, actualizarDisponilidad, registrarWorker }}>
       {children}
     </PersonalContext.Provider>
   );

@@ -1,16 +1,103 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { FormCompleta } from '../types/types';
 
-export const generatePDF = async (data: FormCompleta) => {
-  const nombreCompleto = [
-    data.primerNombre,
-    data.segundoNombre,
-    data.apellidoPaterno,
-    data.apellidoMaterno,
-  ]
-    .filter(Boolean)
-    .join(' ');
+type SignosVitales = {
+  hora: string;
+  presion_sistolica: number;
+  presion_diastolica: number;
+  frecuencia_cardiaca: number;
+  saturacion_oxigeno: number;
+  temperatura: number;
+  fr: number;
+  fio2: number;
+  hgt: number;
+  gcs: number;
+  eva: number;
+  observaciones?: string;
+};
+
+type PreInforme = {
+  pre_informe: string;
+  motivo_llamado: string;
+  estado_paciente: string;
+};
+
+type Cronologia = {
+  hora_llamada: string;
+  despacho_movil: string;
+  llegada_qth1: string;
+  salida_qth1: string;
+  llegada_qth2: string;
+  salida_qth2: string;
+  categoria: string;
+};
+
+type InsumoUtilizado = {
+  insumo__nombre_insumo: string;
+  dosis: number;
+  observaciones: string;
+};
+
+type DocumentoAtencion = {
+  atencion: {
+    id: number;
+    ambulancia: number;
+    despacho: number;
+    hora_salida: string;
+    hora_llegada: string;
+    sello_electronico: string;
+    estado_sello: string;
+  };
+  signos_vitales: SignosVitales[];
+  preinforme: PreInforme;
+  cronologia: Cronologia;
+  insumos_utilizados: InsumoUtilizado[];
+  Hash: string;
+  Firma: string;
+};
+
+const formatearHora = (hora: string): string => {
+  if (!hora || hora.length < 4) return hora;
+  return `${hora.slice(0, 2)}:${hora.slice(2, 4)}`;
+};
+
+const formatearFechaHora = (iso: string): string => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-CL', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+};
+
+export const generatePDF = async (data: DocumentoAtencion) => {
+  const { atencion, signos_vitales, preinforme, cronologia, insumos_utilizados, Hash } = data;
+
+  const signosRows = signos_vitales.map((s) => `
+    <tr>
+      <td>${formatearHora(s.hora)}</td>
+      <td>${s.presion_sistolica}/${s.presion_diastolica}</td>
+      <td>${Math.round((s.presion_diastolica * 2 + s.presion_sistolica) / 3)}</td>
+      <td>${s.frecuencia_cardiaca}</td>
+      <td>—</td>
+      <td>${s.fr}</td>
+      <td>${s.saturacion_oxigeno}%</td>
+      <td>${s.fio2}%</td>
+      <td>${s.temperatura}°C</td>
+      <td>${s.hgt}</td>
+      <td>${s.gcs}</td>
+      <td>${s.eva}</td>
+    </tr>
+  `).join('');
+
+  const insumosRows = insumos_utilizados.map((i) => `
+    <tr>
+      <td>${i.insumo__nombre_insumo}</td>
+      <td>—</td>
+      <td>${i.dosis}</td>
+      <td>${i.observaciones ?? '—'}</td>
+    </tr>
+  `).join('');
 
   const html = `
     <!DOCTYPE html>
@@ -26,8 +113,6 @@ export const generatePDF = async (data: FormCompleta) => {
           padding: 16px;
           background: white;
         }
-
-        /* HEADER */
         .header {
           display: flex;
           align-items: center;
@@ -35,11 +120,6 @@ export const generatePDF = async (data: FormCompleta) => {
           border: 2px solid #1a3a6b;
           padding: 8px 12px;
           margin-bottom: 6px;
-        }
-        .header-logo {
-          display: flex;
-          align-items: center;
-          gap: 8px;
         }
         .logo-box {
           background: #1a3a6b;
@@ -70,18 +150,15 @@ export const generatePDF = async (data: FormCompleta) => {
           color: #666;
           text-align: right;
         }
-
-        /* LAYOUT */
         .main-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 6px;
           margin-bottom: 6px;
         }
-
-        /* SECTIONS */
         .section {
           border: 1px solid #1a3a6b;
+          margin-bottom: 6px;
         }
         .section-title {
           background: #1a3a6b;
@@ -95,8 +172,6 @@ export const generatePDF = async (data: FormCompleta) => {
         .section-body {
           padding: 6px 8px;
         }
-
-        /* FIELDS */
         .field-row {
           display: flex;
           align-items: baseline;
@@ -105,17 +180,14 @@ export const generatePDF = async (data: FormCompleta) => {
           border-bottom: 1px solid #e0e0e0;
           padding-bottom: 3px;
         }
-        .field-row:last-child {
-          border-bottom: none;
-          margin-bottom: 0;
-        }
+        .field-row:last-child { border-bottom: none; margin-bottom: 0; }
         .field-label {
           font-size: 8px;
           font-weight: bold;
           color: #1a3a6b;
           text-transform: uppercase;
           white-space: nowrap;
-          min-width: 60px;
+          min-width: 80px;
         }
         .field-value {
           font-size: 10px;
@@ -125,15 +197,6 @@ export const generatePDF = async (data: FormCompleta) => {
           min-height: 14px;
           padding-left: 2px;
         }
-
-        .field-row-inline {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 6px;
-          margin-bottom: 4px;
-        }
-
-        /* TABLA SIGNOS VITALES */
         table {
           width: 100%;
           border-collapse: collapse;
@@ -156,30 +219,6 @@ export const generatePDF = async (data: FormCompleta) => {
           font-size: 9px;
         }
         tr:nth-child(even) td { background: #f5f7fb; }
-
-        /* CONDICION BADGES */
-        .condicion-row {
-          display: flex;
-          gap: 12px;
-          padding: 6px 8px;
-          align-items: center;
-        }
-        .badge-check {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 10px;
-          font-weight: bold;
-        }
-        .checkbox {
-          width: 12px;
-          height: 12px;
-          border: 1.5px solid #1a3a6b;
-          display: inline-block;
-          border-radius: 2px;
-        }
-
-        /* CRONOLOGIA */
         .crono-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -201,34 +240,6 @@ export const generatePDF = async (data: FormCompleta) => {
           border-bottom: 1px solid #aaa;
           margin-top: 2px;
         }
-
-        /* EQUIPO */
-        .equipo-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
-          padding: 6px 8px;
-        }
-        .equipo-item {
-          background: #e8edf5;
-          border: 1px solid #1a3a6b;
-          border-radius: 3px;
-          padding: 2px 8px;
-          font-size: 9px;
-          color: #1a3a6b;
-          font-weight: bold;
-        }
-
-        /* OBSERVACIONES */
-        .obs-box {
-          min-height: 40px;
-          padding: 6px 8px;
-          font-size: 10px;
-          border-top: 1px solid #e0e0e0;
-          color: #333;
-        }
-
-        /* FIRMA */
         .firma-row {
           display: grid;
           grid-template-columns: 1fr 1fr 1fr;
@@ -244,18 +255,51 @@ export const generatePDF = async (data: FormCompleta) => {
           font-weight: bold;
           color: #1a3a6b;
           text-transform: uppercase;
-          margin-bottom: 20px;
+          margin-bottom: 8px;
         }
         .firma-line {
           border-top: 1px solid #aaa;
           font-size: 8px;
-          color: #888;
+          color: #999;
           padding-top: 2px;
         }
-
-        .full-section {
-          border: 1px solid #1a3a6b;
-          margin-bottom: 6px;
+        .hash-box {
+          margin-top: 6px;
+          border: 1px solid #ddd;
+          padding: 4px 8px;
+          background: #f9f9f9;
+          font-size: 7px;
+          color: #666;
+          word-break: break-all;
+        }
+        .condicion-row {
+          display: flex;
+          gap: 12px;
+          padding: 6px 8px;
+          align-items: center;
+        }
+        .badge-check {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 10px;
+          font-weight: bold;
+        }
+        .checkbox {
+          width: 12px;
+          height: 12px;
+          border: 1.5px solid #1a3a6b;
+          display: inline-block;
+          border-radius: 2px;
+          background: ${preinforme?.estado_paciente === 'estable' ? '#1a3a6b' : 'white'};
+        }
+        .checkbox-inestable {
+          width: 12px;
+          height: 12px;
+          border: 1.5px solid #1a3a6b;
+          display: inline-block;
+          border-radius: 2px;
+          background: ${preinforme?.estado_paciente === 'inestable' ? '#E53935' : 'white'};
         }
       </style>
     </head>
@@ -265,11 +309,16 @@ export const generatePDF = async (data: FormCompleta) => {
       <div class="header">
         <div class="header-logo">
           <div class="logo-box">IMS</div>
-          <div class="logo-sub">Ambulancias</div>
+          <div>
+            <div class="logo-sub">Intensive Medicine On The Street</div>
+            <div class="logo-sub">Registro de Atención Prehospitalaria</div>
+          </div>
         </div>
-        <div class="header-title">
-          Ficha Prehospitalaria
-          <div class="header-folio">Fecha: ${new Date().toLocaleDateString('es-CL')} &nbsp;|&nbsp; Unidad: ${data.unidad}</div>
+        <div>
+          <div class="header-title">Ficha de Atención</div>
+          <div class="header-folio">N° Atención: ${atencion.id}</div>
+          <div class="header-folio">Fecha: ${formatearFechaHora(atencion.hora_salida)}</div>
+          <div class="header-folio">Estado: ${atencion.estado_sello}</div>
         </div>
       </div>
 
@@ -278,88 +327,71 @@ export const generatePDF = async (data: FormCompleta) => {
 
         <!-- COLUMNA IZQUIERDA -->
         <div>
-          <!-- Datos Paciente -->
-          <div class="section" style="margin-bottom:6px">
-            <div class="section-title">Datos del Paciente</div>
+          <!-- Datos Atención -->
+          <div class="section">
+            <div class="section-title">Datos de la Atención</div>
             <div class="section-body">
               <div class="field-row">
-                <span class="field-label">Nombre</span>
-                <span class="field-value">${nombreCompleto}</span>
-              </div>
-              <div class="field-row-inline">
-                <div class="field-row">
-                  <span class="field-label">RUT</span>
-                  <span class="field-value">${data.rut}</span>
-                </div>
-                <div class="field-row">
-                  <span class="field-label">Edad</span>
-                  <span class="field-value">${data.edad} años</span>
-                </div>
+                <span class="field-label">Hora Salida</span>
+                <span class="field-value">${formatearFechaHora(atencion.hora_salida)}</span>
               </div>
               <div class="field-row">
-                <span class="field-label">Fono</span>
-                <span class="field-value">${data.telefono}</span>
+                <span class="field-label">Hora Llegada</span>
+                <span class="field-value">${formatearFechaHora(atencion.hora_llegada)}</span>
               </div>
               <div class="field-row">
-                <span class="field-label">Dirección</span>
-                <span class="field-value">${data.direccionOrigen}</span>
+                <span class="field-label">Despacho N°</span>
+                <span class="field-value">${atencion.despacho}</span>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Ambulancia N°</span>
+                <span class="field-value">${atencion.ambulancia}</span>
               </div>
             </div>
           </div>
 
-          <!-- Antecedentes -->
-          <div class="section" style="margin-bottom:6px">
-            <div class="section-title">Antecedentes Médicos y Cuadro Clínico</div>
+          <!-- Pre Informe -->
+          <div class="section">
+            <div class="section-title">Pre Informe</div>
             <div class="section-body">
               <div class="field-row">
-                <span class="field-label">DG:</span>
-                <span class="field-value">${data.tipoEmergencia}</span>
+                <span class="field-label">Motivo</span>
+                <span class="field-value">${preinforme?.motivo_llamado ?? '—'}</span>
               </div>
               <div class="field-row">
-                <span class="field-label">ANT. MORB:</span>
-                <span class="field-value">&nbsp;</span>
-              </div>
-              <div class="field-row">
-                <span class="field-label">Alergias:</span>
-                <span class="field-value">&nbsp;</span>
-              </div>
-              <div class="field-row">
-                <span class="field-label">MC:</span>
-                <span class="field-value">&nbsp;</span>
+                <span class="field-label">Pre Informe</span>
+                <span class="field-value">${preinforme?.pre_informe ?? '—'}</span>
               </div>
             </div>
           </div>
 
           <!-- Condición -->
-          <div class="section" style="margin-bottom:6px">
-            <div class="section-title">Condición</div>
+          <div class="section">
+            <div class="section-title">Condición del Paciente</div>
             <div class="condicion-row">
               <div class="badge-check">
                 <span class="checkbox"></span> Estable
               </div>
               <div class="badge-check">
-                <span class="checkbox"></span> Inestable
+                <span class="checkbox-inestable"></span> Inestable
               </div>
             </div>
           </div>
 
-          <!-- Medicamentos -->
+          <!-- Insumos -->
           <div class="section">
-            <div class="section-title">Medicamentos</div>
+            <div class="section-title">Insumos Utilizados</div>
             <table>
               <thead>
                 <tr>
-                  <th>Fármaco</th>
+                  <th>Insumo</th>
                   <th>Dilución</th>
                   <th>Dosis</th>
-                  <th>ML/HR</th>
+                  <th>Observación</th>
                 </tr>
               </thead>
               <tbody>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                ${insumosRows || '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -367,34 +399,17 @@ export const generatePDF = async (data: FormCompleta) => {
 
         <!-- COLUMNA DERECHA -->
         <div>
-          <!-- Equipo Interventor -->
-          <div class="section" style="margin-bottom:6px">
-            <div class="section-title">Equipo Interventor</div>
-            <div class="equipo-list">
-${(data.equipoAsignado ?? []).map((e) => `<span class="equipo-item">${e}</span>`).join('')}            </div>
-            <div class="section-body">
-              <div class="field-row">
-                <span class="field-label">U. HOSP (E)</span>
-                <span class="field-value">${data.direccionDestino}</span>
-              </div>
-              <div class="field-row">
-                <span class="field-label">U. HOSP (R)</span>
-                <span class="field-value">&nbsp;</span>
-              </div>
-            </div>
-          </div>
-
           <!-- Signos Vitales -->
-          <div class="section" style="margin-bottom:6px">
+          <div class="section">
             <div class="section-title">Signos Vitales</div>
             <table>
               <thead>
                 <tr>
-                  <th>Horario</th>
+                  <th>Hora</th>
                   <th>PA</th>
                   <th>PAM</th>
                   <th>FC</th>
-                  <th>RITMO</th>
+                  <th>Ritmo</th>
                   <th>FR</th>
                   <th>SAT O2</th>
                   <th>FIO2</th>
@@ -405,9 +420,7 @@ ${(data.equipoAsignado ?? []).map((e) => `<span class="equipo-item">${e}</span>`
                 </tr>
               </thead>
               <tbody>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                ${signosRows || '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -417,80 +430,37 @@ ${(data.equipoAsignado ?? []).map((e) => `<span class="equipo-item">${e}</span>`
             <div class="section-title">Cronología</div>
             <div class="crono-grid">
               <div class="crono-cell">
-                <div class="crono-label">Término de Atención</div>
-                <div class="crono-value">&nbsp;</div>
+                <div class="crono-label">Hora Llamada</div>
+                <div class="crono-value">${formatearHora(cronologia?.hora_llamada)}</div>
               </div>
               <div class="crono-cell">
-                <div class="crono-label">Firma</div>
-                <div class="crono-value">&nbsp;</div>
+                <div class="crono-label">Despacho Móvil</div>
+                <div class="crono-value">${formatearHora(cronologia?.despacho_movil)}</div>
               </div>
               <div class="crono-cell">
                 <div class="crono-label">Llegada QTH1</div>
-                <div class="crono-value">&nbsp;</div>
+                <div class="crono-value">${formatearHora(cronologia?.llegada_qth1)}</div>
               </div>
               <div class="crono-cell">
                 <div class="crono-label">Salida QTH1</div>
-                <div class="crono-value">&nbsp;</div>
-              </div>
-              <div class="crono-cell">
-                <div class="crono-label">Condición</div>
-                <div class="crono-value">&nbsp;</div>
+                <div class="crono-value">${formatearHora(cronologia?.salida_qth1)}</div>
               </div>
               <div class="crono-cell">
                 <div class="crono-label">Llegada QTH2</div>
-                <div class="crono-value">&nbsp;</div>
-              </div>
-              <div class="crono-cell">
-                <div class="crono-label">Tipo Móvil</div>
-                <div class="crono-value">${data.unidad}</div>
+                <div class="crono-value">${formatearHora(cronologia?.llegada_qth2)}</div>
               </div>
               <div class="crono-cell">
                 <div class="crono-label">Salida QTH2</div>
-                <div class="crono-value">&nbsp;</div>
+                <div class="crono-value">${formatearHora(cronologia?.salida_qth2)}</div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECCIÓN INFERIOR: Terapia Ventilatoria + Evolución -->
-      <div class="main-grid">
-        <div class="full-section">
-          <div class="section-title">Terapia Ventilatoria</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Horario</th>
-                <th>MODO</th>
-                <th>FIO2</th>
-                <th>PEEP</th>
-                <th>VT</th>
-                <th>P. INSP</th>
-                <th>R IE</th>
-                <th>PMAX/PMED</th>
-                <th>VME/VTE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-              <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="full-section">
-          <div class="section-title">Evolución Clínica y Procedimientos</div>
-          <div style="padding: 6px 8px; min-height: 60px;">
-            <div class="field-row" style="margin-bottom:2px">
-              <span class="field-label">Fecha</span>
-              <span class="field-value">${new Date().toLocaleDateString('es-CL')}</span>
-            </div>
-            <div class="field-row">
-              <span class="field-label">Folio (Interno)</span>
-              <span class="field-value">&nbsp;</span>
-            </div>
-            <div style="min-height: 40px; border: 1px solid #e0e0e0; margin-top: 6px; padding: 4px;">
-              ${data.observaciones ?? ''}
+              <div class="crono-cell">
+                <div class="crono-label">Categoría</div>
+                <div class="crono-value" style="font-weight:900; font-size:16px; color:#1a3a6b;">${cronologia?.categoria ?? '—'}</div>
+              </div>
+              <div class="crono-cell">
+                <div class="crono-label">Estado Sello</div>
+                <div class="crono-value">${atencion.estado_sello}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -500,16 +470,22 @@ ${(data.equipoAsignado ?? []).map((e) => `<span class="equipo-item">${e}</span>`
       <div class="firma-row">
         <div class="firma-box">
           <div class="firma-label">Médico Receptor</div>
+          <div style="min-height: 30px;"></div>
           <div class="firma-line">Nombre y firma</div>
         </div>
         <div class="firma-box">
-          <div class="firma-label">Prioridad</div>
-          <div style="font-size:16px; font-weight:900; color:#1a3a6b; text-align:center; padding: 4px 0;">${data.prioridad.toUpperCase()}</div>
+          <div class="firma-label">Categoría</div>
+          <div style="font-size:24px; font-weight:900; color:#1a3a6b; text-align:center; padding: 8px 0;">${cronologia?.categoria ?? '—'}</div>
         </div>
         <div class="firma-box">
-          <div class="firma-label">Estado Unidad</div>
-          <div style="font-size:11px; padding: 4px 0;">${data.estadoUnidad}</div>
+          <div class="firma-label">Integridad del Documento</div>
+          <div style="font-size:9px; color:#22c55e; font-weight:bold;">${atencion.estado_sello === 'Firmado' ? '✓ Documento Firmado' : 'Pendiente'}</div>
         </div>
+      </div>
+
+      <!-- HASH -->
+      <div class="hash-box">
+        <strong>Hash SHA-256:</strong> ${Hash}
       </div>
 
     </body>

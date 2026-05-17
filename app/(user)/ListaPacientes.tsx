@@ -9,6 +9,13 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 const ListaPacientes = () => {
   const { pacientes } = usePacientes();
   const [busqueda, setBusqueda] = useState('');
+  const pacientesFiltrados = busqueda.trim()
+    ? pacientes.filter((p) =>
+      p.rut.replace(/\./g, '').toLowerCase().includes(
+        busqueda.replace(/\./g, '').toLowerCase()
+      )
+    )
+    : pacientes;
 
   return (
     <View style={{ flex: 1 }}>
@@ -28,12 +35,12 @@ const ListaPacientes = () => {
       </View>
 
       <ScrollView>
-        {pacientes.length === 0 ? (
+        {pacientesFiltrados.length === 0 ? (
           <View style={styles.container}>
             <Text style={styles.subtitle}>No hay pacientes registrados</Text>
           </View>
         ) : (
-          pacientes.map((d) => (
+          pacientesFiltrados.map((d) => (
             <View key={d.rut} style={styles.container}>
               <Text style={styles.title}>{d.nombre_completo}</Text>
               <Text style={styles.subtitle}>RUT: {d.rut}</Text>
