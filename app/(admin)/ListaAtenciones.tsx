@@ -1,3 +1,4 @@
+import AppHeader from '@/components/AppHeader';
 import { useAtenciones } from '@/context/AtencionContext';
 import { generatePDF } from '@/data/constants/generatePDF';
 import styles from '@/styles/globalStyles';
@@ -37,14 +38,7 @@ const ListaAtenciones = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <View style={local.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={22} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Descargar Atenciones</Text>
-        </View>
-      </View>
+      <AppHeader title='Atenciones'/>
 
       <ScrollView>
         {loading && (

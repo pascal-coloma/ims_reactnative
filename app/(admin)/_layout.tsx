@@ -7,10 +7,30 @@ import InventarioProvider from '@/context/InventoryContext';
 import { AmbulanciaProvider } from '@/context/AmbulanciaContext';
 import DespachosProvider from '@/context/DespachosContext';
 import { AtencionProvider } from '@/context/AtencionContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 export default function AdminLayout() {
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+
   if (!user || user.role !== 'control') return <Redirect href={'/(auth)/login'} />;
+
+  const tabBarOptions = {
+    headerShown: false,
+    tabBarActiveTintColor: '#E53935',
+    tabBarInactiveTintColor: '#999',
+    tabBarHideOnKeyboard: true,
+    tabBarStyle: {
+      height: 60 + insets.bottom,
+      paddingBottom: insets.bottom + 4,
+      paddingTop: 4,
+      backgroundColor: '#fff',
+      borderTopWidth: 1,
+      borderTopColor: '#eee',
+      elevation: 8,
+    },
+  };
 
   return (
     <DespachosProvider>
@@ -82,6 +102,10 @@ export default function AdminLayout() {
                       title: 'ListadoAtenciones'
                     }}
                   />
+                  <Tabs.Screen
+                    name="ListaPersonal"
+                    options={{ href: null, title: 'ListaPersonal' }}
+                  />
                 </Tabs>
               </AmbulanciaProvider>
             </InventarioProvider>
@@ -92,18 +116,4 @@ export default function AdminLayout() {
   );
 }
 
-const tabBarOptions = {
-  headerShown: false,
-  tabBarActiveTintColor: '#E53935',
-  tabBarInactiveTintColor: '#999',
-  tabBarHideOnKeyboard: true,
-  tabBarStyle: {
-    height: 60,
-    paddingBottom: 8,
-    paddingTop: 4,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    elevation: 8,
-  },
-};
+

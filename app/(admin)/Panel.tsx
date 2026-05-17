@@ -1,11 +1,10 @@
+import AppHeader from '@/components/AppHeader';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { usePersonal } from '@/context/PersonalContext';
-import { mockAmbulancias } from '@/data/constants/mockAmbulancia';
-import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link, router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Link } from 'expo-router';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const Panel = () => {
   const { despachos } = useDespachos();
@@ -17,14 +16,7 @@ const Panel = () => {
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={style.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={22} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Panel de Control</Text>
-        </View>
-      </View>
+      <AppHeader title='Panel de Control' />
       <ScrollView contentContainerStyle={{ gap: 10, padding: 10, backgroundColor: 'white' }}>
         <View style={style.contenedorCards}>
           <View style={style.statCard}>
@@ -45,7 +37,7 @@ const Panel = () => {
         <Text style={[style.title, { backgroundColor: 'white' }]}>Acciones Rápidas</Text>
         <Link href={'/(admin)/RegistrarDespacho'}>
           <View style={style.patientCard}>
-            <MaterialIcons name="person" size={40} color="#372121" />
+            <MaterialIcons name="checklist" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
               <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Despacho</Text>
               <Text>Nuevo llamado - crear despacho</Text>
@@ -58,6 +50,15 @@ const Panel = () => {
             <View style={{ padding: 5 }}>
               <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Trabajador</Text>
               <Text>Crear perfil de usuario</Text>
+            </View>
+          </View>
+        </Link>
+        <Link href={'/(admin)/ListaPersonal'}>
+          <View style={style.patientCard}>
+            <MaterialIcons name="person" size={40} color="#372121" />
+            <View style={{ padding: 5 }}>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Ver Personal</Text>
+              <Text>Listado de personal activo</Text>
             </View>
           </View>
         </Link>
@@ -75,7 +76,7 @@ const Panel = () => {
             <MaterialIcons name="list" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
               <Text style={[style.cardTitle, { color: '#372121' }]}>Ver Atenciones</Text>
-              <Text>Crear perfil de usuario</Text>
+              <Text>Descarga documentos de atención</Text>
             </View>
           </View>
         </Link>
@@ -83,11 +84,12 @@ const Panel = () => {
           <View style={style.patientCard}>
             <MaterialIcons name="inventory" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
-              <Text style={[style.cardTitle, { color: '#372121' }]}>Inventario</Text>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Ver Inventario</Text>
               <Text>Gestión de Inventario</Text>
             </View>
           </View>
         </Link>
+
       </ScrollView>
     </>
   );

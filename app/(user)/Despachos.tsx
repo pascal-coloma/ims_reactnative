@@ -1,3 +1,4 @@
+import AppHeader from '@/components/AppHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
@@ -23,21 +24,16 @@ const MisDespachos = () => {
 
   const despachosFiltrados = busqueda.trim()
     ? misDespachos.filter(
-        (d) =>
-          d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
-          d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
-      )
+      (d) =>
+        d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
+        d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
+    )
     : misDespachos;
 
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={local.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={22} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Mis Despachos</Text>
-        </View>
+        <AppHeader title='Mis Despachos' />
         <TextInput
           style={local.buscador}
           placeholder="Buscar por descripción o dirección..."

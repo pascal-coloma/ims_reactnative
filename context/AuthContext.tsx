@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-const BASE_URL = 'http://18.212.226.172';
+const BASE_URL = 'http://34.228.186.22';
 const BACKEND_READY = true;
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;

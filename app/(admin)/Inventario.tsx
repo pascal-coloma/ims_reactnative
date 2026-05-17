@@ -1,3 +1,4 @@
+import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
 import { Insumo } from '@/data/constants/mockInventario';
 import styles from '@/styles/globalStyles';
@@ -60,27 +61,20 @@ const Inventario = () => {
   };
   return (
     <>
-      <View style={styles.container}>
-        <View style={style.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={22} color="#000" />
+      <AppHeader title='Inventario' />
+      <View style={style.filtros}>
+        {FILTROS.map((filtro) => (
+          <TouchableOpacity key={filtro.label} onPress={() => setActiveFilter(filtro.value)}>
+            <View>
+              <Text style={activeFilter === filtro.value ? style.pillActive : style.pillInactive}>
+                {filtro.label}
+              </Text>
+              {filtro.value === activeFilter && <View style={style.underline} />}
+            </View>
           </TouchableOpacity>
-          <Text style={styles.title}>Inventario</Text>
-        </View>
-        <View style={style.filtros}>
-          {FILTROS.map((filtro) => (
-            <TouchableOpacity key={filtro.label} onPress={() => setActiveFilter(filtro.value)}>
-              <View>
-                <Text style={activeFilter === filtro.value ? style.pillActive : style.pillInactive}>
-                  {filtro.label}
-                </Text>
-                {filtro.value === activeFilter && <View style={style.underline} />}
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <View style={style.divisor} />
+        ))}
       </View>
+      <View style={style.divisor} />
 
       <ScrollView>
         <View>
@@ -186,6 +180,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     padding: 5,
+    backgroundColor: 'white'
   },
   divisor: {
     height: 1,

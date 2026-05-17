@@ -4,12 +4,30 @@ import { MaterialIcons } from '@expo/vector-icons';
 import PacienteProvider from '@/context/PacienteContext';
 import { AtencionProvider } from '@/context/AtencionContext';
 import DespachosProvider from '@/context/DespachosContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const UserLayout = () => {
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+
   if (!user || (user.role !== 'medic' && user.role !== 'nurse'))
     return <Redirect href={'/(auth)/login'} />;
 
+  const tabBarOptions = {
+    headerShown: false,
+    tabBarActiveTintColor: '#E53935',
+    tabBarInactiveTintColor: '#999',
+    tabBarHideOnKeyboard: true,
+    tabBarStyle: {
+      height: 60 + insets.bottom,
+      paddingBottom: insets.bottom + 4,
+      paddingTop: 4,
+      backgroundColor: '#fff',
+      borderTopWidth: 1,
+      borderTopColor: '#eee',
+      elevation: 8,
+    },
+  };
   return (
     <DespachosProvider>
       <PacienteProvider>
@@ -51,7 +69,7 @@ const UserLayout = () => {
                 ),
               }}
             />
-            
+
           </Tabs>
         </AtencionProvider>
       </PacienteProvider>
@@ -61,18 +79,4 @@ const UserLayout = () => {
 
 export default UserLayout;
 
-const tabBarOptions = {
-  headerShown: false,
-  tabBarActiveTintColor: '#E53935',
-  tabBarInactiveTintColor: '#999',
-  tabBarHideOnKeyboard: true,
-  tabBarStyle: {
-    height: 60,
-    paddingBottom: 8,
-    paddingTop: 4,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    elevation: 8,
-  },
-};
+

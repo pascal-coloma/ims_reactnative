@@ -4,14 +4,19 @@ import NotificationDrawer from '../NotificationDrawer';
 import { useState } from 'react';
 import SettingsDrawer from '../SettingsDrawer';
 import { useAuth } from '@/context/AuthContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+
 
 const AdminHeader = () => {
   const [notifVisible, setNotifVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+
   return (
     <>
-      <View style={style.container}>
+      <View style={[style.container, { paddingTop: insets.top + 8 }]}>
         <View style={style.left}>
           <View style={style.avatar}>
             <Text style={style.avatarText}>{user?.firstName?.[0]?.toUpperCase() ?? 'U'}</Text>

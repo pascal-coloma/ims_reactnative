@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FormCompleta } from '@/data/types/types';
+import AppHeader from '../AppHeader';
 
 type FormPacienteProps = {
   control: Control<FormCompleta>;
@@ -61,14 +62,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={style.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={22} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Registrar Despacho</Text>
-        </View>
-      </View>
+      <AppHeader title="Registrar Despacho" />
       <View style={style.formulario}>
         <Controller
           control={control}

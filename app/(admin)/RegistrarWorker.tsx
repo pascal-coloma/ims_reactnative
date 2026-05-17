@@ -1,3 +1,4 @@
+import AppHeader from '@/components/AppHeader';
 import { usePersonal } from '@/context/PersonalContext';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -76,12 +77,10 @@ const RegistrarWorker = () => {
     if (resultado) {
         return (
             <View style={style.container}>
-                <View style={style.header}>
-                    <TouchableOpacity onPress={() => setResultado(null)}>
-                        <MaterialIcons name="arrow-back" size={22} color="#000" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Trabajador Registrado</Text>
-                </View>
+                <AppHeader
+                    title="Trabajador Registrado"
+                    onBack={() => setResultado(null)}
+                />
 
                 <View style={style.resultadoCard}>
                     <MaterialIcons
@@ -119,134 +118,128 @@ const RegistrarWorker = () => {
     }
 
     return (
-        <ScrollView>
-            <View style={style.container}>
-                <View style={style.header}>
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <MaterialIcons name="arrow-back" size={22} color="#000" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Registrar Trabajador</Text>
-                </View>
-            </View>
-
-            <View style={style.formulario}>
-                {error && (
-                    <View style={style.errorBanner}>
-                        <Text style={style.errorTexto}>{error}</Text>
-                    </View>
-                )}
-
-                <Text style={style.label}>Nombre</Text>
-                <Controller
-                    control={control}
-                    name="first_name"
-                    rules={{ required: true }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            placeholder="Ingrese nombre"
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value}
-                            style={style.input}
-                        />
+        <>
+            <AppHeader title="Registrar Trabajador" />
+            <ScrollView>
+                <View style={style.formulario}>
+                    {error && (
+                        <View style={style.errorBanner}>
+                            <Text style={style.errorTexto}>{error}</Text>
+                        </View>
                     )}
-                />
-                {errors.first_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-                <Text style={style.label}>Apellido</Text>
-                <Controller
-                    control={control}
-                    name="last_name"
-                    rules={{ required: true }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            placeholder="Ingrese apellido"
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value}
-                            style={style.input}
-                        />
-                    )}
-                />
-                {errors.last_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
+                    <Text style={style.label}>Nombre</Text>
+                    <Controller
+                        control={control}
+                        name="first_name"
+                        rules={{ required: true }}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                placeholder="Ingrese nombre"
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                                style={style.input}
+                            />
+                        )}
+                    />
+                    {errors.first_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-                <Text style={style.label}>RUT</Text>
-                <Controller
-                    control={control}
-                    name="rut"
-                    rules={{ required: true }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            placeholder="12.345.678-9"
-                            onBlur={onBlur}
-                            onChangeText={(text) => onChange(formatearRut(text))}
-                            value={value}
-                            style={style.input}
-                        />
-                    )}
-                />
-                {errors.rut && <Text style={style.campoRequerido}>Campo requerido</Text>}
+                    <Text style={style.label}>Apellido</Text>
+                    <Controller
+                        control={control}
+                        name="last_name"
+                        rules={{ required: true }}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                placeholder="Ingrese apellido"
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                                style={style.input}
+                            />
+                        )}
+                    />
+                    {errors.last_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-                <Text style={style.label}>Cargo</Text>
-                <Controller
-                    control={control}
-                    name="rol_id"
-                    rules={{ required: true, validate: (v) => v !== 0 || 'Seleccione un rol' }}
-                    render={({ field: { onChange, value } }) => {
-                        const seleccionado = ROLES.find((r) => r.value === value);
-                        return (
-                            <>
-                                <TouchableOpacity style={style.picker} onPress={() => setRolModalVisible(true)}>
-                                    <Text style={seleccionado ? style.pickerTexto : style.pickerPlaceholder}>
-                                        {seleccionado?.label ?? 'Seleccione un cargo'}
-                                    </Text>
-                                    <MaterialIcons name="expand-more" size={20} color="#666" />
-                                </TouchableOpacity>
+                    <Text style={style.label}>RUT</Text>
+                    <Controller
+                        control={control}
+                        name="rut"
+                        rules={{ required: true }}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                placeholder="12.345.678-9"
+                                onBlur={onBlur}
+                                onChangeText={(text) => onChange(formatearRut(text))}
+                                value={value}
+                                style={style.input}
+                            />
+                        )}
+                    />
+                    {errors.rut && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-                                <Modal visible={rolModalVisible} transparent animationType="fade">
-                                    <Pressable style={style.modalBackdrop} onPress={() => setRolModalVisible(false)}>
-                                        <View style={style.modalCard}>
-                                            <Text style={style.modalTitulo}>Seleccionar cargo</Text>
-                                            <FlatList
-                                                data={ROLES}
-                                                keyExtractor={(item) => String(item.value)}
-                                                renderItem={({ item }) => (
-                                                    <TouchableOpacity
-                                                        style={[style.modalItem, value === item.value && style.modalItemActivo]}
-                                                        onPress={() => {
-                                                            onChange(item.value);
-                                                            setRolModalVisible(false);
-                                                        }}
-                                                    >
-                                                        <Text
-                                                            style={[
-                                                                style.modalTexto,
-                                                                value === item.value && { color: 'white', fontWeight: 'bold' },
-                                                            ]}
+                    <Text style={style.label}>Cargo</Text>
+                    <Controller
+                        control={control}
+                        name="rol_id"
+                        rules={{ required: true, validate: (v) => v !== 0 || 'Seleccione un rol' }}
+                        render={({ field: { onChange, value } }) => {
+                            const seleccionado = ROLES.find((r) => r.value === value);
+                            return (
+                                <>
+                                    <TouchableOpacity style={style.picker} onPress={() => setRolModalVisible(true)}>
+                                        <Text style={seleccionado ? style.pickerTexto : style.pickerPlaceholder}>
+                                            {seleccionado?.label ?? 'Seleccione un cargo'}
+                                        </Text>
+                                        <MaterialIcons name="expand-more" size={20} color="#666" />
+                                    </TouchableOpacity>
+
+                                    <Modal visible={rolModalVisible} transparent animationType="fade">
+                                        <Pressable style={style.modalBackdrop} onPress={() => setRolModalVisible(false)}>
+                                            <View style={style.modalCard}>
+                                                <Text style={style.modalTitulo}>Seleccionar cargo</Text>
+                                                <FlatList
+                                                    data={ROLES}
+                                                    keyExtractor={(item) => String(item.value)}
+                                                    renderItem={({ item }) => (
+                                                        <TouchableOpacity
+                                                            style={[style.modalItem, value === item.value && style.modalItemActivo]}
+                                                            onPress={() => {
+                                                                onChange(item.value);
+                                                                setRolModalVisible(false);
+                                                            }}
                                                         >
-                                                            {item.label}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                            />
-                                        </View>
-                                    </Pressable>
-                                </Modal>
-                            </>
-                        );
-                    }}
-                />
-                {errors.rol_id && <Text style={style.campoRequerido}>{errors.rol_id.message}</Text>}
+                                                            <Text
+                                                                style={[
+                                                                    style.modalTexto,
+                                                                    value === item.value && { color: 'white', fontWeight: 'bold' },
+                                                                ]}
+                                                            >
+                                                                {item.label}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    )}
+                                                />
+                                            </View>
+                                        </Pressable>
+                                    </Modal>
+                                </>
+                            );
+                        }}
+                    />
+                    {errors.rol_id && <Text style={style.campoRequerido}>{errors.rol_id.message}</Text>}
 
-                <TouchableOpacity
-                    style={[styles.button, cargando && { opacity: 0.6 }]}
-                    onPress={handleSubmit(onSubmit)}
-                    disabled={cargando}
-                >
-                    <Text style={styles.buttonText}>{cargando ? 'Registrando...' : 'Registrar'}</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                    <TouchableOpacity
+                        style={[styles.button, cargando && { opacity: 0.6 }]}
+                        onPress={handleSubmit(onSubmit)}
+                        disabled={cargando}
+                    >
+                        <Text style={styles.buttonText}>{cargando ? 'Registrando...' : 'Registrar'}</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </>
     );
 };
 
