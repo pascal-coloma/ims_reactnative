@@ -34,24 +34,12 @@ const RegistrarDespacho = () => {
     }
   };
 
-  const onGenerarPDF = (data: FormCompleta) => {
-    const ambulancia = ambulancias.find((a) => a.id === data.unidad);
-    const unidadLabel = ambulancia ? `${ambulancia.patente} — ${ambulancia.modelo}` : data.unidad;
-    const grupoLabel =
-      data.grupoAsignado === '1' ? 'Alpha' : data.grupoAsignado === '2' ? 'Bravo' : 'Charlie';
-
-    generatePDF({ ...data, grupoAsignado: grupoLabel, unidad: unidadLabel });
-  };
-
   return (
     <>
       <ScrollView>
         <FormPaciente control={control} errors={errors} />
         <FormDespacho control={control} errors={errors} />
         <View style={style.rowBotones}>
-          <TouchableOpacity style={style.btnCancelar} onPress={handleSubmit(onGenerarPDF)}>
-            <Text style={style.btnTextDark}>Generar PDF</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
             <Text style={style.btnTextDark}>Cancelar</Text>
           </TouchableOpacity>

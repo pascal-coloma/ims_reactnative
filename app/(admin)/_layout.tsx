@@ -96,9 +96,14 @@ const tabBarOptions = {
   headerShown: false,
   tabBarActiveTintColor: '#E53935',
   tabBarInactiveTintColor: '#999',
+  tabBarHideOnKeyboard: true,
   tabBarStyle: {
     height: 60,
-    paddingBottom: 10,
+    paddingBottom: 8,
+    paddingTop: 4,
     backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    elevation: 8,
   },
 };

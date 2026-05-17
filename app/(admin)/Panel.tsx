@@ -52,6 +52,15 @@ const Panel = () => {
             </View>
           </View>
         </Link>
+        <Link href={'/(admin)/RegistrarWorker'}>
+          <View style={style.patientCard}>
+            <MaterialIcons name="input" size={40} color="#372121" />
+            <View style={{ padding: 5 }}>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Trabajador</Text>
+              <Text>Crear perfil de usuario</Text>
+            </View>
+          </View>
+        </Link>
         <Link href={'/(admin)/Despachos'}>
           <View style={style.patientCard}>
             <MaterialIcons name="airport-shuttle" size={40} color="#372121" />
@@ -61,21 +70,21 @@ const Panel = () => {
             </View>
           </View>
         </Link>
+        <Link href={'/(admin)/ListaAtenciones'}>
+          <View style={style.patientCard}>
+            <MaterialIcons name="list" size={40} color="#372121" />
+            <View style={{ padding: 5 }}>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Ver Atenciones</Text>
+              <Text>Crear perfil de usuario</Text>
+            </View>
+          </View>
+        </Link>
         <Link href={'/(admin)/Inventario'}>
           <View style={style.patientCard}>
             <MaterialIcons name="inventory" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
               <Text style={[style.cardTitle, { color: '#372121' }]}>Inventario</Text>
               <Text>Gestión de Inventario</Text>
-            </View>
-          </View>
-        </Link>
-        <Link href={'/(admin)/RegistrarWorker'}>
-          <View style={style.patientCard}>
-            <MaterialIcons name="input" size={40} color="#372121" />
-            <View style={{ padding: 5 }}>
-              <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Trabajador</Text>
-              <Text>Crear perfil de usuario</Text>
             </View>
           </View>
         </Link>
