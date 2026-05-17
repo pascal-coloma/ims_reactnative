@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 
@@ -12,7 +12,7 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
 
   const formatearRut = (rut: string): string => {
-    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9); 
+    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9);
     if (clean.length <= 1) return clean;
     const cuerpo = clean.slice(0, -1);
     const dv = clean.slice(-1);
@@ -37,6 +37,8 @@ export default function LoginForm() {
   }
 
   return (
+
+
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido</Text>
       <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
@@ -77,6 +79,7 @@ export default function LoginForm() {
         <Text style={styles.buttonText}>{cargando ? 'Ingresando...' : 'Iniciar sesión'}</Text>
       </TouchableOpacity>
     </View>
+
   );
 }
 

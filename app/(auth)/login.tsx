@@ -1,20 +1,29 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import LoginForm from '../../components/LoginForm';
 
 export default function LoginScreen() {
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../../assets/bootsplash/logo2x.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <View style={styles.logoStripe} />
-      </View>
-
-      <LoginForm />
-    </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../assets/bootsplash/logo2x.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <View style={styles.logoStripe} />
+          </View>
+          <LoginForm />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
