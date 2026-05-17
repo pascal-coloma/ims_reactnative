@@ -65,15 +65,20 @@ const formatearFechaHora = (iso: string): string => {
   if (!iso) return '—';
   const d = new Date(iso);
   return d.toLocaleDateString('es-CL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 export const generatePDF = async (data: DocumentoAtencion) => {
   const { atencion, signos_vitales, preinforme, cronologia, insumos_utilizados, Hash } = data;
 
-  const signosRows = signos_vitales.map((s) => `
+  const signosRows = signos_vitales
+    .map(
+      (s) => `
     <tr>
       <td>${formatearHora(s.hora)}</td>
       <td>${s.presion_sistolica}/${s.presion_diastolica}</td>
@@ -88,16 +93,22 @@ export const generatePDF = async (data: DocumentoAtencion) => {
       <td>${s.gcs}</td>
       <td>${s.eva}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join('');
 
-  const insumosRows = insumos_utilizados.map((i) => `
+  const insumosRows = insumos_utilizados
+    .map(
+      (i) => `
     <tr>
       <td>${i.insumo__nombre_insumo}</td>
       <td>—</td>
       <td>${i.dosis}</td>
       <td>${i.observaciones ?? '—'}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join('');
 
   const html = `
     <!DOCTYPE html>

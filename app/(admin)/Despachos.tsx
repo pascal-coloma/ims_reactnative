@@ -9,7 +9,7 @@ const Despachos = () => {
   const router = useRouter();
   return (
     <>
-      <AppHeader title='Despachos' />
+      <AppHeader title="Despachos" />
       <ListaDespachos />
     </>
   );

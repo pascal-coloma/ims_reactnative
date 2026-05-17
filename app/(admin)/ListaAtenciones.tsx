@@ -38,7 +38,7 @@ const ListaAtenciones = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppHeader title='Atenciones'/>
+      <AppHeader title="Atenciones" />
 
       <ScrollView>
         {loading && (
@@ -62,7 +62,7 @@ const ListaAtenciones = () => {
         {resumenAtenciones.map((a) => (
           <View key={a.id} style={styles.container}>
             <View style={local.rowHeader}>
-              <Text style={styles.title}>Atención #{a.id}{' '}</Text>
+              <Text style={styles.title}>Atención #{a.id} </Text>
               <View
                 style={[
                   local.badge,
@@ -82,8 +82,6 @@ const ListaAtenciones = () => {
                 </Text>
               </View>
             </View>
-
-
 
             <Text style={styles.title}>{a.paciente__nombre_completo ?? `Atención #${a.id}`}</Text>
             <Text style={styles.subtitle}>

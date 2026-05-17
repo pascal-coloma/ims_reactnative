@@ -15,7 +15,6 @@ type FormDespachoProps = {
 const FormDespacho = ({ control, errors }: FormDespachoProps) => {
   const { ambulancias } = useAmbulancias();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
-  
 
   useEffect(() => {
     const fetchGrupos = async () => {

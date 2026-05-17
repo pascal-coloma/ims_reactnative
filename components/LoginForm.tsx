@@ -19,7 +19,6 @@ export default function LoginForm() {
     return `${cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`;
   };
 
-
   async function handleLogin() {
     if (!username || !passw) {
       setError('Ingresa tus credenciales');
@@ -37,8 +36,6 @@ export default function LoginForm() {
   }
 
   return (
-
-
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido</Text>
       <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
@@ -54,7 +51,7 @@ export default function LoginForm() {
         placeholder="RUT (12.345.678-9)"
         value={username}
         autoCapitalize="none"
-        onChangeText={(text) => setUsername((text))}
+        onChangeText={(text) => setUsername(text)}
         editable={!cargando}
         keyboardType="default"
       />
@@ -79,7 +76,6 @@ export default function LoginForm() {
         <Text style={styles.buttonText}>{cargando ? 'Ingresando...' : 'Iniciar sesión'}</Text>
       </TouchableOpacity>
     </View>
-
   );
 }
 

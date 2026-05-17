@@ -9,7 +9,6 @@ import DespachosProvider from '@/context/DespachosContext';
 import { AtencionProvider } from '@/context/AtencionContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
 export default function AdminLayout() {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
@@ -99,7 +98,7 @@ export default function AdminLayout() {
                     name="ListaAtenciones"
                     options={{
                       href: null,
-                      title: 'ListadoAtenciones'
+                      title: 'ListadoAtenciones',
                     }}
                   />
                   <Tabs.Screen
@@ -115,5 +114,3 @@ export default function AdminLayout() {
     </DespachosProvider>
   );
 }
-
-

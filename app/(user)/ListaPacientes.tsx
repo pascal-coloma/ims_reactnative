@@ -11,10 +11,8 @@ const ListaPacientes = () => {
   const [busqueda, setBusqueda] = useState('');
   const pacientesFiltrados = busqueda.trim()
     ? pacientes.filter((p) =>
-      p.rut.replace(/\./g, '').toLowerCase().includes(
-        busqueda.replace(/\./g, '').toLowerCase()
+        p.rut.replace(/\./g, '').toLowerCase().includes(busqueda.replace(/\./g, '').toLowerCase()),
       )
-    )
     : pacientes;
 
   return (

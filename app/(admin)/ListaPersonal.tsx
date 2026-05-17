@@ -8,9 +8,9 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const ROL_COLOR: Record<string, string> = {
   control: '#1976D2',
-  medic:   '#E53935',
-  nurse:   '#7B1FA2',
-  driver:  '#2E7D32',
+  medic: '#E53935',
+  nurse: '#7B1FA2',
+  driver: '#2E7D32',
 };
 
 const ListaPersonal = () => {
@@ -18,9 +18,10 @@ const ListaPersonal = () => {
   const [busqueda, setBusqueda] = useState('');
 
   const filtrado = busqueda.trim()
-    ? personal.filter((p) =>
-        `${p.first_name} ${p.last_name}`.toLowerCase().includes(busqueda.toLowerCase()) ||
-        p.rut.includes(busqueda.replace(/\./g, ''))
+    ? personal.filter(
+        (p) =>
+          `${p.first_name} ${p.last_name}`.toLowerCase().includes(busqueda.toLowerCase()) ||
+          p.rut.includes(busqueda.replace(/\./g, '')),
       )
     : personal;
 
@@ -46,14 +47,19 @@ const ListaPersonal = () => {
           filtrado.map((p) => (
             <View key={p.id} style={local.card}>
               <View style={local.cardLeft}>
-                <View style={[local.avatar, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>
+                <View
+                  style={[local.avatar, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}
+                >
                   <Text style={local.avatarText}>
-                    {p.first_name?.[0]?.toUpperCase()}{p.last_name?.[0]?.toUpperCase()}
+                    {p.first_name?.[0]?.toUpperCase()}
+                    {p.last_name?.[0]?.toUpperCase()}
                   </Text>
                 </View>
               </View>
               <View style={local.cardBody}>
-                <Text style={local.nombre}>{p.first_name} {p.last_name}</Text>
+                <Text style={local.nombre}>
+                  {p.first_name} {p.last_name}
+                </Text>
                 <Text style={local.rut}>{p.rut}</Text>
               </View>
               <View style={[local.rolPill, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>

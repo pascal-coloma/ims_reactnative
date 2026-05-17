@@ -2,7 +2,6 @@ import { fetchConSesion } from '@/context/AuthContext';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Atencion } from '@/data/types/types';
 
-
 type AtencionResumen = {
   id: number;
   hora_salida: string;
@@ -33,7 +32,6 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [resumenAtenciones, setResumenAtenciones] = useState<AtencionResumen[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
 
   const agregarAtencion = async (
     atencion: Atencion,

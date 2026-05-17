@@ -62,11 +62,11 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
         ambulancia: d.ambulancia_id
           ? {
-            id: String(d.ambulancia_id),
-            patente: '',
-            modelo: '',
-            estado_disponibilidad: 'disponible',
-          }
+              id: String(d.ambulancia_id),
+              patente: '',
+              modelo: '',
+              estado_disponibilidad: 'disponible',
+            }
           : undefined,
       });
 
@@ -82,11 +82,11 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         rutPaciente: d.paciente?.rut ?? undefined,
         ambulancia: d.ambulancia
           ? {
-            id: String(d.ambulancia.id),
-            patente: d.ambulancia.patente ?? '',
-            modelo: d.ambulancia.modelo ?? '',
-            estado_disponibilidad: d.ambulancia.estado ?? 'disponible',
-          }
+              id: String(d.ambulancia.id),
+              patente: d.ambulancia.patente ?? '',
+              modelo: d.ambulancia.modelo ?? '',
+              estado_disponibilidad: d.ambulancia.estado ?? 'disponible',
+            }
           : undefined,
       });
       const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
@@ -110,9 +110,8 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-
       const buscarResp = await fetchConSesion(
-        `/ims/api/pacientes/?rut=${encodeURIComponent(rutLimpio)}`
+        `/ims/api/pacientes/?rut=${encodeURIComponent(rutLimpio)}`,
       );
 
       if (!buscarResp.ok) {
@@ -123,7 +122,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             data.segundoNombre ?? '',
             data.apellidoPaterno,
             data.apellidoMaterno,
-          ].filter(Boolean).join(' '),
+          ]
+            .filter(Boolean)
+            .join(' '),
           fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
           direccion: data.direccionOrigen,
           condicion_paciente: data.condicionPaciente,
@@ -141,7 +142,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
               data.segundoNombre ?? '',
               data.apellidoPaterno,
               data.apellidoMaterno,
-            ].filter(Boolean).join(' '),
+            ]
+              .filter(Boolean)
+              .join(' '),
             fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
             direccion: data.direccionOrigen,
             condicion_paciente: data.condicionPaciente,
@@ -189,7 +192,6 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Error asignando despacho: ${asignarResp.status}`);
       }
       console.log('Paso 2 - asignado');
-
 
       try {
         await fetchDespachos();

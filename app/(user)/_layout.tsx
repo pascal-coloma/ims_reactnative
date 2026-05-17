@@ -69,7 +69,6 @@ const UserLayout = () => {
                 ),
               }}
             />
-
           </Tabs>
         </AtencionProvider>
       </PacienteProvider>
@@ -78,5 +77,3 @@ const UserLayout = () => {
 };
 
 export default UserLayout;
-
-

@@ -16,7 +16,7 @@ const Panel = () => {
 
   return (
     <>
-      <AppHeader title='Panel de Control' />
+      <AppHeader title="Panel de Control" />
       <ScrollView contentContainerStyle={{ gap: 10, padding: 10, backgroundColor: 'white' }}>
         <View style={style.contenedorCards}>
           <View style={style.statCard}>
@@ -89,7 +89,6 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-
       </ScrollView>
     </>
   );

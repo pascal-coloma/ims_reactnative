@@ -6,8 +6,6 @@ import SettingsDrawer from '../SettingsDrawer';
 import { useAuth } from '@/context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
-
 const AdminHeader = () => {
   const [notifVisible, setNotifVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);

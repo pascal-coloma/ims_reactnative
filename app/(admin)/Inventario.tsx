@@ -61,7 +61,7 @@ const Inventario = () => {
   };
   return (
     <>
-      <AppHeader title='Inventario' />
+      <AppHeader title="Inventario" />
       <View style={style.filtros}>
         {FILTROS.map((filtro) => (
           <TouchableOpacity key={filtro.label} onPress={() => setActiveFilter(filtro.value)}>
@@ -180,7 +180,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     padding: 5,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   divisor: {
     height: 1,
