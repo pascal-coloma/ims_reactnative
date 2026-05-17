@@ -30,7 +30,6 @@ const UserLayout = () => {
   };
   return (
     <DespachosProvider>
-      <PacienteProvider>
         <AtencionProvider>
           <Tabs screenOptions={tabBarOptions}>
             <Tabs.Screen
@@ -60,18 +59,9 @@ const UserLayout = () => {
                 ),
               }}
             />
-            <Tabs.Screen
-              name="ListaPacientes"
-              options={{
-                title: 'Lista Pacientes',
-                tabBarIcon: ({ color, size }) => (
-                  <MaterialIcons name="person" size={size} color={color} />
-                ),
-              }}
-            />
+            
           </Tabs>
         </AtencionProvider>
-      </PacienteProvider>
     </DespachosProvider>
   );
 };

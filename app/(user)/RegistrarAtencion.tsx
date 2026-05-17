@@ -8,28 +8,29 @@ import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types/types';
 import styles from '@/styles/globalStyles';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { router } from 'expo-router';
+import AppHeader from '@/components/AppHeader';
 
 const RegistrarAtencion = () => {
   const { agregarAtencion } = useAtenciones();
   const { despachoActivo } = useDespachos();
+  const [exito, setExito] = useState(false);
+
   const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-          ...DEFAULT_VALUES_USUARIO,
-          direccionOrigen: despachoActivo.direccionOrigen,
-          direccionDestino: despachoActivo.direccionDestino,
-          rut: despachoActivo.paciente?.rut ?? '',
-        }
+        ...DEFAULT_VALUES_USUARIO,
+        direccionOrigen: despachoActivo.direccionOrigen,
+        direccionDestino: despachoActivo.direccionDestino,
+        rut: despachoActivo.paciente?.rut ?? '',
+      }
       : DEFAULT_VALUES_USUARIO,
   });
 
-  const {
-    handleSubmit,
-    reset,
-    formState: { errors },
-    control,
-  } = methods;
+  const { handleSubmit, reset, formState: { errors }, control } = methods;
 
   const onSubmit = async (data: FormUsuario) => {
     if (!despachoActivo) {
@@ -49,24 +50,30 @@ const RegistrarAtencion = () => {
           cronologia,
         },
         despachoActivo.ambulancia?.id ?? '',
-        despachoActivo.direccionOrigen, // ← direccion_despacho
+        despachoActivo.direccionOrigen,
       );
       reset();
+      setExito(true);
     } catch (e: any) {
       console.error('Error en onSubmit:', e?.message);
+      Alert.alert('Error', 'No se pudo registrar la atención. Intenta nuevamente.');
     }
   };
+
   return (
     <>
       <FormProvider {...methods}>
         <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
+          <AppHeader title="Registrar Atención" /> 
+
           <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
             <FormPaciente control={methods.control} errors={errors} />
             <ControlVitales control={methods.control} errors={errors} />
             <PreInformeForm control={methods.control} errors={errors} />
             <Cronologia control={methods.control} errors={errors} />
           </ScrollView>
-          <View style={local.botonesContainer}>
+
+          <View style={[local.botonesContainer]}>
             <TouchableOpacity style={local.botonLimpiar} onPress={() => reset()}>
               <Text style={local.botonLimpiarTexto}>Limpiar</Text>
             </TouchableOpacity>
@@ -79,6 +86,27 @@ const RegistrarAtencion = () => {
           </View>
         </View>
       </FormProvider>
+
+      <Modal visible={exito} transparent animationType="fade">
+        <View style={local.modalBackdrop}>
+          <View style={local.modalCard}>
+            <MaterialIcons name="check-circle" size={64} color="#22c55e" style={{ marginBottom: 16 }} />
+            <Text style={local.modalTitulo}>¡Atención registrada!</Text>
+            <Text style={local.modalSubtitulo}>
+              La atención fue registrada y firmada exitosamente.
+            </Text>
+            <TouchableOpacity
+              style={[styles.button, { marginTop: 24, width: '100%' }]}
+              onPress={() => {
+                setExito(false);
+                router.back();
+              }}
+            >
+              <Text style={styles.buttonText}>Volver</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -88,14 +116,10 @@ const local = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     padding: 16,
-    paddingBottom: 24,
     backgroundColor: 'white',
-    borderTopWidth: 1,
     borderTopColor: '#eee',
   },
-  botonEnviar: {
-    flex: 2,
-  },
+  botonEnviar: { flex: 2 },
   botonLimpiar: {
     flex: 1,
     padding: 16,
@@ -108,6 +132,32 @@ const local = StyleSheet.create({
     color: '#E53935',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: '#00000066',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    width: '100%',
+  },
+  modalTitulo: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#111',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalSubtitulo: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
 

@@ -24,23 +24,21 @@ const MisDespachos = () => {
 
   const despachosFiltrados = busqueda.trim()
     ? misDespachos.filter(
-        (d) =>
-          d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
-          d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
-      )
+      (d) =>
+        d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
+        d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
+    )
     : misDespachos;
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <AppHeader title="Mis Despachos" />
-        <TextInput
-          style={local.buscador}
-          placeholder="Buscar por descripción o dirección..."
-          value={busqueda}
-          onChangeText={setBusqueda}
-        />
-      </View>
+      <AppHeader title="Mis Despachos" />
+      <TextInput
+        style={local.buscador}
+        placeholder="Buscar por descripción o dirección..."
+        value={busqueda}
+        onChangeText={setBusqueda}
+      />
 
       <ScrollView>
         {despachosFiltrados.length === 0 ? (
@@ -100,7 +98,9 @@ const local = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     marginTop: 8,
-    width: '100%',
+    marginBottom: 8,
+    marginHorizontal: 16,
+    backgroundColor: '#fff',
   },
   rowHeader: {
     flexDirection: 'row',
