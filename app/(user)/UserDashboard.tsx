@@ -1,11 +1,11 @@
 import DispatchCard from '@/components/admin/dashboard/DispatchCard';
+import DashboardHeader from '@/components/DashboardHeader';
 import UserActions from '@/components/user/UserActions';
-import UserHeader from '@/components/user/UserHeader';
 
 const UserDashboard = () => {
   return (
     <>
-      <UserHeader />
+      <DashboardHeader />
       <DispatchCard />
       <UserActions />
     </>

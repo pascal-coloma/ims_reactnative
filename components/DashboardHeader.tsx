@@ -1,27 +1,30 @@
-import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
+// components/DashboardHeader.tsx
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import NotificationDrawer from '../NotificationDrawer';
+import NotificationDrawer from './NotificationDrawer';
+import SettingsDrawer from './SettingsDrawer';
 import { useState } from 'react';
-import SettingsDrawer from '../SettingsDrawer';
 import { useAuth } from '@/context/AuthContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const UserHeader = () => {
+const DashboardHeader = () => {
   const [notifVisible, setNotifVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+
+  const nombre = `${user?.firstName} ${user?.lastName}`;
 
   return (
     <>
-      <View style={style.container}>
+      <View style={[style.container, { paddingTop: insets.top + 8 }]}>
         <View style={style.left}>
           <View style={style.avatar}>
             <Text style={style.avatarText}>{user?.firstName?.[0]?.toUpperCase() ?? 'U'}</Text>
           </View>
           <View>
-            <Text style={style.welcome}>Bienvenido,</Text>
-            <Text style={style.role}>
-              {user?.firstName} {user?.lastName}
-            </Text>
+            <Text style={style.welcome}>Bienvenido/a,</Text>
+            <Text style={style.nombre}>{nombre}</Text>
           </View>
         </View>
         <View style={{ flex: 1 }} />
@@ -29,10 +32,7 @@ const UserHeader = () => {
           <TouchableOpacity onPress={() => setNotifVisible(true)}>
             <MaterialIcons name="notifications-none" size={24} color="#000" />
           </TouchableOpacity>
-          <NotificationDrawer
-            visible={notifVisible}
-            onClose={() => setNotifVisible(false)}
-          ></NotificationDrawer>
+          <NotificationDrawer visible={notifVisible} onClose={() => setNotifVisible(false)} />
           <TouchableOpacity onPress={() => setSettingsVisible(true)}>
             <MaterialIcons name="settings" size={24} color="#000" />
           </TouchableOpacity>
@@ -47,7 +47,6 @@ const style = StyleSheet.create({
   container: {
     width: '100%',
     backgroundColor: '#fff',
-    height: '10%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
@@ -73,7 +72,7 @@ const style = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
-  role: {
+  nombre: {
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -83,4 +82,4 @@ const style = StyleSheet.create({
   },
 });
 
-export default UserHeader;
+export default DashboardHeader;
