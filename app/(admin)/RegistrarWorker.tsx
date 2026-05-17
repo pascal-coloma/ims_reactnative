@@ -19,10 +19,10 @@ import QRCode from 'react-native-qrcode-svg';
 
 // TODO: revisar id's de roles
 const ROLES = [
-    { label: 'Médico', value: 1 },
-    { label: 'TENS', value: 2 },
-    { label: 'Chofer', value: 3 },
-    { label: 'Control', value: 4 },
+    { label: 'Médico', value: 2 },
+    { label: 'TENS', value: 3 },
+    { label: 'Chofer', value: 4 },
+    { label: 'Control', value: 1 },
 ];
 
 type FormWorker = {
