@@ -1,10 +1,11 @@
+// AuthContext.tsx completo
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppState } from 'react-native';
 
 const BASE_URL = 'http://34.228.186.22';
-const BACKEND_READY = true;
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 
@@ -18,24 +19,24 @@ type User = {
 
 type AuthContextType = {
   user: User;
-  login: (
-    username: string,
-    password: string,
-    totpCode?: string,
-  ) => Promise<{ role: Role; personalId: string } | null>;
+  login: (username: string, password: string, totpCode?: string) => Promise<{ role: Role; personalId: string } | null>;
   logout: () => Promise<void>;
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
   setPendingCredentials: (creds: { username: string; password: string } | null) => void;
   verifyPassword: (username: string, password: string) => Promise<boolean>;
-
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+let _onSessionExpired: (() => void) | null = null;
+
+export const setSessionExpiredHandler = (fn: () => void) => {
+  _onSessionExpired = fn;
+};
+
 export const fetchConSesion = async (url: string, options: RequestInit = {}) => {
   const cookies = await CookieManager.get(BASE_URL);
-
   const sessionid = cookies['sessionid']?.value;
   const csrftoken = cookies['csrftoken']?.value;
 
@@ -53,11 +54,27 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
   });
 
   const setCookie = response.headers.get('set-cookie');
-  if (setCookie) {
-    await CookieManager.setFromResponse(BASE_URL, setCookie);
+  if (setCookie) await CookieManager.setFromResponse(BASE_URL, setCookie);
+
+  // Sesión expirada — limpiar y notificar al provider
+  if (response.status === 401 || response.status === 403) {
+    await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
+    await CookieManager.clearAll();
+    _onSessionExpired?.();
   }
 
   return response;
+};
+
+const fetchCsrfToken = async (): Promise<string> => {
+  const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  const setCookieGet = getResp.headers.get('set-cookie');
+  if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
+  const cookies = await CookieManager.get(BASE_URL);
+  return cookies['csrftoken']?.value ?? '';
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -69,6 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } | null>(null);
 
   useEffect(() => {
+    // Registrar handler de sesión expirada
+    setSessionExpiredHandler(() => setUser(null));
+
     const restore = async () => {
       try {
         const saved = await AsyncStorage.getItem('user');
@@ -79,12 +99,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        // Verificar si la cookie sigue viva
         const cookies = await CookieManager.get(BASE_URL);
-        const sessionid = cookies['sessionid']?.value;
 
-        // Si se perdió, reinyectarla desde AsyncStorage
-        if (!sessionid) {
+        if (!cookies['sessionid']?.value) {
           await CookieManager.set(BASE_URL, {
             name: 'sessionid',
             value: savedSession,
@@ -104,7 +121,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     restore();
 
-    // Reinyectar cookie cuando vuelve a segundo plano
     const sub = AppState.addEventListener('change', async (state) => {
       if (state !== 'active') return;
 
@@ -138,32 +154,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => sub.remove();
+    return () => {
+      sub.remove();
+      setSessionExpiredHandler(() => {});
+    };
   }, []);
-
-  const fetchCsrfToken = async (): Promise<string> => {
-    const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    const setCookieGet = getResp.headers.get('set-cookie');
-    if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
-
-    const cookies = await CookieManager.get(BASE_URL);
-    return cookies['csrftoken']?.value ?? '';
-  };
 
   async function login(username: string, password: string, totpCode?: string) {
     try {
       const csrftoken = await fetchCsrfToken();
 
-      // revisar posibilidad de nuevo endpoint que solo valide la contraseña (verify-password) antes de pasar al totp
       const response = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken ?? '',
+          'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({
           username,
@@ -172,7 +178,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
-      // 1. Verificar respuesta
       if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         console.log('login error:', response.status, JSON.stringify(errorBody));
@@ -181,7 +186,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json();
 
-      // 2. Persistir cookies solo si el login fue exitoso
       const setCookiePost = response.headers.get('set-cookie');
       if (setCookiePost) await CookieManager.setFromResponse(BASE_URL, setCookiePost);
 
@@ -198,7 +202,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem('sessionid', sessionId);
       await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
 
-      // 3. Obtener datos del usuario
       let firstName = '';
       let lastName = '';
       let personalId = '';
@@ -244,7 +247,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken ?? '',
+          'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({ username, password }),
       });
@@ -268,7 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, pendingCredentials, login, verifyPassword, logout, setPendingCredentials, }}
+      value={{ user, login, logout, loading, pendingCredentials, setPendingCredentials, verifyPassword }}
     >
       {children}
     </AuthContext.Provider>
