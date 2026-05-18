@@ -1,4 +1,3 @@
-// app/(admin)/ListaPersonal.tsx
 import { usePersonal } from '@/context/PersonalContext';
 import AppHeader from '@/components/AppHeader';
 import styles from '@/styles/globalStyles';
@@ -13,17 +12,25 @@ const ROL_COLOR: Record<string, string> = {
   driver: '#2E7D32',
 };
 
+const ROL_ORDEN = ['control', 'medic', 'nurse', 'driver'];
+
 const ListaPersonal = () => {
   const { personal } = usePersonal();
   const [busqueda, setBusqueda] = useState('');
 
   const filtrado = busqueda.trim()
     ? personal.filter(
-        (p) =>
-          `${p.first_name} ${p.last_name}`.toLowerCase().includes(busqueda.toLowerCase()) ||
-          p.rut.includes(busqueda.replace(/\./g, '')),
-      )
+      (p) =>
+        `${p.first_name} ${p.last_name}`.toLowerCase().includes(busqueda.toLowerCase()) ||
+        p.rut.includes(busqueda.replace(/\./g, '')),
+    )
     : personal;
+
+  const agrupado = ROL_ORDEN.reduce<Record<string, typeof personal>>((acc, rol) => {
+    const grupo = filtrado.filter((p) => p.rol_nombre === rol);
+    if (grupo.length > 0) acc[rol] = grupo;
+    return acc;
+  }, {});
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
@@ -39,34 +46,43 @@ const ListaPersonal = () => {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        {filtrado.length === 0 ? (
+        {Object.entries(agrupado).length === 0 ? (
           <View style={styles.container}>
             <Text style={styles.subtitle}>Sin resultados</Text>
           </View>
         ) : (
-          filtrado.map((p) => (
-            <View key={p.id} style={local.card}>
-              <View style={local.cardLeft}>
-                <View
-                  style={[local.avatar, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}
-                >
-                  <Text style={local.avatarText}>
-                    {p.first_name?.[0]?.toUpperCase()}
-                    {p.last_name?.[0]?.toUpperCase()}
-                  </Text>
+          <>
+            {Object.entries(agrupado).map(([rol, grupo]) => (
+              <View key={rol}>
+                <View style={local.grupoHeader}>
+                  <View style={[local.grupoIndicador, { backgroundColor: ROL_COLOR[rol] ?? '#999' }]} />
+                  <Text style={local.grupoTitulo}>{traducirRol(rol)}</Text>
+                  <Text style={local.grupoConteo}>{grupo.length}</Text>
                 </View>
+                {grupo.map((p) => (
+                  <View key={p.id} style={local.card}>
+                    <View style={local.cardLeft}>
+                      <View style={[local.avatar, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>
+                        <Text style={local.avatarText}>
+                          {p.first_name?.[0]?.toUpperCase()}
+                          {p.last_name?.[0]?.toUpperCase()}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={local.cardBody}>
+                      <Text style={local.nombre}>
+                        {p.first_name} {p.last_name}
+                      </Text>
+                      <Text style={local.rut}>{p.rut}</Text>
+                    </View>
+                    <View style={[local.rolPill, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>
+                      <Text style={local.rolTexto}>{traducirRol(p.rol_nombre)}</Text>
+                    </View>
+                  </View>
+                ))}
               </View>
-              <View style={local.cardBody}>
-                <Text style={local.nombre}>
-                  {p.first_name} {p.last_name}
-                </Text>
-                <Text style={local.rut}>{p.rut}</Text>
-              </View>
-              <View style={[local.rolPill, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>
-                <Text style={local.rolTexto}>{traducirRol(p.rol_nombre)}</Text>
-              </View>
-            </View>
-          ))
+            ))}
+          </>
         )}
       </ScrollView>
     </View>
@@ -136,6 +152,32 @@ const local = StyleSheet.create({
     color: '#fff',
     fontSize: 11,
     fontWeight: 'bold',
+  },
+  grupoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 6,
+  },
+  grupoIndicador: {
+    width: 4,
+    height: 16,
+    borderRadius: 2,
+  },
+  grupoTitulo: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#444',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    flex: 1,
+  },
+  grupoConteo: {
+    fontSize: 12,
+    color: '#999',
+    fontWeight: '500',
   },
 });
 
