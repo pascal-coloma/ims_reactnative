@@ -141,17 +141,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.remove();
   }, []);
 
+  const fetchCsrfToken = async (): Promise<string> => {
+    const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    const setCookieGet = getResp.headers.get('set-cookie');
+    if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
+
+    const cookies = await CookieManager.get(BASE_URL);
+    return cookies['csrftoken']?.value ?? '';
+  };
+
   async function login(username: string, password: string, totpCode?: string) {
     try {
-      const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const setCookieGet = getResp.headers.get('set-cookie');
-      if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
-
-      const cookies = await CookieManager.get(BASE_URL);
-      const csrftoken = cookies['csrftoken']?.value;
+      const csrftoken = await fetchCsrfToken();
 
       // revisar posibilidad de nuevo endpoint que solo valide la contraseña (verify-password) antes de pasar al totp
       const response = await fetch(`${BASE_URL}/ims/api/login/`, {
@@ -233,15 +237,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function verifyPassword(username: string, password: string): Promise<boolean> {
     try {
-      const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const setCookieGet = getResp.headers.get('set-cookie');
-      if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
-
-      const cookies = await CookieManager.get(BASE_URL);
-      const csrftoken = cookies['csrftoken']?.value;
+      const csrftoken = await fetchCsrfToken();
 
       const response = await fetch(`${BASE_URL}/ims/api/verify-password/`, {
         method: 'POST',
