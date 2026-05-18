@@ -8,8 +8,6 @@ import { traducirRol } from '@/utils/labels';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { ESTADO_COLOR } from '@/utils/despacho';
 
-
-
 const DetalleDespachoScreen = () => {
   const { id } = useLocalSearchParams();
   const { despachos } = useDespachos();

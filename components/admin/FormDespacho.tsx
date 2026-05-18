@@ -31,110 +31,110 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
   }, []);
 
   return (
-      <View style={style.formulario}>
-        <Text style={style.title}>Datos del despacho</Text>
-        <Controller
-          control={control}
-          name="direccionOrigen"
-          rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={style.label}>Dirección de origen</Text>
-              <TextInput
-                placeholder="Ingrese dirección de origen"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-              />
-            </>
-          )}
-        />
-        {errors.direccionOrigen && <Text style={style.campoRequerido}>Campo requerido</Text>}
+    <View style={style.formulario}>
+      <Text style={style.title}>Datos del despacho</Text>
+      <Controller
+        control={control}
+        name="direccionOrigen"
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <>
+            <Text style={style.label}>Dirección de origen</Text>
+            <TextInput
+              placeholder="Ingrese dirección de origen"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+          </>
+        )}
+      />
+      {errors.direccionOrigen && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-        <Controller
-          control={control}
-          name="direccionDestino"
-          rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={style.label}>Dirección de destino</Text>
-              <TextInput
-                placeholder="Ingrese dirección de destino"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-              />
-            </>
-          )}
-        />
-        {errors.direccionDestino && <Text style={style.campoRequerido}>Campo requerido</Text>}
-        <Controller
-          control={control}
-          name="descripcionLlamado"
-          rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={style.label}>Descripción del llamado</Text>
-              <TextInput
-                placeholder="Describe el motivo del llamado"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={[styles.input, style.textArea]}
-                multiline
-                numberOfLines={3}
-              />
-            </>
-          )}
-        />
-        {errors.descripcionLlamado && <Text style={style.campoRequerido}>Campo requerido</Text>}
-        <Controller
-          control={control}
-          name="unidad"
-          rules={{ required: true }}
-          render={({ field: { onChange, value } }) => (
-            <>
-              <Text style={style.label}>Ambulancia</Text>
-              <View style={style.pickerContainer}>
-                <Picker selectedValue={value} onValueChange={onChange}>
-                  <Picker.Item label="Seleccione ambulancia" value="" enabled={false} />
-                  {ambulancias
-                    .filter((a) => a.estado_disponibilidad === 'disponible')
-                    .map((a) => (
-                      <Picker.Item key={a.id} label={`${a.patente} — ${a.modelo}`} value={a.id} />
-                    ))}
-                </Picker>
-              </View>
-            </>
-          )}
-        />
-        {errors.unidad && <Text style={style.campoRequerido}>Campo requerido</Text>}
-        <Controller
-          control={control}
-          name="grupoAsignado"
-          rules={{ required: true }}
-          render={({ field: { onChange, value } }) => (
-            <>
-              <Text style={style.title}>Asignar Equipo</Text>
-              <View style={style.pickerContainer}>
-                <Picker selectedValue={value} onValueChange={onChange}>
-                  <Picker.Item label="Seleccione grupo" value="" enabled={false} />
-                  {grupos.map((g) => (
-                    <Picker.Item
-                      key={g.grupo_id}
-                      label={`${g.grupo_nombre}`}
-                      value={String(g.grupo_id)}
-                    />
+      <Controller
+        control={control}
+        name="direccionDestino"
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <>
+            <Text style={style.label}>Dirección de destino</Text>
+            <TextInput
+              placeholder="Ingrese dirección de destino"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+            />
+          </>
+        )}
+      />
+      {errors.direccionDestino && <Text style={style.campoRequerido}>Campo requerido</Text>}
+      <Controller
+        control={control}
+        name="descripcionLlamado"
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <>
+            <Text style={style.label}>Descripción del llamado</Text>
+            <TextInput
+              placeholder="Describe el motivo del llamado"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={[styles.input, style.textArea]}
+              multiline
+              numberOfLines={3}
+            />
+          </>
+        )}
+      />
+      {errors.descripcionLlamado && <Text style={style.campoRequerido}>Campo requerido</Text>}
+      <Controller
+        control={control}
+        name="unidad"
+        rules={{ required: true }}
+        render={({ field: { onChange, value } }) => (
+          <>
+            <Text style={style.label}>Ambulancia</Text>
+            <View style={style.pickerContainer}>
+              <Picker selectedValue={value} onValueChange={onChange}>
+                <Picker.Item label="Seleccione ambulancia" value="" enabled={false} />
+                {ambulancias
+                  .filter((a) => a.estado_disponibilidad === 'disponible')
+                  .map((a) => (
+                    <Picker.Item key={a.id} label={`${a.patente} — ${a.modelo}`} value={a.id} />
                   ))}
-                </Picker>
-              </View>
-            </>
-          )}
-        />
-        {errors.grupoAsignado && <Text style={style.campoRequerido}>Campo requerido</Text>}
-      </View>
+              </Picker>
+            </View>
+          </>
+        )}
+      />
+      {errors.unidad && <Text style={style.campoRequerido}>Campo requerido</Text>}
+      <Controller
+        control={control}
+        name="grupoAsignado"
+        rules={{ required: true }}
+        render={({ field: { onChange, value } }) => (
+          <>
+            <Text style={style.title}>Asignar Equipo</Text>
+            <View style={style.pickerContainer}>
+              <Picker selectedValue={value} onValueChange={onChange}>
+                <Picker.Item label="Seleccione grupo" value="" enabled={false} />
+                {grupos.map((g) => (
+                  <Picker.Item
+                    key={g.grupo_id}
+                    label={`${g.grupo_nombre}`}
+                    value={String(g.grupo_id)}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </>
+        )}
+      />
+      {errors.grupoAsignado && <Text style={style.campoRequerido}>Campo requerido</Text>}
+    </View>
   );
 };
 

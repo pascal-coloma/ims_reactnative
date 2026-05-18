@@ -67,7 +67,6 @@ export const validarTelefono = (telefono: string): boolean => {
   return digits.length === 11 && digits.startsWith('569');
 };
 
-
 export const formatearHora = (hora: string | undefined): string => {
   if (!hora) return '—';
   if (hora.includes(':')) return hora;

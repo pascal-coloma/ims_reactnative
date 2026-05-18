@@ -57,8 +57,6 @@ type DocumentoAtencion = {
   Firma: string;
 };
 
-
-
 export const generatePDF = async (data: DocumentoAtencion) => {
   const { atencion, signos_vitales, preinforme, cronologia, insumos_utilizados, Hash } = data;
 

@@ -22,11 +22,11 @@ const RegistrarAtencion = () => {
   const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-        ...DEFAULT_VALUES_USUARIO,
-        direccionOrigen: despachoActivo.direccionOrigen,
-        direccionDestino: despachoActivo.direccionDestino,
-        rut: despachoActivo.paciente?.rut ?? '',
-      }
+          ...DEFAULT_VALUES_USUARIO,
+          direccionOrigen: despachoActivo.direccionOrigen,
+          direccionDestino: despachoActivo.direccionDestino,
+          rut: despachoActivo.paciente?.rut ?? '',
+        }
       : DEFAULT_VALUES_USUARIO,
   });
 
@@ -128,7 +128,6 @@ const local = StyleSheet.create({
     backgroundColor: 'white',
     borderTopColor: '#eee',
     borderTopWidth: 1,
-
   },
   botonEnviar: { flex: 2 },
   botonLimpiar: {

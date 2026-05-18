@@ -8,9 +8,6 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import { ESTADO_COLOR } from '@/utils/despacho';
 import EstadoBadge from '@/components/EstadoBadge';
 
-
-
-
 const MisDespachos = () => {
   const { user } = useAuth();
   const { despachosPorPersonal, seleccionarDespacho } = useDespachos();
@@ -20,10 +17,10 @@ const MisDespachos = () => {
 
   const despachosFiltrados = busqueda.trim()
     ? misDespachos.filter(
-      (d) =>
-        d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
-    )
+        (d) =>
+          d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
+          d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
+      )
     : misDespachos;
 
   return (

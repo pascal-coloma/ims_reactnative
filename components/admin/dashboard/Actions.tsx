@@ -5,31 +5,31 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const Actions = () => {
   return (
-      <View style={styles.container}>
-        <Text style={style.title}>Acciones Rápidas</Text>
-        <View style={style.cardsRow}>
-          <Link href={'/(admin)/Despachos'} style={style.linkStyle}>
-            <View style={style.dispatchCard}>
-              <MaterialIcons name="airport-shuttle" size={50} color="white" />
-              <View>
-                <Text style={style.cardTitle}>Despachos</Text>
-                <Text style={style.cardSubtitle}>Ver despachos activos</Text>
-              </View>
+    <View style={styles.container}>
+      <Text style={style.title}>Acciones Rápidas</Text>
+      <View style={style.cardsRow}>
+        <Link href={'/(admin)/Despachos'} style={style.linkStyle}>
+          <View style={style.dispatchCard}>
+            <MaterialIcons name="airport-shuttle" size={50} color="white" />
+            <View>
+              <Text style={style.cardTitle}>Despachos</Text>
+              <Text style={style.cardSubtitle}>Ver despachos activos</Text>
             </View>
-          </Link>
-          <Link href={'/(admin)/Panel'} style={style.linkStyle}>
-            <View style={style.attentionCard}>
-              <MaterialIcons name="admin-panel-settings" size={50} color="#a9cbee" />
-              <View>
-                <Text style={[style.cardTitle, { color: 'white' }]}>Panel de Control</Text>
-                <Text style={[style.cardSubtitle, { color: 'white' }]}>
-                  Inventario, personal y despachos
-                </Text>
-              </View>
+          </View>
+        </Link>
+        <Link href={'/(admin)/Panel'} style={style.linkStyle}>
+          <View style={style.attentionCard}>
+            <MaterialIcons name="admin-panel-settings" size={50} color="#a9cbee" />
+            <View>
+              <Text style={[style.cardTitle, { color: 'white' }]}>Panel de Control</Text>
+              <Text style={[style.cardSubtitle, { color: 'white' }]}>
+                Inventario, personal y despachos
+              </Text>
             </View>
-          </Link>
-        </View>
+          </View>
+        </Link>
       </View>
+    </View>
   );
 };
 

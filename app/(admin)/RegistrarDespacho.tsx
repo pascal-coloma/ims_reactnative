@@ -56,7 +56,6 @@ const RegistrarDespacho = () => {
 };
 
 const style = StyleSheet.create({
-  
   rowBotones: {
     flexDirection: 'row',
     justifyContent: 'center',

@@ -182,10 +182,12 @@ const RegistrarWorker = () => {
                     <Text style={style.campoRequerido}>RUT inválido</Text>
                   )}
                   {errors.rut && !rutCompleto && (
-                    <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
+                    <Text style={style.campoRequerido}>
+                      {errors.rut.message || 'Campo requerido'}
+                    </Text>
                   )}
                 </>
-              )
+              );
             }}
           />
           {errors.rut && <Text style={style.campoRequerido}>Campo requerido</Text>}

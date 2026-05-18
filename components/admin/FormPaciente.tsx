@@ -2,8 +2,13 @@ import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormCompleta } from '@/data/types/types';
 import AppHeader from '../AppHeader';
-import { formatearRut, validarRut, formatearFecha, formatearTelefono, validarFecha } from '@/utils/format';
-
+import {
+  formatearRut,
+  validarRut,
+  formatearFecha,
+  formatearTelefono,
+  validarFecha,
+} from '@/utils/format';
 
 type FormPacienteProps = {
   control: Control<FormCompleta>;
@@ -11,7 +16,6 @@ type FormPacienteProps = {
 };
 
 const FormPaciente = ({ control, errors }: FormPacienteProps) => {
-
   return (
     <>
       <AppHeader title="Registrar Despacho" />
@@ -104,7 +108,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               name="rut"
               rules={{
                 required: true,
-                validate: (value) => validarRut(value) || 'RUT inválido'
+                validate: (value) => validarRut(value) || 'RUT inválido',
               }}
               render={({ field: { onChange, onBlur, value } }) => {
                 const rutCompleto = value?.replace(/[^0-9kK]/g, '').length >= 8;
@@ -128,10 +132,12 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                       <Text style={style.campoRequerido}>RUT inválido</Text>
                     )}
                     {errors.rut && !rutCompleto && (
-                      <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
+                      <Text style={style.campoRequerido}>
+                        {errors.rut.message || 'Campo requerido'}
+                      </Text>
                     )}
                   </>
-                )
+                );
               }}
             />
             {errors.rut && (
@@ -142,7 +148,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
             <Controller
               control={control}
               name="fechaNacimiento"
-              rules={{ required: true, validate: (value) => validarFecha(value) || 'Fecha inválida', }}
+              rules={{
+                required: true,
+                validate: (value) => validarFecha(value) || 'Fecha inválida',
+              }}
               render={({ field: { onChange, value } }) => {
                 const fechaCompleta = value?.replace(/[^0-9]/g, '').length >= 8;
                 const fechaValida = !fechaCompleta || validarFecha(value);

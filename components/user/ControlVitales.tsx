@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Control, Controller, FieldErrors, useFieldArray, useWatch, useFormContext } from 'react-hook-form';
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  useFieldArray,
+  useWatch,
+  useFormContext,
+} from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FormUsuario } from '@/data/types/types';
 
@@ -21,7 +28,6 @@ function PaginaControl({
   const pad = useWatch({ control, name: `controlSignos.${index}.pad` }) ?? 0;
   const pam = Math.round((pad * 2 + pas) / 3);
   const { setValue } = useFormContext<FormUsuario>();
-
 
   useEffect(() => {
     setValue(`controlSignos.${index}.pam`, pam);
@@ -322,7 +328,7 @@ const style = StyleSheet.create({
   },
   pagina: {
     flex: 1,
-    paddingRight: 10
+    paddingRight: 10,
   },
   cardHeader: {
     fontSize: 14,

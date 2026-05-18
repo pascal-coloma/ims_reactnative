@@ -12,7 +12,6 @@ import {
 import NotificationCard from './NotificationCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
 type Props = {
   visible: boolean;
   onClose: () => void;
@@ -25,7 +24,6 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
   const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
   const insets = useSafeAreaInsets();
 
-
   useEffect(() => {
     Animated.timing(translateX, {
       toValue: visible ? 0 : DRAWER_WIDTH,
@@ -37,7 +35,9 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <TouchableOpacity style={style.overlay} onPress={onClose} activeOpacity={1} />
-      <Animated.View style={[style.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}>
+      <Animated.View
+        style={[style.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}
+      >
         <View style={style.header}>
           <Text style={style.titulo}>Notificaciones</Text>
           <TouchableOpacity onPress={onClose}>

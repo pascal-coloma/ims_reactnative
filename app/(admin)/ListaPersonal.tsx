@@ -20,10 +20,10 @@ const ListaPersonal = () => {
 
   const filtrado = busqueda.trim()
     ? personal.filter(
-      (p) =>
-        `${p.first_name} ${p.last_name}`.toLowerCase().includes(busqueda.toLowerCase()) ||
-        p.rut.includes(busqueda.replace(/\./g, '')),
-    )
+        (p) =>
+          `${p.first_name} ${p.last_name}`.toLowerCase().includes(busqueda.toLowerCase()) ||
+          p.rut.includes(busqueda.replace(/\./g, '')),
+      )
     : personal;
 
   const agrupado = ROL_ORDEN.reduce<Record<string, typeof personal>>((acc, rol) => {
@@ -55,14 +55,21 @@ const ListaPersonal = () => {
             {Object.entries(agrupado).map(([rol, grupo]) => (
               <View key={rol}>
                 <View style={local.grupoHeader}>
-                  <View style={[local.grupoIndicador, { backgroundColor: ROL_COLOR[rol] ?? '#999' }]} />
+                  <View
+                    style={[local.grupoIndicador, { backgroundColor: ROL_COLOR[rol] ?? '#999' }]}
+                  />
                   <Text style={local.grupoTitulo}>{traducirRol(rol)}</Text>
                   <Text style={local.grupoConteo}>{grupo.length}</Text>
                 </View>
                 {grupo.map((p) => (
                   <View key={p.id} style={local.card}>
                     <View style={local.cardLeft}>
-                      <View style={[local.avatar, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>
+                      <View
+                        style={[
+                          local.avatar,
+                          { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' },
+                        ]}
+                      >
                         <Text style={local.avatarText}>
                           {p.first_name?.[0]?.toUpperCase()}
                           {p.last_name?.[0]?.toUpperCase()}
@@ -75,7 +82,12 @@ const ListaPersonal = () => {
                       </Text>
                       <Text style={local.rut}>{p.rut}</Text>
                     </View>
-                    <View style={[local.rolPill, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}>
+                    <View
+                      style={[
+                        local.rolPill,
+                        { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' },
+                      ]}
+                    >
                       <Text style={local.rolTexto}>{traducirRol(p.rol_nombre)}</Text>
                     </View>
                   </View>

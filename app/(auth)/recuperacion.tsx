@@ -36,9 +36,7 @@ const RecuperarContrasena = () => {
         autoCapitalize="none"
         onChangeText={(newEmail) => setEmail(newEmail)}
       />
-      {error ? (
-        <Text style={styles.errorTexto}>{error}</Text>
-      ) : null}
+      {error ? <Text style={styles.errorTexto}>{error}</Text> : null}
 
       <TouchableOpacity style={styles.button} onPress={enviarCorreo}>
         <Text style={styles.buttonText}>Recuperar contraseña</Text>

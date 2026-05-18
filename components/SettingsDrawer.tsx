@@ -40,7 +40,9 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <TouchableOpacity style={local.overlay} onPress={onClose} activeOpacity={1} />
-      <Animated.View style={[local.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}>
+      <Animated.View
+        style={[local.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}
+      >
         <View style={local.header}>
           <Text style={local.titulo}>Perfil</Text>
           <TouchableOpacity onPress={onClose}>

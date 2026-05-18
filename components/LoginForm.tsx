@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 import { formatearRut } from '@/utils/format';
 
-
 export default function LoginForm() {
   const router = useRouter();
   const { setPendingCredentials, verifyPassword } = useAuth();
@@ -12,7 +11,6 @@ export default function LoginForm() {
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
 
   async function handleLogin() {
     if (!username || !passw) {
@@ -23,7 +21,7 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      // TODO: /ims/api/verify-password/ 
+      // TODO: /ims/api/verify-password/
       // const ok = await verifyPassword(username.replace(/\./g, ''), passw);
       // if (!ok) {
       //   setError('Credenciales incorrectas');

@@ -19,7 +19,11 @@ type User = {
 
 type AuthContextType = {
   user: User;
-  login: (username: string, password: string, totpCode?: string) => Promise<{ role: Role; personalId: string } | null>;
+  login: (
+    username: string,
+    password: string,
+    totpCode?: string,
+  ) => Promise<{ role: Role; personalId: string } | null>;
   logout: () => Promise<void>;
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
@@ -271,7 +275,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, loading, pendingCredentials, setPendingCredentials, verifyPassword }}
+      value={{
+        user,
+        login,
+        logout,
+        loading,
+        pendingCredentials,
+        setPendingCredentials,
+        verifyPassword,
+      }}
     >
       {children}
     </AuthContext.Provider>

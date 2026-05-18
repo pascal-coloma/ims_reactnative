@@ -7,9 +7,7 @@ type Props = {
 
 const EstadoBadge = ({ estado }: Props) => (
   <View style={[style.badge, { backgroundColor: ESTADO_COLOR[estado] ?? '#999' }]}>
-    <Text style={style.texto}>
-      {estado[0].toUpperCase() + estado.slice(1)}
-    </Text>
+    <Text style={style.texto}>{estado[0].toUpperCase() + estado.slice(1)}</Text>
   </View>
 );
 

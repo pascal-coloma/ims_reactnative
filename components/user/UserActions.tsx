@@ -5,31 +5,29 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const UserActions = () => {
   return (
-      <View style={styles.container}>
-        <Text style={style.title}>Acciones Rápidas</Text>
-        <View style={style.cardsRow}>
-          <Link href={'/(user)/Despachos'} style={style.linkStyle}>
-            <View style={style.dispatchCard}>
-              <MaterialIcons name="airport-shuttle" size={50} color="white" />
-              <View>
-                <Text style={style.cardTitle}>Despachos</Text>
-                <Text style={style.cardSubtitle}>Ver despachos activos</Text>
-              </View>
+    <View style={styles.container}>
+      <Text style={style.title}>Acciones Rápidas</Text>
+      <View style={style.cardsRow}>
+        <Link href={'/(user)/Despachos'} style={style.linkStyle}>
+          <View style={style.dispatchCard}>
+            <MaterialIcons name="airport-shuttle" size={50} color="white" />
+            <View>
+              <Text style={style.cardTitle}>Despachos</Text>
+              <Text style={style.cardSubtitle}>Ver despachos activos</Text>
             </View>
-          </Link>
-          <Link href={'/(user)/RegistrarAtencion'} style={style.linkStyle}>
-            <View style={style.attentionCard}>
-              <MaterialIcons name="checklist" size={50} color="#130b0b" />
-              <View>
-                <Text style={[style.cardTitle, { color: '#130b0b' }]}>Registrar Atencion</Text>
-                <Text style={[style.cardSubtitle, { color: '#130b0b' }]}>
-                  Ficha prehospitalaria
-                </Text>
-              </View>
+          </View>
+        </Link>
+        <Link href={'/(user)/RegistrarAtencion'} style={style.linkStyle}>
+          <View style={style.attentionCard}>
+            <MaterialIcons name="checklist" size={50} color="#130b0b" />
+            <View>
+              <Text style={[style.cardTitle, { color: '#130b0b' }]}>Registrar Atencion</Text>
+              <Text style={[style.cardSubtitle, { color: '#130b0b' }]}>Ficha prehospitalaria</Text>
             </View>
-          </Link>
-        </View>
+          </View>
+        </Link>
       </View>
+    </View>
   );
 };
 

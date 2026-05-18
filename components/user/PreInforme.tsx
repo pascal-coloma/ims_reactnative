@@ -1,11 +1,5 @@
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '@/styles/globalStyles';
 import { FormUsuario } from '@/data/types/types';
 
