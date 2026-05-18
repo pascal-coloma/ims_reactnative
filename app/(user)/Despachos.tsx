@@ -2,7 +2,6 @@ import AppHeader from '@/components/AppHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
-import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -85,12 +84,6 @@ const MisDespachos = () => {
 };
 
 const local = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    padding: 10,
-  },
   buscador: {
     borderWidth: 1,
     borderColor: '#ccc',

@@ -22,11 +22,11 @@ const RegistrarAtencion = () => {
   const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
       ? {
-          ...DEFAULT_VALUES_USUARIO,
-          direccionOrigen: despachoActivo.direccionOrigen,
-          direccionDestino: despachoActivo.direccionDestino,
-          rut: despachoActivo.paciente?.rut ?? '',
-        }
+        ...DEFAULT_VALUES_USUARIO,
+        direccionOrigen: despachoActivo.direccionOrigen,
+        direccionDestino: despachoActivo.direccionDestino,
+        rut: despachoActivo.paciente?.rut ?? '',
+      }
       : DEFAULT_VALUES_USUARIO,
   });
 
@@ -34,7 +34,6 @@ const RegistrarAtencion = () => {
     handleSubmit,
     reset,
     formState: { errors },
-    control,
   } = methods;
 
   const onSubmit = async (data: FormUsuario) => {
@@ -128,6 +127,8 @@ const local = StyleSheet.create({
     padding: 16,
     backgroundColor: 'white',
     borderTopColor: '#eee',
+    borderTopWidth: 1,
+
   },
   botonEnviar: { flex: 2 },
   botonLimpiar: {
