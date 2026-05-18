@@ -62,6 +62,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
     };
     buscar();
   }, [paciente?.rut]);
+  
   return (
       <View style={style.formulario}>
         <Text style={style.sectionTitle}>Datos del Paciente</Text>

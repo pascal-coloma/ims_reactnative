@@ -1,3 +1,4 @@
+import { formatearFechaHora, formatearHora } from '@/utils/format';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
@@ -56,22 +57,7 @@ type DocumentoAtencion = {
   Firma: string;
 };
 
-const formatearHora = (hora: string): string => {
-  if (!hora || hora.length < 4) return hora;
-  return `${hora.slice(0, 2)}:${hora.slice(2, 4)}`;
-};
 
-const formatearFechaHora = (iso: string): string => {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('es-CL', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
 
 export const generatePDF = async (data: DocumentoAtencion) => {
   const { atencion, signos_vitales, preinforme, cronologia, insumos_utilizados, Hash } = data;

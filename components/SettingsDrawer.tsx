@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useRef } from 'react';
 import {
@@ -34,13 +35,8 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
   }, [visible]);
 
   const iniciales = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
-  const ROL_LABELS: Record<string, string> = {
-    medic: 'Médico',
-    nurse: 'Enfermero/a',
-    control: 'Control',
-    driver: 'Conductor',
-  };
-  const rolLabel = ROL_LABELS[user?.role ?? ''] ?? 'Usuario';
+  const rolLabel = traducirRol(user?.role ?? '');
+
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <TouchableOpacity style={local.overlay} onPress={onClose} activeOpacity={1} />

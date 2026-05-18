@@ -2,7 +2,7 @@ import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormCompleta } from '@/data/types/types';
 import AppHeader from '../AppHeader';
-import { formatearRut } from '@/utils/format';
+import { formatearRut, validarRut, formatearFecha, formatearTelefono } from '@/utils/format';
 
 
 type FormPacienteProps = {
@@ -11,46 +11,6 @@ type FormPacienteProps = {
 };
 
 const FormPaciente = ({ control, errors }: FormPacienteProps) => {
-
-  const formatearFecha = (fechaNacimiento: string): string => {
-    const limpiar = fechaNacimiento.replace(/[^0-9]/g, '');
-    if (limpiar.length <= 1) return limpiar;
-    const dia = limpiar.slice(0, 2);
-    const mes = limpiar.slice(2, 4);
-    const anno = limpiar.slice(4, 8);
-    return limpiar.length < 3
-      ? dia
-      : limpiar.length < 5
-        ? dia + '-' + mes
-        : dia + '-' + mes + '-' + anno;
-  };
-
-  const formatearTelefono = (telefono: string): string => {
-    const limpio = telefono
-      .replace('+569', '')
-      .replace(/[^0-9]/g, '')
-      .slice(0, 8);
-    return '+569 ' + limpio;
-  };
-
-  const validarRut = (rut: string): boolean => {
-    const clean = rut.replace(/[^0-9kK]/g, '');
-    const cuerpo = clean.slice(0, -1);
-    const dv = clean.slice(-1).toLowerCase();
-
-    let suma = 0;
-    let multiplo = 2;
-
-    for (let i = cuerpo.length - 1; i >= 0; i--) {
-      suma += parseInt(cuerpo[i]) * multiplo;
-      multiplo = multiplo === 7 ? 2 : multiplo + 1;
-    }
-
-    const dvEsperado = 11 - (suma % 11);
-    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'k' : String(dvEsperado);
-
-    return dv === dvCalculado;
-  };
 
   return (
     <>
