@@ -5,14 +5,11 @@ import styles from '@/styles/globalStyles';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ESTADO_COLOR } from '@/utils/despacho';
+import EstadoBadge from '@/components/EstadoBadge';
 
-const ESTADO_COLOR: Record<string, string> = {
-  recibido: '#FB8C00',
-  asignado: '#1976D2',
-  activo: '#22c55e',
-  finalizado: '#22c55e',
-  cancelado: '#9E9E9E',
-};
+
+
 
 const MisDespachos = () => {
   const { user } = useAuth();
@@ -23,10 +20,10 @@ const MisDespachos = () => {
 
   const despachosFiltrados = busqueda.trim()
     ? misDespachos.filter(
-        (d) =>
-          d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
-          d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
-      )
+      (d) =>
+        d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
+        d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
+    )
     : misDespachos;
 
   return (
@@ -56,11 +53,7 @@ const MisDespachos = () => {
             >
               <View style={local.rowHeader}>
                 <Text style={styles.title}>Despacho {d.id} </Text>
-                <View style={[local.badge, { backgroundColor: ESTADO_COLOR[d.estado] }]}>
-                  <Text style={local.badgeTexto}>
-                    {d.estado[0].toUpperCase() + d.estado.slice(1)}
-                  </Text>
-                </View>
+                <EstadoBadge estado={d.estado} />
               </View>
 
               <Text style={styles.subtitle}>

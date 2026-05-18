@@ -6,14 +6,9 @@ import styles from '@/styles/globalStyles';
 import { usePersonal } from '@/context/PersonalContext';
 import { traducirRol } from '@/utils/labels';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
+import { ESTADO_COLOR } from '@/utils/despacho';
 
-const estadoColors: Record<string, string> = {
-  recibido: '#FB8C00',
-  asignado: '#1976D2',
-  activo: '#22c55e',
-  finalizado: '#22c55e',
-  cancelado: '#9E9E9E',
-};
+
 
 const DetalleDespachoScreen = () => {
   const { id } = useLocalSearchParams();
@@ -40,7 +35,7 @@ const DetalleDespachoScreen = () => {
             <MaterialIcons name="arrow-back" size={22} color="#000" />
           </TouchableOpacity>
           <Text style={styles.title}>Despacho {despacho.id}</Text>
-          <View style={[style.estadoPill, { backgroundColor: estadoColors[despacho.estado] }]}>
+          <View style={[style.estadoPill, { backgroundColor: ESTADO_COLOR[despacho.estado] }]}>
             <Text style={style.estadoPillText}>
               {despacho.estado[0].toUpperCase() + despacho.estado.slice(1)}
             </Text>

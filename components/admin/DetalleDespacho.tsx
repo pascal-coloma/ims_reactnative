@@ -5,16 +5,9 @@ import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
-
+import { ESTADO_COLOR } from '@/utils/despacho';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const ESTADO_COLOR: Record<Despacho['estado'], string> = {
-  recibido: '#FB8C00',
-  asignado: '#1976D2',
-  activo: '#22c55e',
-  finalizado: '#22c55e',
-  cancelado: '#9E9E9E',
-};
+import EstadoBadge from '../EstadoBadge';
 
 const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
   const { personal } = usePersonal();
@@ -23,52 +16,46 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
   const ambulancia = ambulancias.find((a) => a.id === despacho.ambulancia?.id);
 
   return (
-      <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
-        <View style={styles.container}>
-          <View style={local.headerRow}>
-            <Text style={local.idTexto}>Despacho {despacho.id}</Text>
-            <View style={local.badgeRow}>
-              <View style={[local.badge, { backgroundColor: ESTADO_COLOR[despacho.estado] }]}>
-                <Text style={local.badgeTexto}>
-                  {despacho.estado[0].toUpperCase() + despacho.estado.slice(1)}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={local.rutaRow}>
-            <MaterialIcons name="place" size={14} color="#888" />
-            <Text style={local.dato} numberOfLines={1}>
-              {despacho.direccionOrigen}
-            </Text>
-          </View>
-          <View style={local.rutaRow}>
-            <MaterialIcons name="local-hospital" size={14} color="#888" />
-            <Text style={local.dato} numberOfLines={1}>
-              {despacho.direccionDestino}
-            </Text>
-          </View>
-
-          <Text style={local.dato}>Emergencia: {despacho.descripcionLlamado}</Text>
-
-          {ambulancia && (
-            <Text style={local.dato}>
-              Unidad: {ambulancia.modelo} — {ambulancia.patente}
-            </Text>
-          )}
-
-          {equipoDespacho.map((p) => (
-            <View key={p.id} style={local.equipoItem}>
-              <Text style={local.dato}>
-                {p.first_name} {p.last_name}{' '}
-              </Text>
-              <Text style={local.equipoRol}>{traducirRol(p.rol_nombre)}</Text>
-            </View>
-          ))}
-
-          <View style={local.divisor} />
+    <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
+      <View style={styles.container}>
+        <View style={local.headerRow}>
+          <Text style={local.idTexto}>Despacho {despacho.id}</Text>
+          <EstadoBadge estado={despacho.estado} />
         </View>
-      </TouchableOpacity>
+
+        <View style={local.rutaRow}>
+          <MaterialIcons name="place" size={14} color="#888" />
+          <Text style={local.dato} numberOfLines={1}>
+            {despacho.direccionOrigen}
+          </Text>
+        </View>
+        <View style={local.rutaRow}>
+          <MaterialIcons name="local-hospital" size={14} color="#888" />
+          <Text style={local.dato} numberOfLines={1}>
+            {despacho.direccionDestino}
+          </Text>
+        </View>
+
+        <Text style={local.dato}>Emergencia: {despacho.descripcionLlamado}</Text>
+
+        {ambulancia && (
+          <Text style={local.dato}>
+            Unidad: {ambulancia.modelo} — {ambulancia.patente}
+          </Text>
+        )}
+
+        {equipoDespacho.map((p) => (
+          <View key={p.id} style={local.equipoItem}>
+            <Text style={local.dato}>
+              {p.first_name} {p.last_name}{' '}
+            </Text>
+            <Text style={local.equipoRol}>{traducirRol(p.rol_nombre)}</Text>
+          </View>
+        ))}
+
+        <View style={local.divisor} />
+      </View>
+    </TouchableOpacity>
   );
 };
 
