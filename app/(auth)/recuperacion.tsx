@@ -37,7 +37,7 @@ const RecuperarContrasena = () => {
         onChangeText={(newEmail) => setEmail(newEmail)}
       />
       {error ? (
-        <Text style={{ color: '#E53935', fontSize: 13, marginBottom: 8 }}>{error}</Text>
+        <Text style={styles.errorTexto}>{error}</Text>
       ) : null}
 
       <TouchableOpacity style={styles.button} onPress={enviarCorreo}>
@@ -72,11 +72,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
   },
-  forgotPassword: {
-    color: '#E53935',
-    textAlign: 'right',
-    marginBottom: 24,
-  },
   button: {
     backgroundColor: '#E53935',
     padding: 16,
@@ -87,6 +82,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  errorTexto: {
+    color: '#E53935',
+    fontSize: 13,
+    marginBottom: 8,
   },
 });
 
