@@ -83,8 +83,11 @@ const RegistrarWorker = () => {
           <View style={style.resultadoValor}>
             <TextInput
               value={resultado.password}
-              editable={false}
+              editable={true}
               selectTextOnFocus
+              contextMenuHidden={false}
+              caretHidden={true}
+              showSoftInputOnFocus={false}
               style={style.resultadoCodigo}
             />
           </View>
