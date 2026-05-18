@@ -165,29 +165,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
+      // 1. Verificar respuesta
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        console.log('login error:', response.status, JSON.stringify(errorBody));
+        return null;
+      }
+
+      const data = await response.json();
+
+      // 2. Persistir cookies solo si el login fue exitoso
       const setCookiePost = response.headers.get('set-cookie');
       if (setCookiePost) await CookieManager.setFromResponse(BASE_URL, setCookiePost);
 
       const cookiesPost = await CookieManager.get(BASE_URL);
-      const sessionId = cookiesPost['sessionid'].value;
-      const csrftokenPost = cookiesPost['csrftoken']?.value;
-
-      await AsyncStorage.setItem('sessionid', sessionId);
-      await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
 
       if (!cookiesPost['sessionid']?.value) {
         console.error('sessionid no persistido después del login');
         return null;
       }
 
-      if (!response.ok) {
-        console.log('login response status:', response.status);
-        const errorBody = await response.json().catch(() => ({}));
-        console.log('login error body:', JSON.stringify(errorBody));
-        return null;
-      }
-      const data = await response.json();
+      const sessionId = cookiesPost['sessionid'].value;
+      const csrftokenPost = cookiesPost['csrftoken']?.value;
 
+      await AsyncStorage.setItem('sessionid', sessionId);
+      await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
+
+      // 3. Obtener datos del usuario
       let firstName = '';
       let lastName = '';
       let personalId = '';
@@ -204,7 +208,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (e) {
-        console.warn('No se pudo obtener datos de personal, usando defaults:', e);
+        console.warn('No se pudo obtener datos de personal:', e);
       }
 
       const loggedUser: User = {
