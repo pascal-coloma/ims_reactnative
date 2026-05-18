@@ -34,7 +34,6 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const [despachoActivo, setDespachoActivo] = useState<Despacho | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const pacienteRutMap = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (BACKEND_READY) fetchDespachos();
@@ -130,30 +129,15 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
           condicion_paciente: data.condicionPaciente,
           telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
         };
-        console.log('Payload paciente:', JSON.stringify(payloadPaciente, null, 2));
         // Paciente no existe → crear
         console.log('Paso 0 - paciente no existe, creando...');
         const crearResp = await fetchConSesion('/ims/api/pacientes/', {
           method: 'POST',
-          body: JSON.stringify({
-            rut: rutLimpio,
-            nombre_completo: [
-              data.primerNombre,
-              data.segundoNombre ?? '',
-              data.apellidoPaterno,
-              data.apellidoMaterno,
-            ]
-              .filter(Boolean)
-              .join(' '),
-            fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
-            direccion: data.direccionOrigen,
-            condicion_paciente: data.condicionPaciente,
-            telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
-          }),
+          body: JSON.stringify(payloadPaciente),
         });
         if (!crearResp.ok) {
           const errorText = await crearResp.text().catch(() => 'no body');
-          console.log('Error creando paciente raw:', errorText);
+          console.log('Error creando paciente:', errorText);
           throw new Error(`Error creando paciente: ${crearResp.status}`);
         }
         console.log('Paso 0 - paciente creado');

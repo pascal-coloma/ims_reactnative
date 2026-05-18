@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 
 export default function LoginForm() {
   const router = useRouter();
-  const { login, setPendingCredentials, verifyPassword } = useAuth();
+  const { setPendingCredentials, verifyPassword } = useAuth();
   const [username, setUsername] = useState('');
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);

@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 import NotificationCard from './NotificationCard';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 type Props = {
   visible: boolean;
@@ -21,6 +23,8 @@ const DRAWER_WIDTH = width * 0.7;
 
 const NotificationDrawer = ({ visible, onClose }: Props) => {
   const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
+  const insets = useSafeAreaInsets();
+
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -33,15 +37,15 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <TouchableOpacity style={style.overlay} onPress={onClose} activeOpacity={1} />
-      <Animated.View style={[style.drawer, { transform: [{ translateX }] }]}>
+      <Animated.View style={[style.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}>
         <View style={style.header}>
           <Text style={style.titulo}>Notificaciones</Text>
           <TouchableOpacity onPress={onClose}>
             <Text style={style.cerrar}>✕</Text>
           </TouchableOpacity>
         </View>
-        {mockNotificaciones.map((n) => (
-          <NotificationCard key={n.titulo} notificacion={n} />
+        {mockNotificaciones.map((n, i) => (
+          <NotificationCard key={i} notificacion={n} />
         ))}
       </Animated.View>
     </Modal>
@@ -60,7 +64,6 @@ const style = StyleSheet.create({
     bottom: 0,
     width: DRAWER_WIDTH,
     backgroundColor: 'white',
-    paddingTop: 50,
     paddingHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: { width: -3, height: 0 },

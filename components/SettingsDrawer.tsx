@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.7;
@@ -22,6 +23,7 @@ type Props = {
 const SettingsDrawer = ({ visible, onClose }: Props) => {
   const { user, logout } = useAuth();
   const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -32,21 +34,17 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
   }, [visible]);
 
   const iniciales = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
-  const rolLabel =
-    user?.role === 'medic'
-      ? 'Médico'
-      : user?.role === 'nurse'
-        ? 'Enfermero/a'
-        : user?.role === 'control'
-          ? 'Control'
-          : user?.role === 'driver'
-            ? 'Conductor'
-            : 'Usuario';
-
+  const ROL_LABELS: Record<string, string> = {
+    medic: 'Médico',
+    nurse: 'Enfermero/a',
+    control: 'Control',
+    driver: 'Conductor',
+  };
+  const rolLabel = ROL_LABELS[user?.role ?? ''] ?? 'Usuario';
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <TouchableOpacity style={local.overlay} onPress={onClose} activeOpacity={1} />
-      <Animated.View style={[local.drawer, { transform: [{ translateX }] }]}>
+      <Animated.View style={[local.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}>
         <View style={local.header}>
           <Text style={local.titulo}>Perfil</Text>
           <TouchableOpacity onPress={onClose}>

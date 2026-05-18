@@ -21,7 +21,7 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetchConSesion('/ims/api/pacientes');
+        const response = await fetchConSesion('/ims/api/pacientes/');
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
         setPacientes(data);
@@ -53,6 +53,7 @@ export default PacienteProvider;
 
 export function usePacientes() {
   const ctx = useContext(PacienteContext);
-  if (!ctx) throw new Error('useContext debe usarse dentro de PersonalProvider');
+  if (!ctx) throw new Error('usePacientes debe usarse dentro de PacienteProvider');
+
   return ctx;
 }

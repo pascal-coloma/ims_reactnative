@@ -46,6 +46,6 @@ export default InventarioProvider;
 
 export function useInventario() {
   const ctx = useContext(InventarioContext);
-  if (!ctx) throw new Error('useContext debe usarse dentro de PersonalProvider');
+  if (!ctx) throw new Error('useInventario debe usarse dentro de PersonalProvider');
   return ctx;
 }

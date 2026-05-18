@@ -5,7 +5,7 @@ import { NuevoWorker, WorkerCreado } from '@/data/types/types';
 
 type PersonalContextType = {
   personal: Personal[];
-  actualizarDisponilidad: (id: string) => void;
+  actualizarDisponibilidad: (id: string) => void;
   registrarWorker: (data: NuevoWorker) => Promise<WorkerCreado | null>;
 };
 
@@ -44,11 +44,11 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
     fetchPersonal();
   }, []);
 
-  function actualizarDisponilidad(id: string): void {
+  function actualizarDisponibilidad(id: string): void {
     setPersonal((prev) => prev.map((p) => (p.id === id ? { ...p, is_active: false } : p)));
   }
   return (
-    <PersonalContext.Provider value={{ personal, actualizarDisponilidad, registrarWorker }}>
+    <PersonalContext.Provider value={{ personal, actualizarDisponibilidad, registrarWorker }}>
       {children}
     </PersonalContext.Provider>
   );
