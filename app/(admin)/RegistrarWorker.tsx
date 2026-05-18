@@ -17,7 +17,7 @@ import {
   FlatList,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { formatearRut } from '@/utils/format';
+import { formatearRut, validarRut } from '@/utils/format';
 
 const ROLES = [
   { label: 'Médico', value: 2 },
@@ -156,21 +156,37 @@ const RegistrarWorker = () => {
             )}
           />
           {errors.last_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
-
-          <Text style={style.label}>RUT</Text>
           <Controller
             control={control}
             name="rut"
             rules={{ required: true }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                placeholder="12.345.678-9"
-                onBlur={onBlur}
-                onChangeText={(text) => onChange(formatearRut(text))}
-                value={value}
-                style={style.input}
-              />
-            )}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const rutCompleto = value?.replace(/[^0-9kK]/g, '').length >= 8;
+              const rutValido = !rutCompleto || validarRut(value);
+              return (
+                <>
+                  <Text style={style.label}>RUT</Text>
+                  <TextInput
+                    placeholder="12.345.678-9"
+                    onBlur={onBlur}
+                    onChangeText={(text) => onChange(formatearRut(text))}
+                    value={value}
+                    style={[
+                      style.input,
+                      rutCompleto && !rutValido && { borderColor: '#E53935' },
+                      rutCompleto && rutValido && { borderColor: '#22c55e' },
+                    ]}
+                    keyboardType="default"
+                  />
+                  {rutCompleto && !rutValido && (
+                    <Text style={style.campoRequerido}>RUT inválido</Text>
+                  )}
+                  {errors.rut && !rutCompleto && (
+                    <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
+                  )}
+                </>
+              )
+            }}
           />
           {errors.rut && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
