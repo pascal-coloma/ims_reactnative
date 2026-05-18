@@ -4,8 +4,6 @@ import { createContext, useContext, useState, useEffect, ReactNode, useRef } fro
 import { FormCompleta } from '@/data/types/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BACKEND_READY = true;
-
 type DespachosContextType = {
   despachos: Despacho[];
   despachoActivo: Despacho | null;
@@ -18,6 +16,7 @@ type DespachosContextType = {
   loading: boolean;
   error: string | null;
   fetchDespachos: () => Promise<void>;
+  recargar: () => void;
 };
 
 const DespachosContext = createContext<DespachosContextType | null>(null);
@@ -30,14 +29,16 @@ export const useDespachos = () => {
 
 const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [despachos, setDespachos] = useState<Despacho[]>(mockDespachos);
+  const [despachos, setDespachos] = useState<Despacho[]>([]);
   const [despachoActivo, setDespachoActivo] = useState<Despacho | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const recargar = () => setRefreshKey((prev) => prev + 1);
 
   useEffect(() => {
-    if (BACKEND_READY) fetchDespachos();
-  }, []);
+    fetchDespachos();
+  }, [refreshKey]);
 
   const fetchDespachos = async () => {
     setLoading(true);
@@ -94,7 +95,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     } catch (e: any) {
       console.error('Error fetching despachos:', e);
       setError(e.message ?? 'Error desconocido');
-      setDespachos(mockDespachos);
+      setDespachos([]);
     } finally {
       setLoading(false);
     }
@@ -227,6 +228,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         loading,
         error,
         fetchDespachos,
+        recargar,
       }}
     >
       {children}
