@@ -2,16 +2,38 @@ import AppHeader from '@/components/AppHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ESTADO_COLOR } from '@/utils/despacho';
 import EstadoBadge from '@/components/EstadoBadge';
 
 const MisDespachos = () => {
   const { user } = useAuth();
-  const { despachosPorPersonal, seleccionarDespacho } = useDespachos();
+  const { despachosPorPersonal, seleccionarDespacho, recargar } = useDespachos();
   const [busqueda, setBusqueda] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      recargar();
+    }, []),
+  );
+
+  const refrescarSwipe = async () => {
+    setRefreshing(true);
+    await recargar();
+    setRefreshing(false);
+  };
 
   const misDespachos = despachosPorPersonal(user?.personalId ?? '');
 
@@ -26,49 +48,49 @@ const MisDespachos = () => {
   return (
     <View style={{ flex: 1 }}>
       <AppHeader title="Mis Despachos" />
-      <TextInput
-        style={local.buscador}
-        placeholder="Buscar por descripción o dirección..."
-        value={busqueda}
-        onChangeText={setBusqueda}
-      />
 
-      <ScrollView>
-        {despachosFiltrados.length === 0 ? (
+      <FlatList
+        data={despachosFiltrados}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={
+          <TextInput
+            style={local.buscador}
+            placeholder="Buscar por descripción o dirección..."
+            value={busqueda}
+            onChangeText={setBusqueda}
+          />
+        }
+        ListEmptyComponent={
           <View style={styles.container}>
             <Text style={styles.subtitle}>Sin despachos activos asignados</Text>
           </View>
-        ) : (
-          despachosFiltrados.map((d) => (
-            <TouchableOpacity
-              key={d.id}
-              style={styles.container}
-              onPress={() => {
-                seleccionarDespacho(d.id);
-                router.push('/(user)/RegistrarAtencion');
-              }}
-            >
-              <View style={local.rowHeader}>
-                <Text style={styles.title}>Despacho {d.id} </Text>
-                <EstadoBadge estado={d.estado} />
-              </View>
-
+        }
+        renderItem={({ item: d }) => (
+          <TouchableOpacity
+            style={styles.container}
+            onPress={() => {
+              seleccionarDespacho(d.id);
+              router.push('/(user)/RegistrarAtencion');
+            }}
+          >
+            <View style={local.rowHeader}>
+              <Text style={styles.title}>Despacho {d.id}</Text>
+              <EstadoBadge estado={d.estado} />
+            </View>
+            <Text style={styles.subtitle}>
+              {d.direccionOrigen} → {d.direccionDestino}
+            </Text>
+            <Text style={styles.subtitle}>Descripción: {d.descripcionLlamado}</Text>
+            {d.ambulancia && (
               <Text style={styles.subtitle}>
-                {d.direccionOrigen} → {d.direccionDestino}
+                Unidad: {d.ambulancia.modelo} — {d.ambulancia.patente}
               </Text>
-              <Text style={styles.subtitle}>Descripción: {d.descripcionLlamado}</Text>
-
-              {d.ambulancia && (
-                <Text style={styles.subtitle}>
-                  Unidad: {d.ambulancia.modelo} — {d.ambulancia.patente}
-                </Text>
-              )}
-
-              <View style={local.divisor} />
-            </TouchableOpacity>
-          ))
+            )}
+            <View style={local.divisor} />
+          </TouchableOpacity>
         )}
-      </ScrollView>
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refrescarSwipe} />}
+      />
     </View>
   );
 };
