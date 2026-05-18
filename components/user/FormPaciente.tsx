@@ -1,6 +1,4 @@
-import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { Control, Controller, FieldErrors, useFormContext } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FormUsuario } from '@/data/types/types';
@@ -34,7 +32,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   const paciente = despachoActivo?.paciente ?? null;
   const { setValue } = useFormContext<FormUsuario>();
   const [pacienteDetalle, setPacienteDetalle] = useState<any>(null);
-  const [buscando, setBuscando] = useState(false);
 
   const formatearRut = (rut: string): string => {
     const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9);
@@ -72,7 +69,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
     buscar();
   }, [paciente?.rut]);
   return (
-    <>
       <View style={style.formulario}>
         <Text style={style.sectionTitle}>Datos del Paciente</Text>
         {paciente && (
@@ -246,12 +242,10 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           />
         </CampoEditable>
       </View>
-    </>
   );
 };
 
 const style = StyleSheet.create({
-  header: { flexDirection: 'row', gap: 20, alignItems: 'center', padding: 10 },
   formulario: { padding: 20, backgroundColor: 'white' },
   sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 12, color: '#111' },
   campoWrapper: { marginBottom: 16 },

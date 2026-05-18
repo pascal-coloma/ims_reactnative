@@ -5,9 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Modal,
-  FlatList,
-  Pressable,
 } from 'react-native';
 import styles from '@/styles/globalStyles';
 import { FormUsuario } from '@/data/types/types';

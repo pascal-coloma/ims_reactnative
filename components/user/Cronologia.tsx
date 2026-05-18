@@ -78,8 +78,8 @@ const Cronologia = ({ control, errors }: CronologiaProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>Cronología</Text>
 
-      {FILAS.map((fila, i) => (
-        <View key={i} style={local.fila}>
+      {FILAS.map((fila) => (
+        <View key={fila.left.name} style={local.fila}>
           <Controller
             control={control}
             name={fila.left.name}

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Control, Controller, FieldErrors, useFieldArray, useWatch } from 'react-hook-form';
-import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Control, Controller, FieldErrors, useFieldArray, useWatch, useFormContext } from 'react-hook-form';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FormUsuario } from '@/data/types/types';
-
-const { width } = Dimensions.get('window');
 
 type ControlVitalesProps = {
   control: Control<FormUsuario>;
@@ -22,9 +20,11 @@ function PaginaControl({
   const pas = useWatch({ control, name: `controlSignos.${index}.pas` }) ?? 0;
   const pad = useWatch({ control, name: `controlSignos.${index}.pad` }) ?? 0;
   const pam = Math.round((pad * 2 + pas) / 3);
+  const { setValue } = useFormContext<FormUsuario>();
+
 
   useEffect(() => {
-    control._formValues.controlSignos[index].pam = pam;
+    setValue(`controlSignos.${index}.pam`, pam);
   }, [pam]);
 
   return (
@@ -321,8 +321,8 @@ const style = StyleSheet.create({
     fontSize: 14,
   },
   pagina: {
-    width: width - 40,
-    paddingRight: 10,
+    flex: 1,
+    paddingRight: 10
   },
   cardHeader: {
     fontSize: 14,
@@ -356,11 +356,6 @@ const style = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#2E7D32',
-  },
-  formulaHint: {
-    fontSize: 11,
-    color: '#888',
-    marginBottom: 16,
   },
   campoRequerido: {
     color: '#E53935',
