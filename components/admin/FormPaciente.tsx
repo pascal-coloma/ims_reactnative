@@ -2,7 +2,7 @@ import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormCompleta } from '@/data/types/types';
 import AppHeader from '../AppHeader';
-import { formatearRut, validarRut, formatearFecha, formatearTelefono } from '@/utils/format';
+import { formatearRut, validarRut, formatearFecha, formatearTelefono, validarFecha } from '@/utils/format';
 
 
 type FormPacienteProps = {
@@ -106,19 +106,33 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                 required: true,
                 validate: (value) => validarRut(value) || 'RUT inválido'
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <>
-                  <Text style={style.label}>RUT</Text>
-                  <TextInput
-                    placeholder="12.345.678-9"
-                    onBlur={onBlur}
-                    onChangeText={(text) => onChange(formatearRut(text))}
-                    value={value}
-                    style={style.input}
-                    keyboardType="default"
-                  />
-                </>
-              )}
+              render={({ field: { onChange, onBlur, value } }) => {
+                const rutCompleto = value?.replace(/[^0-9kK]/g, '').length >= 8;
+                const rutValido = !rutCompleto || validarRut(value);
+                return (
+                  <>
+                    <Text style={style.label}>RUT</Text>
+                    <TextInput
+                      placeholder="12.345.678-9"
+                      onBlur={onBlur}
+                      onChangeText={(text) => onChange(formatearRut(text))}
+                      value={value}
+                      style={[
+                        style.input,
+                        rutCompleto && !rutValido && { borderColor: '#E53935' },
+                        rutCompleto && rutValido && { borderColor: '#22c55e' },
+                      ]}
+                      keyboardType="default"
+                    />
+                    {rutCompleto && !rutValido && (
+                      <Text style={style.campoRequerido}>RUT inválido</Text>
+                    )}
+                    {errors.rut && !rutCompleto && (
+                      <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
+                    )}
+                  </>
+                )
+              }}
             />
             {errors.rut && (
               <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
@@ -128,19 +142,36 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
             <Controller
               control={control}
               name="fechaNacimiento"
-              rules={{ required: true }}
-              render={({ field: { onChange, value } }) => (
-                <>
-                  <Text style={style.label}>Fecha de nacimiento</Text>
-                  <TextInput
-                    placeholder="DD-MM-AAAA"
-                    onChangeText={(text) => onChange(formatearFecha(text))}
-                    value={value}
-                    style={style.input}
-                    keyboardType="numeric"
-                  />
-                </>
-              )}
+              rules={{ required: true, validate: (value) => validarFecha(value) || 'Fecha inválida', }}
+              render={({ field: { onChange, value } }) => {
+                const fechaCompleta = value?.replace(/[^0-9]/g, '').length >= 8;
+                const fechaValida = !fechaCompleta || validarFecha(value);
+
+                return (
+                  <>
+                    <Text style={style.label}>Fecha de nacimiento</Text>
+                    <TextInput
+                      placeholder="DD-MM-AAAA"
+                      onChangeText={(text) => onChange(formatearFecha(text))}
+                      value={value}
+                      style={[
+                        style.input,
+                        fechaCompleta && !fechaValida && { borderColor: '#E53935' },
+                        fechaCompleta && fechaValida && { borderColor: '#22c55e' },
+                      ]}
+                      keyboardType="numeric"
+                    />
+                    {fechaCompleta && !fechaValida && (
+                      <Text style={style.campoRequerido}>Fecha inválida</Text>
+                    )}
+                    {errors.fechaNacimiento && !fechaCompleta && (
+                      <Text style={style.campoRequerido}>
+                        {errors.fechaNacimiento.message || 'Campo requerido'}
+                      </Text>
+                    )}
+                  </>
+                );
+              }}
             />
             {errors.fechaNacimiento && (
               <Text style={style.campoRequerido}>

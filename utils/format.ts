@@ -26,6 +26,19 @@ export const validarRut = (rut: string): boolean => {
   return dv === dvCalculado;
 };
 
+export const validarFecha = (fecha: string): boolean => {
+  const clean = fecha.replace(/[^0-9]/g, '');
+  if (clean.length < 8) return false;
+  const dia = parseInt(clean.slice(0, 2));
+  const mes = parseInt(clean.slice(2, 4));
+  const anno = parseInt(clean.slice(4, 8));
+  if (mes < 1 || mes > 12) return false;
+  if (dia < 1 || dia > 31) return false;
+  if (anno < 1900 || anno > new Date().getFullYear()) return false;
+  const date = new Date(anno, mes - 1, dia);
+  return date.getFullYear() === anno && date.getMonth() === mes - 1 && date.getDate() === dia;
+};
+
 export const formatearFecha = (fechaNacimiento: string): string => {
   const limpiar = fechaNacimiento.replace(/[^0-9]/g, '');
   if (limpiar.length <= 1) return limpiar;
@@ -41,15 +54,24 @@ export const formatearFecha = (fechaNacimiento: string): string => {
 
 export const formatearTelefono = (telefono: string): string => {
   const limpio = telefono
-    .replace('+569', '')
+    .replace(/\+569\s?/g, '')
     .replace(/[^0-9]/g, '')
     .slice(0, 8);
+  if (!limpio) return '';
   return '+569 ' + limpio;
 };
 
+export const validarTelefono = (telefono: string): boolean => {
+  const digits = telefono.replace(/[^0-9]/g, '');
+  // +569 + 8 dígitos = 12 dígitos totales
+  return digits.length === 11 && digits.startsWith('569');
+};
 
-export const formatearHora = (hora: string): string => {
-  if (!hora || hora.length < 4) return hora;
+
+export const formatearHora = (hora: string | undefined): string => {
+  if (!hora) return '—';
+  if (hora.includes(':')) return hora;
+  if (hora.length < 4) return hora;
   return `${hora.slice(0, 2)}:${hora.slice(2, 4)}`;
 };
 
