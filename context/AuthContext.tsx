@@ -175,7 +175,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem('sessionid', sessionId);
       await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
 
-
       if (!cookiesPost['sessionid']?.value) {
         console.error('sessionid no persistido después del login');
         return null;
