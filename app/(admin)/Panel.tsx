@@ -116,20 +116,6 @@ const style = StyleSheet.create({
     fontWeight: 'light',
     fontSize: 35,
   },
-  cardsRow: {
-    flexDirection: 'row',
-    width: '100%',
-    gap: 10,
-  },
-  linkStyle: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    padding: 10,
-  },
   statCard: {
     backgroundColor: '#e62a2af3',
     borderRadius: 20,
@@ -143,16 +129,6 @@ const style = StyleSheet.create({
     gap: 10,
     padding: 10,
     width: '50%',
-  },
-  attentionCard: {
-    backgroundColor: '#dfacab5b',
-    borderRadius: 20,
-    width: '100%',
-    flex: 1,
-    gap: 10,
-    padding: 10,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
   },
   patientCard: {
     backgroundColor: '#ddcdcd5b',

@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
-// TODO: revisar id's de roles
 const ROLES = [
   { label: 'Médico', value: 2 },
   { label: 'TENS', value: 3 },
@@ -45,7 +44,6 @@ const RegistrarWorker = () => {
     handleSubmit,
     reset,
     formState: { errors },
-    watch,
   } = useForm<FormWorker>({
     defaultValues: { first_name: '', last_name: '', rut: '', rol_id: 0 },
   });
@@ -255,7 +253,6 @@ const RegistrarWorker = () => {
 
 const style = StyleSheet.create({
   container: { padding: 16, backgroundColor: '#fff' },
-  header: { flexDirection: 'row', gap: 20, alignItems: 'center', padding: 10 },
   formulario: { padding: 20, backgroundColor: 'white' },
   label: { fontSize: 14, fontWeight: '500', marginBottom: 4, color: '#333' },
   input: {
@@ -319,13 +316,6 @@ const style = StyleSheet.create({
     letterSpacing: 2,
   },
   resultadoSubtitulo: { fontSize: 13, color: '#666', marginBottom: 16 },
-  qrPlaceholder: {
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#F7F7F7',
-    borderRadius: 12,
-    marginBottom: 24,
-  },
 });
 
 export default RegistrarWorker;

@@ -3,7 +3,6 @@ import { useAtenciones } from '@/context/AtencionContext';
 import { generatePDF } from '@/data/constants/generatePDF';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -118,12 +117,6 @@ const ListaAtenciones = () => {
 };
 
 const local = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    padding: 10,
-  },
   rowHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

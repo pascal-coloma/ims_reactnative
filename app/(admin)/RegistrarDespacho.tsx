@@ -1,17 +1,14 @@
 import FormDespacho from '@/components/admin/FormDespacho';
 import FormPaciente from '@/components/admin/FormPaciente';
-import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
-import { generatePDF } from '@/data/constants/generatePDF';
 import { FormCompleta } from '@/data/types/types';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarDespacho = () => {
-  const { agregarDespacho, despachos, loading } = useDespachos();
-  const { ambulancias } = useAmbulancias();
+  const { agregarDespacho, loading } = useDespachos();
 
   const {
     control,
@@ -59,12 +56,7 @@ const RegistrarDespacho = () => {
 };
 
 const style = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    padding: 10,
-  },
+  
   rowBotones: {
     flexDirection: 'row',
     justifyContent: 'center',

@@ -1,9 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
 import { Insumo } from '@/data/constants/mockInventario';
-import styles from '@/styles/globalStyles';
-import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
@@ -57,7 +54,6 @@ const Inventario = () => {
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Eliminar', style: 'destructive', onPress: () => eliminarInsumo(id) },
     ]);
-    console.log('pressed');
   };
   return (
     <>
@@ -167,12 +163,6 @@ const Inventario = () => {
 };
 
 const style = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    padding: 10,
-  },
   filtros: {
     flexDirection: 'row',
     gap: 10,

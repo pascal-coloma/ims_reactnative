@@ -47,7 +47,7 @@ export default function AdminLayout() {
                         <MaterialIcons name="home" size={size} color={color} />
                       ),
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="Despachos"
                     options={{
@@ -56,7 +56,7 @@ export default function AdminLayout() {
                         <MaterialIcons name="airport-shuttle" size={size} color={color} />
                       ),
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="Panel"
                     options={{
@@ -65,35 +65,35 @@ export default function AdminLayout() {
                         <MaterialIcons name="admin-panel-settings" size={size} color={color} />
                       ),
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="RegistrarDespacho"
                     options={{
                       href: null,
                       title: 'RegistrarDespacho',
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="detalledespacho"
                     options={{
                       href: null,
                       title: 'detalledespacho',
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="Inventario"
                     options={{
                       href: null,
                       title: 'Inventario',
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="RegistrarWorker"
                     options={{
                       href: null,
                       title: 'RegistrarWorker',
                     }}
-                  ></Tabs.Screen>
+                  />
                   <Tabs.Screen
                     name="ListaAtenciones"
                     options={{

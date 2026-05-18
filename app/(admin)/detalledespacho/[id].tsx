@@ -1,4 +1,4 @@
-import { useLocalSearchParams, router, Stack } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDespachos } from '@/context/DespachosContext';
@@ -101,7 +101,6 @@ const DetalleDespachoScreen = () => {
           ))
         )}
       </View>
-      <Stack.Screen options={{ headerShown: false }} />
     </ScrollView>
   );
 };
