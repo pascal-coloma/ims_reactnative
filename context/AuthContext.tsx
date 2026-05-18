@@ -27,6 +27,8 @@ type AuthContextType = {
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
   setPendingCredentials: (creds: { username: string; password: string } | null) => void;
+  verifyPassword: (username: string, password: string) => Promise<boolean>;
+
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -102,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     restore();
 
-    // Reinyectar cookie cuando vuelve al foreground
+    // Reinyectar cookie cuando vuelve a segundo plano
     const sub = AppState.addEventListener('change', async (state) => {
       if (state !== 'active') return;
 
@@ -151,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const cookies = await CookieManager.get(BASE_URL);
       const csrftoken = cookies['csrftoken']?.value;
 
+      // revisar posibilidad de nuevo endpoint que solo valide la contraseña (verify-password) antes de pasar al totp
       const response = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'POST',
         credentials: 'include',
@@ -228,6 +231,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function verifyPassword(username: string, password: string): Promise<boolean> {
+    try {
+      const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const setCookieGet = getResp.headers.get('set-cookie');
+      if (setCookieGet) await CookieManager.setFromResponse(BASE_URL, setCookieGet);
+
+      const cookies = await CookieManager.get(BASE_URL);
+      const csrftoken = cookies['csrftoken']?.value;
+
+      const response = await fetch(`${BASE_URL}/ims/api/verify-password/`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken ?? '',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      return response.ok;
+    } catch (e) {
+      console.error('Error verifyPassword:', e);
+      return false;
+    }
+  }
+
   async function logout(): Promise<void> {
     try {
       await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
@@ -240,7 +272,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, loading, pendingCredentials, setPendingCredentials }}
+      value={{ user, loading, pendingCredentials, login, verifyPassword, logout, setPendingCredentials, }}
     >
       {children}
     </AuthContext.Provider>
