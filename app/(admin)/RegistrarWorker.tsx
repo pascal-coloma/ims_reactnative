@@ -17,6 +17,7 @@ import {
   FlatList,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import { formatearRut } from '@/utils/format';
 
 const ROLES = [
   { label: 'Médico', value: 2 },
@@ -47,14 +48,6 @@ const RegistrarWorker = () => {
   } = useForm<FormWorker>({
     defaultValues: { first_name: '', last_name: '', rut: '', rol_id: 0 },
   });
-
-  const formatearRut = (rut: string): string => {
-    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9);
-    if (clean.length <= 1) return clean;
-    const cuerpo = clean.slice(0, -1);
-    const dv = clean.slice(-1);
-    return `${cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`;
-  };
 
   const onSubmit = async (data: FormWorker) => {
     setCargando(true);

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
+import { formatearRut } from '@/utils/format';
+
 
 export default function LoginForm() {
   const router = useRouter();
@@ -11,13 +13,6 @@ export default function LoginForm() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const formatearRut = (rut: string): string => {
-    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9);
-    if (clean.length <= 1) return clean;
-    const cuerpo = clean.slice(0, -1);
-    const dv = clean.slice(-1);
-    return `${cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`;
-  };
 
   async function handleLogin() {
     if (!username || !passw) {

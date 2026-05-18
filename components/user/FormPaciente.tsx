@@ -1,10 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Control, Controller, FieldErrors, useFormContext } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormUsuario } from '@/data/types/types';
 import { useDespachos } from '@/context/DespachosContext';
 import { useEffect, useState } from 'react';
 import { fetchConSesion } from '@/context/AuthContext';
+import { formatearRut } from '@/utils/format';
+
 
 type FormPacienteProps = {
   control: Control<FormUsuario>;
@@ -33,14 +35,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   const { setValue } = useFormContext<FormUsuario>();
   const [pacienteDetalle, setPacienteDetalle] = useState<any>(null);
 
-  const formatearRut = (rut: string): string => {
-    const clean = rut.replace(/[^0-9kK]/g, '').slice(0, 9);
-    if (clean.length <= 1) return clean;
-    const cuerpo = clean.slice(0, -1);
-    const dv = clean.slice(-1);
-    const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${cuerpoFormateado}-${dv}`;
-  };
 
   useEffect(() => {
     const buscar = async () => {
