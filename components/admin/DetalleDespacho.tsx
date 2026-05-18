@@ -23,7 +23,6 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
   const ambulancia = ambulancias.find((a) => a.id === despacho.ambulancia?.id);
 
   return (
-    <>
       <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
         <View style={styles.container}>
           <View style={local.headerRow}>
@@ -70,7 +69,6 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
           <View style={local.divisor} />
         </View>
       </TouchableOpacity>
-    </>
   );
 };
 
@@ -102,12 +100,6 @@ const local = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
   },
-  pacienteNombre: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: 4,
-  },
   rutaRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -118,22 +110,6 @@ const local = StyleSheet.create({
     fontSize: 13,
     color: '#555',
     marginBottom: 2,
-  },
-  accionRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 10,
-  },
-  btnAsignar: {
-    backgroundColor: '#E53935',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  btnAsignarTexto: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
   },
   divisor: {
     height: 1,

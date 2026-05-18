@@ -5,7 +5,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const Actions = () => {
   return (
-    <>
       <View style={styles.container}>
         <Text style={style.title}>Acciones Rápidas</Text>
         <View style={style.cardsRow}>
@@ -31,7 +30,6 @@ const Actions = () => {
           </Link>
         </View>
       </View>
-    </>
   );
 };
 

@@ -6,9 +6,9 @@ import DetalleDespacho from './DetalleDespacho';
 
 const FILTROS = [
   { label: 'Todos', value: 'todos' },
-  { label: 'Pendientes', value: 'pendiente' },
+  { label: 'Recibidos', value: 'recibido' },
   { label: 'Activos', value: 'activo' },
-  { label: 'Completados', value: 'completado' },
+  { label: 'Finalizados', value: 'finalizado' },
 ];
 
 const ListaDespachos = () => {

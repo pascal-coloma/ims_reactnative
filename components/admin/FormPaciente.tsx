@@ -1,8 +1,5 @@
-import styles from '@/styles/globalStyles';
-import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormCompleta } from '@/data/types/types';
 import AppHeader from '../AppHeader';
 
@@ -152,10 +149,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               name="rut"
               rules={{
                 required: true,
-                validate: (value) => {
-                  if (!value) return 'Campo requerido';
-                  return true;
-                },
+                validate: (value) => validarRut(value) || 'RUT inválido'
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <>
@@ -241,11 +235,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
 };
 
 const style = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-  },
   formulario: {
     padding: 20,
     backgroundColor: 'white',
@@ -273,10 +262,6 @@ const style = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 5,
-  },
-  divisor: {
-    height: 5,
-    backgroundColor: 'grey',
   },
 });
 

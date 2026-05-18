@@ -31,7 +31,6 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
   }, []);
 
   return (
-    <>
       <View style={style.formulario}>
         <Text style={style.title}>Datos del despacho</Text>
         <Controller
@@ -136,7 +135,6 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
         />
         {errors.grupoAsignado && <Text style={style.campoRequerido}>Campo requerido</Text>}
       </View>
-    </>
   );
 };
 
@@ -165,17 +163,6 @@ const style = StyleSheet.create({
   textArea: {
     height: 100,
     textAlignVertical: 'top',
-  },
-  checkItem: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
-  },
-  checkItemSeleccionado: {
-    backgroundColor: '#e60303',
-    borderColor: '#e60303',
   },
   title: {
     fontSize: 20,
