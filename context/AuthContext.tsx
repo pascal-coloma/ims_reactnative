@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { AppState } from 'react-native';
 
 const BASE_URL = 'http://34.228.186.22';
 const BACKEND_READY = true;
@@ -68,24 +69,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const restore = async () => {
       try {
+        const saved = await AsyncStorage.getItem('user');
+        const savedSession = await AsyncStorage.getItem('sessionid');
+
+        if (!saved || !savedSession) {
+          setUser(null);
+          return;
+        }
+
+        // Verificar si la cookie sigue viva
         const cookies = await CookieManager.get(BASE_URL);
         const sessionid = cookies['sessionid']?.value;
-        const saved = await AsyncStorage.getItem('user');
 
-        if (sessionid && saved) {
-          setUser(JSON.parse(saved));
-        } else {
-          await AsyncStorage.removeItem('user');
-          await CookieManager.clearAll();
-          setUser(null);
+        // Si se perdió, reinyectarla desde AsyncStorage
+        if (!sessionid) {
+          await CookieManager.set(BASE_URL, {
+            name: 'sessionid',
+            value: savedSession,
+            path: '/',
+            secure: true,
+            httpOnly: true,
+          });
         }
+
+        setUser(JSON.parse(saved));
       } catch (e) {
         console.error('Error restaurando sesión:', e);
       } finally {
         setLoading(false);
       }
     };
+
     restore();
+
+    // Reinyectar cookie cuando vuelve al foreground
+    const sub = AppState.addEventListener('change', async (state) => {
+      if (state !== 'active') return;
+
+      const [savedSession, savedCsrf] = await Promise.all([
+        AsyncStorage.getItem('sessionid'),
+        AsyncStorage.getItem('csrftoken'),
+      ]);
+
+      if (!savedSession) return;
+
+      const cookies = await CookieManager.get(BASE_URL);
+
+      if (!cookies['sessionid']?.value) {
+        await CookieManager.set(BASE_URL, {
+          name: 'sessionid',
+          value: savedSession,
+          path: '/',
+          secure: true,
+          httpOnly: true,
+        });
+      }
+
+      if (savedCsrf && !cookies['csrftoken']?.value) {
+        await CookieManager.set(BASE_URL, {
+          name: 'csrftoken',
+          value: savedCsrf,
+          path: '/',
+          secure: false,
+          httpOnly: false,
+        });
+      }
+    });
+
+    return () => sub.remove();
   }, []);
 
   async function login(username: string, password: string, totpCode?: string) {
@@ -118,6 +169,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (setCookiePost) await CookieManager.setFromResponse(BASE_URL, setCookiePost);
 
       const cookiesPost = await CookieManager.get(BASE_URL);
+      const sessionId = cookiesPost['sessionid'].value;
+      const csrftokenPost = cookiesPost['csrftoken']?.value;
+
+      await AsyncStorage.setItem('sessionid', sessionId);
+      await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
+
+
       if (!cookiesPost['sessionid']?.value) {
         console.error('sessionid no persistido después del login');
         return null;
@@ -169,8 +227,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function logout(): Promise<void> {
     try {
+      await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
       await CookieManager.clearAll();
-      await AsyncStorage.removeItem('user');
       setUser(null);
     } catch (e) {
       console.error('Error logout:', e);
