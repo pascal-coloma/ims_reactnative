@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,

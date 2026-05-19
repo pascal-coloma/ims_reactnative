@@ -6,9 +6,11 @@ import styles from '@/styles/globalStyles';
 import { usePersonal } from '@/context/PersonalContext';
 import { traducirRol } from '@/utils/labels';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
-import { ESTADO_COLOR } from '@/utils/despacho';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import EstadoBadge from '@/components/EstadoBadge';
 
 const DetalleDespachoScreen = () => {
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams();
   const { despachos } = useDespachos();
   const { personal } = usePersonal();
@@ -26,21 +28,16 @@ const DetalleDespachoScreen = () => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
       <View style={styles.container}>
-        <View style={style.header}>
+        <View style={[style.header, { paddingTop: insets.top + 8 }]}>
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={22} color="#000" />
           </TouchableOpacity>
           <Text style={styles.title}>Despacho {despacho.id}</Text>
-          <View style={[style.estadoPill, { backgroundColor: ESTADO_COLOR[despacho.estado] }]}>
-            <Text style={style.estadoPillText}>
-              {despacho.estado[0].toUpperCase() + despacho.estado.slice(1)}
-            </Text>
-          </View>
+          <EstadoBadge estado={despacho.estado} />
         </View>
       </View>
-
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Ubicación</Text>
         <View style={style.campo}>
@@ -52,7 +49,6 @@ const DetalleDespachoScreen = () => {
           <Text style={style.campoValor}>{despacho.direccionDestino}</Text>
         </View>
       </View>
-
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Detalles del Despacho</Text>
         <View style={style.campo}>
@@ -66,7 +62,6 @@ const DetalleDespachoScreen = () => {
           </Text>
         </View>
       </View>
-
       <View style={style.seccion}>
         <Text style={style.seccionTitulo}>Equipo Asignado</Text>
         {equipoDespacho.length === 0 ? (
@@ -104,18 +99,6 @@ const style = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     padding: 10,
-  },
-  estadoPill: {
-    marginLeft: 'auto',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-    alignItems: 'center',
-  },
-  estadoPillText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
   },
   seccion: {
     backgroundColor: 'white',
