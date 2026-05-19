@@ -16,7 +16,7 @@ type AtencionContextType = {
   agregarAtencion: (
     atencion: Atencion,
     ambulanciaId: string,
-    direccionDespacho: string, // ← agrega
+    direccionDespacho: string,
   ) => Promise<void>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;

@@ -1,9 +1,27 @@
+import { Link, router } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { useDespachos } from '@/context/DespachosContext';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
 
 const UserActions = () => {
+  const { user } = useAuth();
+  const { despachosPorPersonal, seleccionarDespacho } = useDespachos();
+
+  const handleRegistrarAtencion = () => {
+    const misDespachos = despachosPorPersonal(user?.personalId ?? '');
+
+    if (misDespachos.length === 0) {
+      Alert.alert('Sin despacho activo', 'No tienes un despacho activo asignado.');
+      return;
+    }
+
+    const ultimo = misDespachos[misDespachos.length - 1];
+    seleccionarDespacho(ultimo.id);
+    router.push('/(user)/RegistrarAtencion');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={style.title}>Acciones Rápidas</Text>
@@ -17,15 +35,18 @@ const UserActions = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(user)/RegistrarAtencion'} style={style.linkStyle}>
+
+        <TouchableOpacity style={style.linkStyle} onPress={handleRegistrarAtencion}>
           <View style={style.attentionCard}>
             <MaterialIcons name="checklist" size={50} color="#130b0b" />
             <View>
-              <Text style={[style.cardTitle, { color: '#130b0b' }]}>Registrar Atencion</Text>
-              <Text style={[style.cardSubtitle, { color: '#130b0b' }]}>Ficha prehospitalaria</Text>
+              <Text style={[style.cardTitle, { color: '#130b0b' }]}>Registrar Atención</Text>
+              <Text style={[style.cardSubtitle, { color: '#130b0b' }]}>
+                Rellenar ficha ultimo despacho
+              </Text>
             </View>
           </View>
-        </Link>
+        </TouchableOpacity>
       </View>
     </View>
   );

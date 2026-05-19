@@ -26,8 +26,8 @@ const RegistrarDespacho = () => {
       await agregarDespacho(data);
       reset();
       router.back();
-    } catch (e) {
-      console.error('Falló el envío del despacho');
+    } catch (e: any) {
+      console.error('Falló el envío del despacho', e.message);
     }
   };
 
