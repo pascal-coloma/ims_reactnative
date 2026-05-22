@@ -20,7 +20,7 @@ const Panel = () => {
       <ScrollView contentContainerStyle={{ gap: 10, padding: 10, backgroundColor: 'white' }}>
         <View style={style.contenedorCards}>
           <View style={style.statCard}>
-            <Text style={style.cardTitle}>Despachos hoy</Text>
+            <Text style={style.cardTitle}>{`Despachos (activos/totales)`}</Text>
             <Text style={style.cardSubtitle}>{totalDespachos}</Text>
           </View>
           <View style={[style.statCard, { borderLeftColor: '#E53935' }]}>
@@ -30,7 +30,7 @@ const Panel = () => {
         </View>
         <View style={style.contenedorCards}>
           <View style={style.personalCard}>
-            <Text style={style.cardTitle}>Personal activo</Text>
+            <Text style={style.cardTitle}>Personal registrado</Text>
             <Text style={style.cardSubtitle}>{personalActivo}</Text>
           </View>
         </View>

@@ -44,6 +44,12 @@
     },
     "ios": {
       "bundleIdentifier": "com.anonymous.ims"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "35bfcbfe-f74d-49a8-89e8-9699dbd9467f"
+      }
     }
   }
 }

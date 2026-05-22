@@ -1,3 +1,6 @@
+// Copyright 2025 Pascal Coloma
+// SPDX-License-Identifier: Apache-2.0
+
 import { formatearFechaHora, formatearHora } from '@/utils/format';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
