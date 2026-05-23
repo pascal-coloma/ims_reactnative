@@ -6,7 +6,7 @@ import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppState } from 'react-native';
 
-const BASE_URL = 'http://34.228.186.22';
+const BASE_URL = 'https://956.duckdns.org';
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 
@@ -61,7 +61,6 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
   const setCookie = response.headers.get('set-cookie');
   if (setCookie) await CookieManager.setFromResponse(BASE_URL, setCookie);
 
-  // Sesión expirada — limpiar y notificar al provider
   if (response.status === 401 || response.status === 403) {
     await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
     await CookieManager.clearAll();
@@ -91,7 +90,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } | null>(null);
 
   useEffect(() => {
-    // Registrar handler de sesión expirada
     setSessionExpiredHandler(() => setUser(null));
 
     const restore = async () => {
