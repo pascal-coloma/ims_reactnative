@@ -48,6 +48,17 @@ const UserActions = () => {
           </View>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        style={style.misAtencionesCard}
+        onPress={() => router.push('/(user)/MisAtenciones')}
+      >
+        <MaterialIcons name="assignment" size={28} color="#1976D2" />
+        <View>
+          <Text style={style.misAtencionesTitulo}>Mis Atenciones</Text>
+          <Text style={style.misAtencionesSubtitulo}>Ver y editar atenciones registradas</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -97,5 +108,25 @@ const style = StyleSheet.create({
     padding: 10,
     flexDirection: 'column',
     alignItems: 'flex-start',
+  },
+  misAtencionesCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 10,
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#1976D2',
+    backgroundColor: '#EFF6FF',
+  },
+  misAtencionesTitulo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1976D2',
+  },
+  misAtencionesSubtitulo: {
+    fontSize: 11,
+    color: '#555',
   },
 });

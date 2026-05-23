@@ -58,6 +58,19 @@ const UserLayout = () => {
               ),
             }}
           />
+          <Tabs.Screen
+            name="MisAtenciones"
+            options={{
+              title: 'Mis Atenciones',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialIcons name="assignment" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="ModificarAtencion"
+            options={{ href: null, title: 'ModificarAtencion' }}
+          />
         </Tabs>
       </AtencionProvider>
     </DespachosProvider>
