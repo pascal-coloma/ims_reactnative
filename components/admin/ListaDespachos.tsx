@@ -30,7 +30,7 @@ const ListaDespachos = () => {
   useFocusEffect(
     useCallback(() => {
       recargar();
-    }, [recargar]),
+    }, []),
   );
 
   const refrescarSwipe = async () => {
