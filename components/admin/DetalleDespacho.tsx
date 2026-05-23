@@ -5,7 +5,6 @@ import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
-import { ESTADO_COLOR } from '@/utils/despacho';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import EstadoBadge from '../EstadoBadge';
 

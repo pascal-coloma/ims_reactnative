@@ -137,9 +137,9 @@ describe('useAuth — login', () => {
 
   const mockPersonalResponse = {
     ok: true,
-    json: jest.fn().mockResolvedValue([
-      { username: 'testuser', first_name: 'Test', last_name: 'User', id: 42 },
-    ]),
+    json: jest
+      .fn()
+      .mockResolvedValue([{ username: 'testuser', first_name: 'Test', last_name: 'User', id: 42 }]),
     headers: { get: () => null },
   };
 
@@ -175,9 +175,10 @@ describe('useAuth — login', () => {
       .mockResolvedValueOnce(noCookies)
       .mockResolvedValueOnce({ csrftoken: { value: 'csrf-abc' } });
 
-    mockFetch
-      .mockResolvedValueOnce(mockCsrfGetResponse)
-      .mockResolvedValueOnce({ ...mockLoginPostResponse(false), json: jest.fn().mockResolvedValue({}) });
+    mockFetch.mockResolvedValueOnce(mockCsrfGetResponse).mockResolvedValueOnce({
+      ...mockLoginPostResponse(false),
+      json: jest.fn().mockResolvedValue({}),
+    });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -191,7 +192,9 @@ describe('useAuth — login', () => {
 
   it('returns null on network error', async () => {
     mockGet.mockResolvedValueOnce(noCookies).mockResolvedValueOnce({ csrftoken: { value: 'x' } });
-    mockFetch.mockResolvedValueOnce(mockCsrfGetResponse).mockRejectedValueOnce(new Error('Network error'));
+    mockFetch
+      .mockResolvedValueOnce(mockCsrfGetResponse)
+      .mockRejectedValueOnce(new Error('Network error'));
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
