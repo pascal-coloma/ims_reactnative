@@ -47,6 +47,7 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    Origin: BASE_URL,
     ...(sessionid ? { Cookie: `sessionid=${sessionid}; csrftoken=${csrftoken ?? ''}` } : {}),
     ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
     ...(options.headers as Record<string, string>),
@@ -172,6 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          Origin: BASE_URL,
           'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({
@@ -250,6 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          Origin: BASE_URL,
           'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({ username, password }),
