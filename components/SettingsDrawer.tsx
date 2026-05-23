@@ -32,7 +32,7 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
       duration: 280,
       useNativeDriver: true,
     }).start();
-  }, [visible, translateX]);
+  }, [visible]);
 
   const iniciales = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
   const rolLabel = traducirRol(user?.role ?? '');

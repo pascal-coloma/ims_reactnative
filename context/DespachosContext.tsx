@@ -91,7 +91,8 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             }
           : undefined,
       });
-      console.log('raw API response[0]:', JSON.stringify(data[0]));
+      let count = 0;
+      console.log(count++);
       const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
 
       setDespachos(mapped);

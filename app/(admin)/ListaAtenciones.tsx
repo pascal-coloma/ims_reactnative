@@ -20,7 +20,7 @@ const ListaAtenciones = () => {
 
   useEffect(() => {
     fetchAtenciones();
-  }, [fetchAtenciones]);
+  }, []);
 
   const handleGenerarPDF = async (id: number) => {
     setGenerando(id);
