@@ -31,7 +31,7 @@ function PaginaControl({
 
   useEffect(() => {
     setValue(`controlSignos.${index}.pam`, pam);
-  }, [pam]);
+  }, [pam, index, setValue]);
 
   return (
     <View style={style.pagina}>
