@@ -60,6 +60,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         fechaLlamado: d.fecha_llamado,
         fechaAsignacion: d.fecha_asignacion,
         personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
+        grupoNombre: d.grupo_nombre ?? undefined,
         ambulancia: d.ambulancia_id
           ? {
               id: String(d.ambulancia_id),
@@ -78,6 +79,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         estado: d.estado === 'asignado' ? 'activo' : d.estado,
         fechaLlamado: d.fechaLlamado,
         personalIds: d.personalIds ?? [],
+        grupoNombre: d.grupoNombre ?? d.grupo_nombre ?? undefined,
         paciente: d.paciente ?? undefined,
         rutPaciente: d.paciente?.rut ?? undefined,
         ambulancia: d.ambulancia
@@ -89,6 +91,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             }
           : undefined,
       });
+      console.log('raw API response[0]:', JSON.stringify(data[0]));
       const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
 
       setDespachos(mapped);

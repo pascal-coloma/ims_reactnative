@@ -15,6 +15,7 @@ export type Despacho = {
   fechaAsignacion?: string;
   ambulancia?: Ambulancia;
   personalIds: string[];
+  grupoNombre?: string;
 };
 
 const mockDespachos: Despacho[] = [
