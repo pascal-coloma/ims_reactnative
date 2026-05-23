@@ -42,7 +42,7 @@ export default function TOTPScreen() {
       } else {
         setError('Rol no reconocido');
       }
-    } catch (e) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setCargando(false);
