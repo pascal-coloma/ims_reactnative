@@ -7,6 +7,7 @@ type AtencionResumen = {
   hora_salida: string;
   hora_llegada: string | null;
   estado_sello: string;
+  firma_digital: string;
   paciente__nombre_completo: string;
 };
 
@@ -107,6 +108,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         hora_salida: a.hora_salida,
         hora_llegada: a.hora_llegada,
         estado_sello: a.estado_sello,
+        firma_digital: a.firma_digital ?? '',
         paciente__nombre_completo: a.despacho?.paciente?.nombre ?? 'Sin paciente',
       }));
       setResumenAtenciones(mapped);
@@ -131,6 +133,14 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
       const documento = await s3Resp.json();
       console.log('Documento S3:', JSON.stringify(documento, null, 2));
+
+      // Paso 3 — inyectar estado_sello y firma_digital actuales desde RetornarAtencionAPIView
+      const resumen = resumenAtenciones.find((a) => a.id === id);
+      if (resumen && documento.atencion) {
+        documento.atencion.estado_sello = resumen.estado_sello;
+        documento.atencion.sello_electronico = resumen.firma_digital;
+      }
+
       return documento;
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
