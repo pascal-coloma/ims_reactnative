@@ -38,7 +38,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (user) fetchDespachos();
-  }, [refreshKey, user?.role]);
+  }, [refreshKey]);
 
   const fetchDespachos = async () => {
     setLoading(true);
