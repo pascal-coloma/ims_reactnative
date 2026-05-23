@@ -1,8 +1,6 @@
-import { fetchConSesion } from '@/context/AuthContext';
-import { mockAmbulancias, Ambulancia } from '@/data/constants/mockAmbulancia';
+import { fetchConSesion, useAuth } from '@/context/AuthContext';
+import { Ambulancia } from '@/data/constants/mockAmbulancia';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-
-const BACKEND_READY = true;
 
 type AmbulanciaContextType = {
   ambulancias: Ambulancia[];
@@ -13,13 +11,14 @@ type AmbulanciaContextType = {
 const AmbulanciaContext = createContext<AmbulanciaContextType | null>(null);
 
 export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
-  const [ambulancias, setAmbulancias] = useState<Ambulancia[]>(mockAmbulancias);
+  const { user } = useAuth();
+  const [ambulancias, setAmbulancias] = useState<Ambulancia[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (BACKEND_READY) fetchAmbulancias();
-  }, []);
+    if (user) fetchAmbulancias();
+  }, [user?.role]);
 
   const fetchAmbulancias = async () => {
     setLoading(true);
@@ -34,7 +33,7 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
     } catch (e: any) {
       console.error('Error fetching ambulancias:', e);
       setError(e.message ?? 'Error desconocido');
-      setAmbulancias(mockAmbulancias);
+      setAmbulancias([]);
     } finally {
       setLoading(false);
     }

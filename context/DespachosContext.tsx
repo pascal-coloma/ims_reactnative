@@ -37,8 +37,8 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const recargar = () => setRefreshKey((prev) => prev + 1);
 
   useEffect(() => {
-    fetchDespachos();
-  }, [refreshKey]);
+    if (user) fetchDespachos();
+  }, [refreshKey, user?.role]);
 
   const fetchDespachos = async () => {
     setLoading(true);
@@ -59,6 +59,8 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         estado: d.estado === 'asignado' ? 'activo' : d.estado,
         fechaLlamado: d.fecha_llamado,
         fechaAsignacion: d.fecha_asignacion,
+        paciente: d.paciente ?? undefined,
+        rutPaciente: d.paciente?.rut ?? undefined,
         personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
         grupoNombre: d.grupo_nombre ?? undefined,
         ambulancia: d.ambulancia_id
@@ -66,7 +68,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
               id: String(d.ambulancia_id),
               patente: '',
               modelo: '',
-              estado_disponibilidad: 'disponible',
+              estado_disponibilidad: 'disponible' as const,
             }
           : undefined,
       });
@@ -91,8 +93,6 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             }
           : undefined,
       });
-      let count = 0;
-      console.log(count++);
       const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
 
       setDespachos(mapped);
