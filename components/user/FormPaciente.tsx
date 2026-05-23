@@ -59,7 +59,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
       }
     };
     buscar();
-  }, [paciente?.rut, despachoActivo?.direccionOrigen, despachoActivo?.direccionDestino, setValue]);
+  }, [paciente?.rut]);
 
   return (
     <View style={style.formulario}>

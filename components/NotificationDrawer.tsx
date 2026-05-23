@@ -30,7 +30,7 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
       duration: 280,
       useNativeDriver: true,
     }).start();
-  }, [visible, translateX]);
+  }, [visible]);
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
