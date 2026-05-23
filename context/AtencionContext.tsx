@@ -7,17 +7,14 @@ type AtencionResumen = {
   hora_salida: string;
   hora_llegada: string | null;
   estado_sello: string;
+  firma_digital: string;
   paciente__nombre_completo: string;
 };
 
 type AtencionContextType = {
   atenciones: Atencion[];
   resumenAtenciones: AtencionResumen[];
-  agregarAtencion: (
-    atencion: Atencion,
-    ambulanciaId: string,
-    direccionDespacho: string,
-  ) => Promise<void>;
+  agregarAtencion: (atencion: Atencion, ambulanciaId: string) => Promise<void>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;
   buscarPorDespacho: (despachoId: string) => Atencion | undefined;
@@ -33,25 +30,10 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const agregarAtencion = async (
-    atencion: Atencion,
-    ambulanciaId: string,
-    direccionDespacho: string,
-  ) => {
+  const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
     setLoading(true);
     setError(null);
     try {
-      // Paso 0 — buscar paciente por rut
-      const buscarResp = await fetchConSesion(
-        `/ims/api/pacientes/?rut=${encodeURIComponent(atencion.paciente.rut)}`,
-      );
-      if (!buscarResp.ok)
-        throw new Error('Paciente no encontrado — debe ser registrado por control primero');
-      const pacienteData = await buscarResp.json();
-      const paciente_id: number = pacienteData.id;
-      console.log('Paso 0 - paciente_id:', paciente_id);
-
-      // Paso 1 — registrar atención
       const formatearHora = (hora: string) => {
         const nums = hora.replace(/[^0-9]/g, '');
         return nums.padStart(4, '0').slice(0, 4);
@@ -60,11 +42,8 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       const payload = {
         despacho: {
           despacho_id: Number(atencion.despachoId),
-          paciente_id,
           ambulancia_id: Number(ambulanciaId),
-          direccion_despacho: direccionDespacho,
           hora_salida: atencion.fechaRegistro,
-          hora_llegada: atencion.fechaRegistro,
         },
         signos_vitales: atencion.controlSignos.map((s) => ({
           presion_sistolica: s.pas,
@@ -129,6 +108,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         hora_salida: a.hora_salida,
         hora_llegada: a.hora_llegada,
         estado_sello: a.estado_sello,
+        firma_digital: a.firma_digital ?? '',
         paciente__nombre_completo: a.despacho?.paciente?.nombre ?? 'Sin paciente',
       }));
       setResumenAtenciones(mapped);
@@ -153,6 +133,14 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
       const documento = await s3Resp.json();
       console.log('Documento S3:', JSON.stringify(documento, null, 2));
+
+      // Paso 3 — inyectar estado_sello y firma_digital actuales desde RetornarAtencionAPIView
+      const resumen = resumenAtenciones.find((a) => a.id === id);
+      if (resumen && documento.atencion) {
+        documento.atencion.estado_sello = resumen.estado_sello;
+        documento.atencion.sello_electronico = resumen.firma_digital;
+      }
+
       return documento;
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
