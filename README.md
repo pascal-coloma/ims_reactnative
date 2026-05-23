@@ -111,7 +111,7 @@ Stored to AWS S3 with SHA-256 hash for document integrity.
 | GET | `/ims/api/atenciones/` | Attention summary or `?id=N` for S3 presigned URL |
 | POST | `/ims/api/atenciones/add/` | Register attention |
 
-Base URL: `http://34.228.186.22`
+Base URL: `https://956.duckdns.org`
 
 ---
 
