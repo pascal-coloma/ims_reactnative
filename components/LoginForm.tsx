@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
-import { formatearRut } from '@/utils/format';
-
 export default function LoginForm() {
   const router = useRouter();
-  const { setPendingCredentials, verifyPassword } = useAuth();
+  const { setPendingCredentials } = useAuth();
   const [username, setUsername] = useState('');
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);

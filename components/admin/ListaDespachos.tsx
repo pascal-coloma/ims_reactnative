@@ -30,8 +30,7 @@ const ListaDespachos = () => {
   useFocusEffect(
     useCallback(() => {
       recargar();
-      console.log(despachos[0].grupoNombre);
-    }, []),
+    }, [recargar]),
   );
 
   const refrescarSwipe = async () => {

@@ -7,14 +7,12 @@ import { useCallback, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ESTADO_COLOR } from '@/utils/despacho';
 import EstadoBadge from '@/components/EstadoBadge';
 
 const MisDespachos = () => {
@@ -26,7 +24,7 @@ const MisDespachos = () => {
   useFocusEffect(
     useCallback(() => {
       recargar();
-    }, []),
+    }, [recargar]),
   );
 
   const refrescarSwipe = async () => {
