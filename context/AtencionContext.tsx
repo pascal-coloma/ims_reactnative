@@ -16,7 +16,6 @@ type AtencionContextType = {
   agregarAtencion: (
     atencion: Atencion,
     ambulanciaId: string,
-    direccionDespacho: string,
   ) => Promise<void>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;
@@ -36,22 +35,10 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const agregarAtencion = async (
     atencion: Atencion,
     ambulanciaId: string,
-    direccionDespacho: string,
   ) => {
     setLoading(true);
     setError(null);
     try {
-      // Paso 0 — buscar paciente por rut
-      const buscarResp = await fetchConSesion(
-        `/ims/api/pacientes/?rut=${encodeURIComponent(atencion.paciente.rut)}`,
-      );
-      if (!buscarResp.ok)
-        throw new Error('Paciente no encontrado — debe ser registrado por control primero');
-      const pacienteData = await buscarResp.json();
-      const paciente_id: number = pacienteData.id;
-      console.log('Paso 0 - paciente_id:', paciente_id);
-
-      // Paso 1 — registrar atención
       const formatearHora = (hora: string) => {
         const nums = hora.replace(/[^0-9]/g, '');
         return nums.padStart(4, '0').slice(0, 4);
@@ -60,11 +47,8 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       const payload = {
         despacho: {
           despacho_id: Number(atencion.despachoId),
-          paciente_id,
           ambulancia_id: Number(ambulanciaId),
-          direccion_despacho: direccionDespacho,
           hora_salida: atencion.fechaRegistro,
-          hora_llegada: atencion.fechaRegistro,
         },
         signos_vitales: atencion.controlSignos.map((s) => ({
           presion_sistolica: s.pas,

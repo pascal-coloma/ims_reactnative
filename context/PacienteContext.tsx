@@ -1,4 +1,4 @@
-import mockPacientes, { Paciente } from '@/data/constants/mockPaciente';
+import { Paciente } from '@/data/constants/mockPaciente';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { fetchConSesion, useAuth } from './AuthContext';
 
@@ -6,17 +6,20 @@ type PacienteContextType = {
   pacientes: Paciente[];
   agregarPaciente: (paciente: Paciente) => void;
   buscarPaciente: (rut: string) => Paciente | undefined;
+  loading: boolean;
+  error: string | null;
 };
 
 const PacienteContext = createContext<PacienteContextType | null>(null);
 
 const PacienteProvider = ({ children }: { children: ReactNode }) => {
-  const [pacientes, setPacientes] = useState<Paciente[]>(mockPacientes);
+  const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!user) return;
     const fetchPacientes = async () => {
       setLoading(true);
       setError(null);
@@ -26,12 +29,14 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
         const data = await response.json();
         setPacientes(data);
       } catch (e: any) {
-        console.error('Error al hacer fetch' + e);
+        console.error('Error al hacer fetch:', e);
         setError(e.message ?? 'Error desconocido');
+      } finally {
+        setLoading(false);
       }
     };
     fetchPacientes();
-  }, []);
+  }, [user?.role]);
 
   const agregarPaciente = (paciente: Paciente) => {
     setPacientes([...pacientes, paciente]);
@@ -43,7 +48,7 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <PacienteContext.Provider value={{ pacientes, agregarPaciente, buscarPaciente }}>
+    <PacienteContext.Provider value={{ pacientes, agregarPaciente, buscarPaciente, loading, error }}>
       {children}
     </PacienteContext.Provider>
   );

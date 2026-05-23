@@ -54,7 +54,6 @@ const RegistrarAtencion = () => {
           cronologia,
         },
         despachoActivo.ambulancia?.id ?? '',
-        despachoActivo.direccionOrigen,
       );
       reset();
       setExito(true);

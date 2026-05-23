@@ -4,10 +4,10 @@ import { useDespachos } from '@/context/DespachosContext';
 import { usePersonal } from '@/context/PersonalContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const Panel = () => {
-  const { despachos } = useDespachos();
+  const { despachos, loading: loadingDespachos } = useDespachos();
   const { personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
   const totalDespachos = despachos.length;
@@ -21,7 +21,11 @@ const Panel = () => {
         <View style={style.contenedorCards}>
           <View style={style.statCard}>
             <Text style={style.cardTitle}>{`Despachos (activos/totales)`}</Text>
-            <Text style={style.cardSubtitle}>{totalDespachos}</Text>
+            {loadingDespachos ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={style.cardSubtitle}>{totalDespachos}</Text>
+            )}
           </View>
           <View style={[style.statCard, { borderLeftColor: '#E53935' }]}>
             <Text style={style.cardTitle}>Ambulancias</Text>
