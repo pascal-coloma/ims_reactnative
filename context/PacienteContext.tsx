@@ -48,7 +48,9 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <PacienteContext.Provider value={{ pacientes, agregarPaciente, buscarPaciente, loading, error }}>
+    <PacienteContext.Provider
+      value={{ pacientes, agregarPaciente, buscarPaciente, loading, error }}
+    >
       {children}
     </PacienteContext.Provider>
   );

@@ -13,10 +13,7 @@ type AtencionResumen = {
 type AtencionContextType = {
   atenciones: Atencion[];
   resumenAtenciones: AtencionResumen[];
-  agregarAtencion: (
-    atencion: Atencion,
-    ambulanciaId: string,
-  ) => Promise<void>;
+  agregarAtencion: (atencion: Atencion, ambulanciaId: string) => Promise<void>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;
   buscarPorDespacho: (despachoId: string) => Atencion | undefined;
@@ -32,10 +29,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const agregarAtencion = async (
-    atencion: Atencion,
-    ambulanciaId: string,
-  ) => {
+  const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
     setLoading(true);
     setError(null);
     try {
