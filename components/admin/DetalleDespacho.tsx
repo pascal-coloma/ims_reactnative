@@ -1,18 +1,13 @@
-import { usePersonal } from '@/context/PersonalContext';
 import { Despacho } from '@/data/constants/mockDespachos';
 import styles from '@/styles/globalStyles';
-import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
-import { ESTADO_COLOR } from '@/utils/despacho';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import EstadoBadge from '../EstadoBadge';
 
 const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
-  const { personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
-  const equipoDespacho = personal.filter((p) => despacho.personalIds.includes(String(p.id)));
   const ambulancia = ambulancias.find((a) => a.id === despacho.ambulancia?.id);
 
   return (
@@ -36,22 +31,28 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
           </Text>
         </View>
 
-        <Text style={local.dato}>Emergencia: {despacho.descripcionLlamado}</Text>
+        <View style={local.rutaRow}>
+          <MaterialIcons name="warning" size={14} color="#888" />
+          <Text style={local.dato} numberOfLines={1}>
+            {despacho.descripcionLlamado}
+          </Text>
+        </View>
 
         {ambulancia && (
-          <Text style={local.dato}>
-            Unidad: {ambulancia.modelo} — {ambulancia.patente}
-          </Text>
+          <View style={local.rutaRow}>
+            <MaterialIcons name="airport-shuttle" size={14} color="#888" />
+            <Text style={local.dato} numberOfLines={1}>
+              {ambulancia.modelo} — {ambulancia.patente}
+            </Text>
+          </View>
         )}
 
-        {equipoDespacho.map((p) => (
-          <View key={p.id} style={local.equipoItem}>
-            <Text style={local.dato}>
-              {p.first_name} {p.last_name}{' '}
-            </Text>
-            <Text style={local.equipoRol}>{traducirRol(p.rol_nombre)}</Text>
+        {despacho.grupoNombre && (
+          <View style={local.rutaRow}>
+            <MaterialIcons name="group" size={14} color="#888" />
+            <Text style={local.dato}>{despacho.grupoNombre}</Text>
           </View>
-        ))}
+        )}
 
         <View style={local.divisor} />
       </View>
@@ -68,24 +69,10 @@ const local = StyleSheet.create({
     marginBottom: 6,
   },
   idTexto: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '700',
     color: '#888',
     letterSpacing: 0.5,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  badgeTexto: {
-    color: 'white',
-    fontSize: 11,
-    fontWeight: 'bold',
   },
   rutaRow: {
     flexDirection: 'row',
@@ -103,17 +90,6 @@ const local = StyleSheet.create({
     backgroundColor: '#eee',
     width: '100%',
     marginTop: 12,
-  },
-  equipoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 2,
-  },
-  equipoRol: {
-    fontSize: 11,
-    color: '#888',
-    fontStyle: 'italic',
   },
 });
 
