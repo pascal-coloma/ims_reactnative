@@ -1,5 +1,6 @@
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
 import {
   FlatList,
@@ -13,11 +14,11 @@ import {
 import DetalleDespacho from './DetalleDespacho';
 import { useFocusEffect } from 'expo-router';
 
-const FILTROS = [
-  { label: 'Todos', value: 'todos' },
-  { label: 'Recibidos', value: 'recibido' },
-  { label: 'Activos', value: 'activo' },
-  { label: 'Finalizados', value: 'finalizado' },
+const FILTROS: { icon: keyof typeof MaterialIcons.glyphMap; value: string }[] = [
+  { icon: 'format-list-bulleted', value: 'todos' },
+  { icon: 'inbox', value: 'recibido' },
+  { icon: 'local-hospital', value: 'activo' },
+  { icon: 'check-circle', value: 'finalizado' },
 ];
 
 const ListaDespachos = () => {
@@ -29,6 +30,7 @@ const ListaDespachos = () => {
   useFocusEffect(
     useCallback(() => {
       recargar();
+      console.log(despachos[0].grupoNombre);
     }, []),
   );
 
@@ -60,12 +62,12 @@ const ListaDespachos = () => {
             <View style={local.filtros}>
               {FILTROS.map((filtro) => (
                 <TouchableOpacity key={filtro.value} onPress={() => setFiltroActivo(filtro.value)}>
-                  <View>
-                    <Text
-                      style={filtroActivo === filtro.value ? local.pillActive : local.pillInactive}
-                    >
-                      {filtro.label}
-                    </Text>
+                  <View style={local.pillWrapper}>
+                    <MaterialIcons
+                      name={filtro.icon}
+                      size={22}
+                      color={filtroActivo === filtro.value ? '#E53935' : '#999'}
+                    />
                     {filtroActivo === filtro.value && <View style={local.underline} />}
                   </View>
                 </TouchableOpacity>
@@ -112,14 +114,8 @@ const local = StyleSheet.create({
     backgroundColor: '#eee',
     marginTop: 8,
   },
-  pillActive: {
-    color: '#E53935',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  pillInactive: {
-    color: '#999',
-    fontSize: 14,
+  pillWrapper: {
+    alignItems: 'center',
   },
   underline: {
     height: 2,
