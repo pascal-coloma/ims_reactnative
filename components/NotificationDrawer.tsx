@@ -1,14 +1,7 @@
 import mockNotificaciones from '@/data/constants/mockNotificaciones';
-import { useEffect, useRef } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { useEffect } from 'react';
+import { Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import NotificationCard from './NotificationCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -21,32 +14,32 @@ const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.7;
 
 const NotificationDrawer = ({ visible, onClose }: Props) => {
-  const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
+  const translateX = useSharedValue(DRAWER_WIDTH);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    Animated.timing(translateX, {
-      toValue: visible ? 0 : DRAWER_WIDTH,
-      duration: 280,
-      useNativeDriver: true,
-    }).start();
+    translateX.value = withTiming(visible ? 0 : DRAWER_WIDTH, { duration: 280 });
   }, [visible]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <TouchableOpacity style={style.overlay} onPress={onClose} activeOpacity={1} />
-      <Animated.View
-        style={[style.drawer, { paddingTop: insets.top + 16, transform: [{ translateX }] }]}
-      >
+      <Animated.View style={[style.drawer, { paddingTop: insets.top + 16 }, animatedStyle]}>
         <View style={style.header}>
           <Text style={style.titulo}>Notificaciones</Text>
           <TouchableOpacity onPress={onClose}>
             <Text style={style.cerrar}>✕</Text>
           </TouchableOpacity>
         </View>
-        {mockNotificaciones.map((n, i) => (
-          <NotificationCard key={i} notificacion={n} />
-        ))}
+        {__DEV__ ? (
+          mockNotificaciones.map((n, i) => <NotificationCard key={i} notificacion={n} />)
+        ) : (
+          <Text style={style.sinNotifs}>Sin notificaciones</Text>
+        )}
       </Animated.View>
     </Modal>
   );
@@ -85,6 +78,12 @@ const style = StyleSheet.create({
   cerrar: {
     fontSize: 18,
     color: '#94a3b8',
+  },
+  sinNotifs: {
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
+    marginTop: 24,
   },
 });
 

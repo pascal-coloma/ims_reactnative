@@ -1,6 +1,6 @@
 import { fetchConSesion } from '@/context/AuthContext';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 import { Atencion } from '@/data/types/types';
 
 type AtencionResumen = {
@@ -31,7 +31,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
+  const agregarAtencion = useCallback(async (atencion: Atencion, ambulanciaId: string) => {
     if (OFFLINE_MODE) {
       setAtenciones((prev) => [...prev, atencion]);
       return;
@@ -104,9 +104,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAtenciones = async () => {
+  const fetchAtenciones = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -127,9 +127,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAtencionDetalle = async (id: number) => {
+  const fetchAtencionDetalle = useCallback(async (id: number) => {
     try {
       // Paso 1 — obtener URL presignada de S3
       const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
@@ -156,27 +156,28 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       setError(e.message ?? 'Error desconocido');
       return null;
     }
-  };
+  }, [resumenAtenciones]);
 
-  const buscarPorDespacho = (despachoId: string) =>
-    atenciones.find((a) => a.despachoId === despachoId);
-
-  return (
-    <AtencionContext.Provider
-      value={{
-        atenciones,
-        resumenAtenciones,
-        agregarAtencion,
-        fetchAtenciones,
-        fetchAtencionDetalle,
-        buscarPorDespacho,
-        loading,
-        error,
-      }}
-    >
-      {children}
-    </AtencionContext.Provider>
+  const buscarPorDespacho = useCallback(
+    (despachoId: string) => atenciones.find((a) => a.despachoId === despachoId),
+    [atenciones],
   );
+
+  const value = useMemo(
+    () => ({
+      atenciones,
+      resumenAtenciones,
+      agregarAtencion,
+      fetchAtenciones,
+      fetchAtencionDetalle,
+      buscarPorDespacho,
+      loading,
+      error,
+    }),
+    [atenciones, resumenAtenciones, agregarAtencion, fetchAtenciones, fetchAtencionDetalle, buscarPorDespacho, loading, error],
+  );
+
+  return <AtencionContext.Provider value={value}>{children}</AtencionContext.Provider>;
 };
 
 export const useAtenciones = () => {

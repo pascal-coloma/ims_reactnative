@@ -1,5 +1,5 @@
 import PERSONAL, { Personal } from '@/data/constants/mockPersonal';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { fetchConSesion } from './AuthContext';
 import { NuevoWorker, WorkerCreado } from '@/data/types/types';
 
@@ -16,7 +16,7 @@ const PersonalContext = createContext<PersonalContextType | null>(null);
 const PersonalProvider = ({ children }: { children: ReactNode }) => {
   const [personal, setPersonal] = useState<Personal[]>([]);
 
-  const registrarWorker = async (data: NuevoWorker): Promise<WorkerCreado | null> => {
+  const registrarWorker = useCallback(async (data: NuevoWorker): Promise<WorkerCreado | null> => {
     try {
       const response = await fetchConSesion('/ims/api/personal/', {
         method: 'POST',
@@ -28,7 +28,7 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
       console.error('Error registrando worker:', e.message);
       return null;
     }
-  };
+  }, []);
   // Revision de la autenticacion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
     const fetchPersonal = async () => {
@@ -44,14 +44,16 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
     fetchPersonal();
   }, []);
 
-  function actualizarDisponibilidad(id: string): void {
+  const actualizarDisponibilidad = useCallback((id: string): void => {
     setPersonal((prev) => prev.map((p) => (p.id === id ? { ...p, is_active: false } : p)));
-  }
-  return (
-    <PersonalContext.Provider value={{ personal, actualizarDisponibilidad, registrarWorker }}>
-      {children}
-    </PersonalContext.Provider>
+  }, []);
+
+  const value = useMemo(
+    () => ({ personal, actualizarDisponibilidad, registrarWorker }),
+    [personal, actualizarDisponibilidad, registrarWorker],
   );
+
+  return <PersonalContext.Provider value={value}>{children}</PersonalContext.Provider>;
 };
 
 export default PersonalProvider;
