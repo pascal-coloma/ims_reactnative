@@ -22,7 +22,12 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
 
   const agregarInsumo = (insumo: (typeof insumos)[0]) => {
     if (fields.some((f) => f.insumoId === insumo.id)) return;
-    append({ insumoId: insumo.id, nombre: insumo.nombre, cantidad: 1, unidad: insumo.unidadMedida });
+    append({
+      insumoId: insumo.id,
+      nombre: insumo.nombre,
+      cantidad: 1,
+      unidad: insumo.unidadMedida,
+    });
     setBusqueda('');
   };
 

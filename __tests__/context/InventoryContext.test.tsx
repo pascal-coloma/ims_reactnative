@@ -15,18 +15,46 @@ const mockFetchConSesion = fetchConSesion as jest.Mock;
 
 const apiResponse = [
   {
-    presentacion: { id: 1, nombre: 'Paracetamol', categoria: 'Analgésicos', cantidad: 500, unidad_medida: 'mg' },
+    presentacion: {
+      id: 1,
+      nombre: 'Paracetamol',
+      categoria: 'Analgésicos',
+      cantidad: 500,
+      unidad_medida: 'mg',
+    },
     ambulancia: { patente: 'ABC-001', stock: 10 },
   },
   {
-    presentacion: { id: 2, nombre: 'Suero fisiológico', categoria: 'Soluciones IV', cantidad: 500, unidad_medida: 'ml' },
+    presentacion: {
+      id: 2,
+      nombre: 'Suero fisiológico',
+      categoria: 'Soluciones IV',
+      cantidad: 500,
+      unidad_medida: 'ml',
+    },
     ambulancia: { patente: 'ABC-001', stock: 6 },
   },
 ];
 
 const mappedInsumos: Insumo[] = [
-  { id: '1', nombre: 'Paracetamol', categoria: 'Analgésicos', cantidad: 500, unidadMedida: 'mg', ambulanciaPatente: 'ABC-001', stock: 10 },
-  { id: '2', nombre: 'Suero fisiológico', categoria: 'Soluciones IV', cantidad: 500, unidadMedida: 'ml', ambulanciaPatente: 'ABC-001', stock: 6 },
+  {
+    id: '1',
+    nombre: 'Paracetamol',
+    categoria: 'Analgésicos',
+    cantidad: 500,
+    unidadMedida: 'mg',
+    ambulanciaPatente: 'ABC-001',
+    stock: 10,
+  },
+  {
+    id: '2',
+    nombre: 'Suero fisiológico',
+    categoria: 'Soluciones IV',
+    cantidad: 500,
+    unidadMedida: 'ml',
+    ambulanciaPatente: 'ABC-001',
+    stock: 6,
+  },
 ];
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -64,9 +92,17 @@ describe('InventarioContext', () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
       const newInsumo: Insumo = {
-        id: '99', nombre: 'Test Item', categoria: 'Test', cantidad: 1, unidadMedida: 'unidades', ambulanciaPatente: 'XYZ-001', stock: 3,
+        id: '99',
+        nombre: 'Test Item',
+        categoria: 'Test',
+        cantidad: 1,
+        unidadMedida: 'unidades',
+        ambulanciaPatente: 'XYZ-001',
+        stock: 3,
       };
-      act(() => { result.current.agregarInsumo(newInsumo); });
+      act(() => {
+        result.current.agregarInsumo(newInsumo);
+      });
       expect(result.current.insumos).toContainEqual(newInsumo);
       expect(result.current.insumos.length).toBe(mappedInsumos.length + 1);
     });
@@ -105,9 +141,14 @@ describe('InventarioContext', () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
       act(() => {
-        result.current.editarInsumo(mappedInsumos[0].id, { ...mappedInsumos[0], nombre: 'Cambiado' });
+        result.current.editarInsumo(mappedInsumos[0].id, {
+          ...mappedInsumos[0],
+          nombre: 'Cambiado',
+        });
       });
-      expect(result.current.insumos.find((i) => i.id === mappedInsumos[1].id)).toEqual(mappedInsumos[1]);
+      expect(result.current.insumos.find((i) => i.id === mappedInsumos[1].id)).toEqual(
+        mappedInsumos[1],
+      );
     });
   });
 
@@ -116,7 +157,9 @@ describe('InventarioContext', () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
       const targetId = mappedInsumos[0].id;
-      act(() => { result.current.eliminarInsumo(targetId); });
+      act(() => {
+        result.current.eliminarInsumo(targetId);
+      });
       expect(result.current.insumos.find((i) => i.id === targetId)).toBeUndefined();
       expect(result.current.insumos.length).toBe(mappedInsumos.length - 1);
     });

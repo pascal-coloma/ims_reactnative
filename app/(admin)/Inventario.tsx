@@ -76,9 +76,7 @@ const Inventario = () => {
                 </View>
                 <View style={style.campo}>
                   <Text style={style.campoLabel}>Stock</Text>
-                  <Text style={style.campoValor}>
-                    {insumo.stock} unidades
-                  </Text>
+                  <Text style={style.campoValor}>{insumo.stock} unidades</Text>
                 </View>
                 <View style={style.campo}>
                   <Text style={style.campoLabel}>Presentación</Text>

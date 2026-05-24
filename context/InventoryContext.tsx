@@ -34,15 +34,17 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
       setInsumos(
-        data.map((item: any): Insumo => ({
-          id: String(item.presentacion.id),
-          nombre: item.presentacion.nombre,
-          categoria: item.presentacion.categoria,
-          cantidad: item.presentacion.cantidad,
-          unidadMedida: item.presentacion.unidad_medida,
-          ambulanciaPatente: item.ambulancia.patente,
-          stock: item.ambulancia.stock,
-        }))
+        data.map(
+          (item: any): Insumo => ({
+            id: String(item.presentacion.id),
+            nombre: item.presentacion.nombre,
+            categoria: item.presentacion.categoria,
+            cantidad: item.presentacion.cantidad,
+            unidadMedida: item.presentacion.unidad_medida,
+            ambulanciaPatente: item.ambulancia.patente,
+            stock: item.ambulancia.stock,
+          }),
+        ),
       );
     } catch (e: any) {
       console.error('Error fetching insumos:', e);
