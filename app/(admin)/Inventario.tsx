@@ -1,6 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
-import { Insumo } from '@/data/constants/mockInventario';
+import { Insumo } from '@/data/types/types';
 import { useState } from 'react';
 import {
   Alert,
@@ -13,27 +13,19 @@ import {
   View,
 } from 'react-native';
 
-const FILTROS = [
-  { label: 'Todos', value: 'todos' },
-  { label: 'Bodega', value: 'bodega' },
-  { label: 'Ambulancia', value: 'ambulancia' },
-];
-
 const Inventario = () => {
-  const { insumos, buscarInsumo, editarInsumo, eliminarInsumo } = useInventario();
-  const [activeFilter, setActiveFilter] = useState('todos');
-  const insumosFiltrados = activeFilter === 'todos' ? insumos : buscarInsumo(activeFilter);
+  const { insumos, editarInsumo, eliminarInsumo } = useInventario();
   const [modalVisible, setModalVisible] = useState(false);
   const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(null);
   const [nombre, setNombre] = useState('');
-  const [stockTotal, setStockTotal] = useState('');
-  const [tipo, setTipo] = useState('');
+  const [stock, setStock] = useState('');
+  const [categoria, setCategoria] = useState('');
 
   const abrirModal = (insumo: Insumo) => {
     setInsumoSeleccionado(insumo);
     setNombre(insumo.nombre);
-    setStockTotal(String(insumo.stockTotal));
-    setTipo(insumo.tipo);
+    setStock(String(insumo.stock));
+    setCategoria(insumo.categoria);
     setModalVisible(true);
   };
 
@@ -42,8 +34,8 @@ const Inventario = () => {
     const insumoActualizado: Insumo = {
       ...insumoSeleccionado,
       nombre,
-      stockTotal: Number(stockTotal),
-      tipo,
+      stock: Number(stock),
+      categoria,
     };
     editarInsumo(insumoSeleccionado.id, insumoActualizado);
     setModalVisible(false);
@@ -55,26 +47,13 @@ const Inventario = () => {
       { text: 'Eliminar', style: 'destructive', onPress: () => eliminarInsumo(id) },
     ]);
   };
+
   return (
     <>
       <AppHeader title="Inventario" />
-      <View style={style.filtros}>
-        {FILTROS.map((filtro) => (
-          <TouchableOpacity key={filtro.label} onPress={() => setActiveFilter(filtro.value)}>
-            <View>
-              <Text style={activeFilter === filtro.value ? style.pillActive : style.pillInactive}>
-                {filtro.label}
-              </Text>
-              {filtro.value === activeFilter && <View style={style.underline} />}
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View style={style.divisor} />
-
       <ScrollView>
         <View>
-          {insumosFiltrados.map((insumo) => (
+          {insumos.map((insumo) => (
             <View key={insumo.id} style={style.card}>
               <View style={style.cardHeader}>
                 <Text style={style.nombre}>{insumo.nombre}</Text>
@@ -90,35 +69,24 @@ const Inventario = () => {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View
-                style={[
-                  style.ubicacionPill,
-                  insumo.ubicacion === 'ambulancia' ? style.pillAmbulancia : style.pillBodega,
-                ]}
-              >
-                <Text style={style.ubicacionText}>{insumo.ubicacion}</Text>
-              </View>
               <View style={style.cardBody}>
                 <View style={style.campo}>
-                  <Text style={style.campoLabel}>Tipo</Text>
-                  <Text style={style.campoValor}>{insumo.tipo}</Text>
+                  <Text style={style.campoLabel}>Categoría</Text>
+                  <Text style={style.campoValor}>{insumo.categoria}</Text>
                 </View>
                 <View style={style.campo}>
                   <Text style={style.campoLabel}>Stock</Text>
-                  <Text
-                    style={[
-                      style.campoValor,
-                      insumo.stockTotal <= insumo.stockMinimo && { color: '#ef4444' },
-                    ]}
-                  >
-                    {insumo.stockTotal} {insumo.unidadMedida}
+                  <Text style={style.campoValor}>{insumo.stock} unidades</Text>
+                </View>
+                <View style={style.campo}>
+                  <Text style={style.campoLabel}>Presentación</Text>
+                  <Text style={style.campoValor}>
+                    {insumo.cantidad} {insumo.unidadMedida}
                   </Text>
                 </View>
                 <View style={style.campo}>
-                  <Text style={style.campoLabel}>Stock mínimo</Text>
-                  <Text style={style.campoValor}>
-                    {insumo.stockMinimo} {insumo.unidadMedida}
-                  </Text>
+                  <Text style={style.campoLabel}>Ambulancia</Text>
+                  <Text style={style.campoValor}>{insumo.ambulanciaPatente}</Text>
                 </View>
               </View>
               <View style={style.divisorCard} />
@@ -137,14 +105,14 @@ const Inventario = () => {
           <Text style={style.label}>Nombre</Text>
           <TextInput style={style.input} value={nombre} onChangeText={setNombre} />
 
-          <Text style={style.label}>Tipo</Text>
-          <TextInput style={style.input} value={tipo} onChangeText={setTipo} />
+          <Text style={style.label}>Categoría</Text>
+          <TextInput style={style.input} value={categoria} onChangeText={setCategoria} />
 
-          <Text style={style.label}>Stock total</Text>
+          <Text style={style.label}>Stock</Text>
           <TextInput
             style={style.input}
-            value={stockTotal}
-            onChangeText={setStockTotal}
+            value={stock}
+            onChangeText={setStock}
             keyboardType="numeric"
           />
 
@@ -163,28 +131,6 @@ const Inventario = () => {
 };
 
 const style = StyleSheet.create({
-  filtros: {
-    flexDirection: 'row',
-    gap: 10,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    padding: 5,
-    backgroundColor: 'white',
-  },
-  divisor: {
-    height: 1,
-    width: '100%',
-    backgroundColor: '#5a444452',
-  },
-  pillActive: { color: '#E53935' },
-  pillInactive: { color: 'grey' },
-  underline: {
-    height: 2,
-    backgroundColor: '#E53935',
-    borderRadius: 2,
-    marginTop: 4,
-  },
   card: {
     paddingHorizontal: 16,
     paddingTop: 12,
@@ -233,19 +179,6 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
     color: '#111',
     flex: 1,
-  },
-  ubicacionPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    alignSelf: 'flex-end',
-  },
-  pillAmbulancia: { backgroundColor: '#dbeafe' },
-  pillBodega: { backgroundColor: '#dcfce7' },
-  ubicacionText: {
-    fontSize: 12,
-    fontWeight: '500',
-    textTransform: 'capitalize',
   },
   cardBody: { gap: 4 },
   campo: {
