@@ -1,3 +1,20 @@
+export type Insumo = {
+  id: string;
+  nombre: string;
+  categoria: string;
+  cantidad: number;
+  unidadMedida: string;
+  ambulanciaPatente: string;
+  stock: number;
+};
+
+export type InsumoUtilizado = {
+  insumoId: string;
+  nombre: string;
+  cantidad: number;
+  unidad: string;
+};
+
 export type FormCompleta = {
   // Paciente
   primerNombre: string;
@@ -21,6 +38,7 @@ export type FormUsuario = CamposPaciente & {
   controlSignos: SignosVitales[];
   preInforme: PreInforme;
   cronologia: Cronologia;
+  insumosUtilizados: InsumoUtilizado[];
 };
 
 export type SignosVitales = {
@@ -76,6 +94,7 @@ export type Atencion = {
   controlSignos: SignosVitales[];
   preInforme: PreInforme;
   cronologia: Cronologia;
+  insumosUtilizados: InsumoUtilizado[];
 };
 
 export type NuevoWorker = {
