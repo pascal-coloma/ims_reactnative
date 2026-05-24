@@ -1,6 +1,4 @@
-import { FormCompleta, FormUsuario } from '../types/types';
-
-export const OFFLINE_MODE = false;
+import { FormCompleta, FormUsuario } from '../types';
 
 export const DEFAULT_VALUES_ADMIN: FormCompleta = {
   primerNombre: '',

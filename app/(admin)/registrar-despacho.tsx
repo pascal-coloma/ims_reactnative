@@ -2,7 +2,7 @@ import FormDespacho from '@/components/admin/FormDespacho';
 import FormPaciente from '@/components/admin/FormPaciente';
 import { useDespachos } from '@/context/DespachosContext';
 import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
-import { FormCompleta } from '@/data/types/types';
+import { FormCompleta } from '@/data/types';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

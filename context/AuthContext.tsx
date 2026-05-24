@@ -5,8 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppState } from 'react-native';
-import { OFFLINE_MODE } from '@/data/constants/defaultValues';
-
 const MOCK_USER = {
   username: 'offline',
   role: 'medic' as Role,
@@ -15,7 +13,7 @@ const MOCK_USER = {
   lastName: 'García',
 };
 
-const BASE_URL = 'https://956.duckdns.org';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 

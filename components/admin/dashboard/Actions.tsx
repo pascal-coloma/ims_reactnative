@@ -8,7 +8,7 @@ const Actions = () => {
     <View style={styles.container}>
       <Text style={style.title}>Acciones Rápidas</Text>
       <View style={style.cardsRow}>
-        <Link href={'/(admin)/Despachos'} style={style.linkStyle}>
+        <Link href={'/(admin)/despachos'} style={style.linkStyle}>
           <View style={style.dispatchCard}>
             <MaterialIcons name="airport-shuttle" size={50} color="white" />
             <View>
@@ -17,7 +17,7 @@ const Actions = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/Panel'} style={style.linkStyle}>
+        <Link href={'/(admin)/panel'} style={style.linkStyle}>
           <View style={style.attentionCard}>
             <MaterialIcons name="admin-panel-settings" size={50} color="#a9cbee" />
             <View>

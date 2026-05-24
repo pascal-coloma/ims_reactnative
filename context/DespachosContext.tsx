@@ -1,8 +1,7 @@
-import mockDespachos, { Despacho } from '@/data/constants/mockDespachos';
-import { OFFLINE_MODE } from '@/data/constants/defaultValues';
+import mockDespachos, { Despacho } from '@/data/mock/mockDespachos';
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
-import { FormCompleta } from '@/data/types/types';
+import { FormCompleta } from '@/data/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type DespachosContextType = {
@@ -42,7 +41,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   }, [refreshKey]);
 
   const fetchDespachos = async () => {
-    if (OFFLINE_MODE) {
+    if (__DEV__) {
       setDespachos(mockDespachos);
       setDespachoActivo(mockDespachos.find((d) => d.estado === 'activo') ?? null);
       return;

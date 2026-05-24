@@ -1,7 +1,6 @@
 import { fetchConSesion } from '@/context/AuthContext';
-import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Atencion } from '@/data/types/types';
+import { Atencion } from '@/data/types';
 
 type AtencionResumen = {
   id: number;
@@ -32,7 +31,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
-    if (OFFLINE_MODE) {
+    if (__DEV__) {
       setAtenciones((prev) => [...prev, atencion]);
       return;
     }

@@ -68,7 +68,7 @@ const MisDespachos = () => {
             style={styles.container}
             onPress={() => {
               seleccionarDespacho(d.id);
-              router.push('/(user)/RegistrarAtencion');
+              router.push('/(user)/registrar-atencion');
             }}
           >
             <View style={local.rowHeader}>

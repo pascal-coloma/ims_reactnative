@@ -1,5 +1,5 @@
-import { CATEGORIAS_EMERGENCIA } from '@/data/constants/mockAmbulancia';
-import { FormUsuario } from '@/data/types/types';
+import { CATEGORIAS_EMERGENCIA } from '@/data/mock/mockAmbulancia';
+import { FormUsuario } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';

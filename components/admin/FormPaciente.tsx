@@ -1,6 +1,6 @@
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { FormCompleta } from '@/data/types/types';
+import { FormCompleta } from '@/data/types';
 import AppHeader from '../AppHeader';
 import {
   formatearRut,

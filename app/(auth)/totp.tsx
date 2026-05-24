@@ -36,9 +36,9 @@ export default function TOTPScreen() {
         return;
       }
       if (result.role === 'medic' || result.role === 'nurse' || result.role === 'driver') {
-        router.replace('/(user)/UserDashboard');
+        router.replace('/(user)/dashboard');
       } else if (result.role === 'control') {
-        router.replace('/(admin)/AdminDashboard');
+        router.replace('/(admin)/dashboard');
       } else {
         setError('Rol no reconocido');
       }

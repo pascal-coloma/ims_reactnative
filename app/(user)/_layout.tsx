@@ -34,7 +34,7 @@ const UserLayout = () => {
         <AtencionProvider>
           <Tabs screenOptions={tabBarOptions}>
             <Tabs.Screen
-              name="UserDashboard"
+              name="dashboard"
               options={{
                 title: 'Home',
                 tabBarIcon: ({ color, size }) => (
@@ -43,7 +43,7 @@ const UserLayout = () => {
               }}
             />
             <Tabs.Screen
-              name="Despachos"
+              name="despachos"
               options={{
                 title: 'Despachos',
                 tabBarIcon: ({ color, size }) => (
@@ -52,7 +52,7 @@ const UserLayout = () => {
               }}
             />
             <Tabs.Screen
-              name="RegistrarAtencion"
+              name="registrar-atencion"
               options={{
                 title: 'Registrar Atencion',
                 tabBarIcon: ({ color, size }) => (

@@ -1,5 +1,5 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { Insumo } from '@/data/types/types';
+import { Insumo } from '@/data/types';
 import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 
 type InventarioContextType = {

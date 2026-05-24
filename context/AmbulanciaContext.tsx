@@ -1,5 +1,5 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { Ambulancia } from '@/data/constants/mockAmbulancia';
+import { Ambulancia } from '@/data/mock/mockAmbulancia';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 type AmbulanciaContextType = {

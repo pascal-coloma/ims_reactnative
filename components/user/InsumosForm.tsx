@@ -1,7 +1,7 @@
 import { Controller, Control, FieldErrors, useFieldArray } from 'react-hook-form';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useState } from 'react';
-import { FormUsuario } from '@/data/types/types';
+import { FormUsuario } from '@/data/types';
 import { useInventario } from '@/context/InventoryContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import styles from '@/styles/globalStyles';
