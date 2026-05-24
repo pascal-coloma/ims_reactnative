@@ -16,15 +16,15 @@ type InventarioContextType = {
 const InventarioContext = createContext<InventarioContextType | null>(null);
 
 const InventarioProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [insumos, setInsumos] = useState<Insumo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    if (user) fetchInsumos();
-  }, [user, refreshKey]);
+    if (!authLoading && user) fetchInsumos();
+  }, [authLoading, refreshKey]);
 
   const fetchInsumos = async () => {
     setLoading(true);
@@ -34,16 +34,18 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
       setInsumos(
-        data.map(
-          (item: any): Insumo => ({
-            id: String(item.presentacion.id),
-            nombre: item.presentacion.nombre,
-            categoria: item.presentacion.categoria,
-            cantidad: item.presentacion.cantidad,
-            unidadMedida: item.presentacion.unidad_medida,
-            ambulanciaPatente: item.ambulancia.patente,
-            stock: item.ambulancia.stock,
-          }),
+        data.flatMap((ambulancia: any) =>
+          (ambulancia.stock ?? []).map(
+            (item: any): Insumo => ({
+              id: String(item.presentacion_id),
+              nombre: item.insumo_nombre,
+              categoria: item.categoria,
+              cantidad: item.insumo_cantidad,
+              unidadMedida: item.unidad_medida,
+              ambulanciaPatente: ambulancia.patente,
+              stock: item.stock,
+            }),
+          ),
         ),
       );
     } catch (e: any) {
