@@ -26,6 +26,7 @@ function PaginaControl({
 }) {
   const pas = useWatch({ control, name: `controlSignos.${index}.pas` }) ?? 0;
   const pad = useWatch({ control, name: `controlSignos.${index}.pad` }) ?? 0;
+  const hora = useWatch({ control, name: `controlSignos.${index}.hora` }) ?? '';
   const pam = Math.round((pad * 2 + pas) / 3);
   const { setValue } = useFormContext<FormUsuario>();
 
@@ -36,8 +37,7 @@ function PaginaControl({
   return (
     <View style={style.pagina}>
       <Text style={style.cardHeader}>
-        Control {index + 1} —{' '}
-        {new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}
+        Control {index + 1} — {hora || '--:--'}
       </Text>
 
       <Text style={style.label}>PAS — Presión Arterial Sistólica</Text>
@@ -235,8 +235,11 @@ function ControlVitales({ control, errors }: ControlVitalesProps) {
   });
 
   const nuevoControl = () => {
+    const now = new Date();
+    const hh = now.getHours().toString().padStart(2, '0');
+    const mm = now.getMinutes().toString().padStart(2, '0');
     append({
-      hora: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }),
+      hora: `${hh}:${mm}`,
       pas: 0,
       pad: 0,
       pam: 0,

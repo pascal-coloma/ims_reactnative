@@ -18,9 +18,17 @@ type AtencionContextType = {
   agregarAtencion: (atencion: Atencion, ambulanciaId: string) => Promise<void>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;
+  fetchAtencionDetalleLocal: (id: number) => Promise<any>;
+  modificarAtencion: (atencionId: number, data: ModificacionPayload) => Promise<void>;
   buscarPorDespacho: (despachoId: string) => Atencion | undefined;
   loading: boolean;
   error: string | null;
+};
+
+type ModificacionPayload = {
+  controlSignos: import('@/data/types/types').SignosVitales[];
+  preInforme: import('@/data/types/types').PreInforme;
+  cronologia: import('@/data/types/types').Cronologia;
 };
 
 const AtencionContext = createContext<AtencionContextType | null>(null);
@@ -44,11 +52,18 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         return nums.padStart(4, '0').slice(0, 4);
       };
 
+      const horaAISO = (hora: string) => {
+        const hhmm = formatearHora(hora);
+        const fecha = atencion.fechaRegistro.split('T')[0];
+        return `${fecha}T${hhmm.slice(0, 2)}:${hhmm.slice(2, 4)}:00`;
+      };
+
       const payload = {
         despacho: {
           despacho_id: Number(atencion.despachoId),
           ambulancia_id: Number(ambulanciaId),
           hora_salida: atencion.fechaRegistro,
+          hora_llegada: horaAISO(atencion.cronologia.llegadaQTH1),
         },
         signos_vitales: atencion.controlSignos.map((s) => ({
           presion_sistolica: s.pas,
@@ -158,6 +173,73 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const fetchAtencionDetalleLocal = async (id: number) => {
+    try {
+      const response = await fetchConSesion(`/ims/api/atenciones/detalle/?id=${id}`);
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      return await response.json();
+    } catch (e: any) {
+      setError(e.message ?? 'Error desconocido');
+      return null;
+    }
+  };
+
+  const modificarAtencion = async (atencionId: number, data: ModificacionPayload) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const formatearHora = (hora: string) => {
+        const nums = hora.replace(/[^0-9]/g, '');
+        return nums.padStart(4, '0').slice(0, 4);
+      };
+
+      const payload = {
+        atencion_id: atencionId,
+        signos_vitales: data.controlSignos.map((s) => ({
+          presion_sistolica: s.pas,
+          presion_diastolica: s.pad,
+          frecuencia_cardiaca: s.fc,
+          saturacion_oxigeno: s.satO2,
+          temperatura: s.temperatura,
+          fr: s.fr,
+          fio2: s.fio2,
+          hgt: s.hgt,
+          gcs: s.gcs,
+          eva: s.eva,
+          hora: formatearHora(s.hora),
+        })),
+        preinforme: {
+          pre_informe: data.preInforme.preInforme,
+          motivo_llamado: data.preInforme.motivoLlamado,
+          estado_paciente: data.preInforme.estadoPaciente,
+        },
+        cronologia: {
+          hora_llamada: formatearHora(data.cronologia.horaLlamada),
+          despacho_movil: formatearHora(data.cronologia.despachoMovil),
+          llegada_qth1: formatearHora(data.cronologia.llegadaQTH1),
+          salida_qth1: formatearHora(data.cronologia.salidaQTH1),
+          llegada_qth2: formatearHora(data.cronologia.llegadaQTH2),
+          salida_qth2: formatearHora(data.cronologia.salidaQTH2),
+          categoria: data.cronologia.categoria,
+        },
+      };
+
+      const resp = await fetchConSesion('/ims/api/atenciones/update/', {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) {
+        const errorBody = await resp.json().catch(() => ({}));
+        throw new Error(`Error modificando atención: ${resp.status} ${JSON.stringify(errorBody)}`);
+      }
+    } catch (e: any) {
+      setError(e.message ?? 'Error desconocido');
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const buscarPorDespacho = (despachoId: string) =>
     atenciones.find((a) => a.despachoId === despachoId);
 
@@ -169,6 +251,8 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         agregarAtencion,
         fetchAtenciones,
         fetchAtencionDetalle,
+        fetchAtencionDetalleLocal,
+        modificarAtencion,
         buscarPorDespacho,
         loading,
         error,
