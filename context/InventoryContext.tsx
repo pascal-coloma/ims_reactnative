@@ -1,41 +1,90 @@
-import mockInsumos, { Insumo } from '@/data/constants/mockInventario';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { fetchConSesion, useAuth } from '@/context/AuthContext';
+import { Insumo } from '@/data/types/types';
+import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 
 type InventarioContextType = {
   insumos: Insumo[];
+  loading: boolean;
+  error: string | null;
   agregarInsumo: (insumo: Insumo) => void;
-  buscarInsumo: (ubicacion: string) => Insumo[];
+  buscarInsumo: (termino: string) => Insumo[];
   editarInsumo: (id: string, insumo: Insumo) => void;
   eliminarInsumo: (id: string) => void;
+  recargar: () => void;
 };
 
 const InventarioContext = createContext<InventarioContextType | null>(null);
 
 const InventarioProvider = ({ children }: { children: ReactNode }) => {
-  const [insumos, setInsumos] = useState<Insumo[]>(mockInsumos);
+  const { user } = useAuth();
+  const [insumos, setInsumos] = useState<Insumo[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const agregarInsumo = (insumo: Insumo) => {
-    setInsumos([...insumos, insumo]);
+  useEffect(() => {
+    if (user) fetchInsumos();
+  }, [user, refreshKey]);
+
+  const fetchInsumos = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchConSesion('/ims/api/inv/get/');
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      const data = await response.json();
+      setInsumos(
+        data.map(
+          (item: any): Insumo => ({
+            id: String(item.presentacion.id),
+            nombre: item.presentacion.nombre,
+            categoria: item.presentacion.categoria,
+            cantidad: item.presentacion.cantidad,
+            unidadMedida: item.presentacion.unidad_medida,
+            ambulanciaPatente: item.ambulancia.patente,
+            stock: item.ambulancia.stock,
+          }),
+        ),
+      );
+    } catch (e: any) {
+      console.error('Error fetching insumos:', e);
+      setError(e.message ?? 'Error desconocido');
+      setInsumos([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const buscarInsumo = (ubicacion: string) => {
-    const insumo = insumos.filter((p) => p.ubicacion == ubicacion);
-    return insumo;
+  const recargar = () => setRefreshKey((k) => k + 1);
+
+  const agregarInsumo = (insumo: Insumo) => {
+    setInsumos((prev) => [...prev, insumo]);
+  };
+
+  const buscarInsumo = (termino: string) => {
+    return insumos.filter((i) => i.nombre.toLowerCase().includes(termino.toLowerCase()));
   };
 
   const editarInsumo = (id: string, insumoActualizado: Insumo) => {
-    const insumosActualizados = insumos.map((i) => (i.id == id ? insumoActualizado : i));
-    setInsumos(insumosActualizados);
+    setInsumos((prev) => prev.map((i) => (i.id === id ? insumoActualizado : i)));
   };
 
   const eliminarInsumo = (id: string) => {
-    const insumoEliminado = insumos.filter((i) => i.id != id);
-    setInsumos(insumoEliminado);
+    setInsumos((prev) => prev.filter((i) => i.id !== id));
   };
 
   return (
     <InventarioContext.Provider
-      value={{ insumos, agregarInsumo, buscarInsumo, editarInsumo, eliminarInsumo }}
+      value={{
+        insumos,
+        loading,
+        error,
+        agregarInsumo,
+        buscarInsumo,
+        editarInsumo,
+        eliminarInsumo,
+        recargar,
+      }}
     >
       {children}
     </InventarioContext.Provider>
@@ -46,6 +95,6 @@ export default InventarioProvider;
 
 export function useInventario() {
   const ctx = useContext(InventarioContext);
-  if (!ctx) throw new Error('useInventario debe usarse dentro de PersonalProvider');
+  if (!ctx) throw new Error('useInventario debe usarse dentro de InventarioProvider');
   return ctx;
 }

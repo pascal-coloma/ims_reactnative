@@ -1,4 +1,5 @@
 import { fetchConSesion } from '@/context/AuthContext';
+import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Atencion } from '@/data/types/types';
 
@@ -39,6 +40,10 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
+    if (OFFLINE_MODE) {
+      setAtenciones((prev) => [...prev, atencion]);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -87,7 +92,12 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
           salida_qth2: formatearHora(atencion.cronologia.salidaQTH2),
           categoria: atencion.cronologia.categoria,
         },
-        insumos_utilizados: [],
+        insumos_utilizados: atencion.insumosUtilizados.map((i) => ({
+          insumo_id: i.insumoId,
+          nombre: i.nombre,
+          cantidad: i.cantidad,
+          unidad: i.unidad,
+        })),
       };
 
       const atencionResp = await fetchConSesion('/ims/api/atenciones/add/', {
