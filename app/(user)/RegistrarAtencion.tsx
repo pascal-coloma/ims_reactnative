@@ -1,14 +1,25 @@
 import ControlVitales from '@/components/user/ControlVitales';
 import Cronologia from '@/components/user/Cronologia';
 import FormPaciente from '@/components/user/FormPaciente';
+import InsumosForm from '@/components/user/InsumosForm';
 import PreInformeForm from '@/components/user/PreInforme';
 import { useAtenciones } from '@/context/AtencionContext';
 import { useDespachos } from '@/context/DespachosContext';
+import { useInventario } from '@/context/InventoryContext';
 import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types/types';
 import styles from '@/styles/globalStyles';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import {
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { router } from 'expo-router';
@@ -17,7 +28,15 @@ import AppHeader from '@/components/AppHeader';
 const RegistrarAtencion = () => {
   const { agregarAtencion } = useAtenciones();
   const { despachoActivo } = useDespachos();
+  const { recargar: recargarInventario, loading: loadingInventario } = useInventario();
   const [exito, setExito] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refrescarSwipe = () => {
+    setRefreshing(true);
+    recargarInventario();
+    setRefreshing(false);
+  };
 
   const methods = useForm<FormUsuario>({
     defaultValues: despachoActivo
@@ -42,7 +61,7 @@ const RegistrarAtencion = () => {
       return;
     }
     try {
-      const { controlSignos, preInforme, cronologia, ...camposPaciente } = data;
+      const { controlSignos, preInforme, cronologia, insumosUtilizados, ...camposPaciente } = data;
       await agregarAtencion(
         {
           id: Date.now().toString(),
@@ -52,6 +71,7 @@ const RegistrarAtencion = () => {
           controlSignos,
           preInforme,
           cronologia,
+          insumosUtilizados,
         },
         despachoActivo.ambulancia?.id ?? '',
       );
@@ -69,9 +89,18 @@ const RegistrarAtencion = () => {
         <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
           <AppHeader title="Registrar Atención" />
 
-          <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 90 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing || loadingInventario}
+                onRefresh={refrescarSwipe}
+              />
+            }
+          >
             <FormPaciente control={methods.control} errors={errors} />
             <ControlVitales control={methods.control} errors={errors} />
+            <InsumosForm control={methods.control} errors={errors} />
             <PreInformeForm control={methods.control} errors={errors} />
             <Cronologia control={methods.control} errors={errors} />
           </ScrollView>

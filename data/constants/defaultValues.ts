@@ -1,5 +1,7 @@
 import { FormCompleta, FormUsuario } from '../types/types';
 
+export const OFFLINE_MODE = true;
+
 export const DEFAULT_VALUES_ADMIN: FormCompleta = {
   primerNombre: '',
   segundoNombre: '',
@@ -30,6 +32,7 @@ export const DEFAULT_VALUES_USUARIO: FormUsuario = {
   condicionPaciente: '',
   comuna: '',
   controlSignos: [],
+  insumosUtilizados: [],
   preInforme: { preInforme: '', motivoLlamado: '', estadoPaciente: 'estable' },
   cronologia: {
     horaLlamada: '',

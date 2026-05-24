@@ -5,6 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppState } from 'react-native';
+import { OFFLINE_MODE } from '@/data/constants/defaultValues';
+
+const MOCK_USER = {
+  username: 'offline',
+  role: 'medic' as Role,
+  personalId: '1',
+  firstName: 'Ignacio',
+  lastName: 'García',
+};
 
 const BASE_URL = 'https://956.duckdns.org';
 
@@ -94,6 +103,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSessionExpiredHandler(() => setUser(null));
 
     const restore = async () => {
+      if (OFFLINE_MODE) {
+        setUser(MOCK_USER);
+        setLoading(false);
+        return;
+      }
       try {
         const saved = await AsyncStorage.getItem('user');
         const savedSession = await AsyncStorage.getItem('sessionid');
@@ -165,6 +179,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function login(username: string, password: string, totpCode?: string) {
+    if (OFFLINE_MODE) {
+      setUser(MOCK_USER);
+      return { role: MOCK_USER.role, personalId: MOCK_USER.personalId };
+    }
     try {
       const csrftoken = await fetchCsrfToken();
 
@@ -244,6 +262,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function verifyPassword(username: string, password: string): Promise<boolean> {
+    if (OFFLINE_MODE) return true;
     try {
       const csrftoken = await fetchCsrfToken();
 
