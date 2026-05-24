@@ -1,9 +1,11 @@
 export type Insumo = {
   id: string;
   nombre: string;
-  dosis: number;
-  unidad: 'mg' | 'ml' | 'unidades';
-  observacion?: string;
+  categoria: string;
+  cantidad: number;
+  unidadMedida: string;
+  ambulanciaPatente: string;
+  stock: number;
 };
 
 export type InsumoUtilizado = {
