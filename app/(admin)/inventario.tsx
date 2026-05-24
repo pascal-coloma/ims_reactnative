@@ -1,13 +1,11 @@
 import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
-import { Insumo } from '@/data/types';
-import { useMemo, useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Insumo } from '@/data/types/types';
+import { memo, useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -15,153 +13,98 @@ import {
   View,
 } from 'react-native';
 
+type InsumoCardProps = {
+  insumo: Insumo;
+  onEditar: (insumo: Insumo) => void;
+  onEliminar: (id: string) => void;
+};
+
+const InsumoCard = memo(({ insumo, onEditar, onEliminar }: InsumoCardProps) => (
+  <View style={style.card}>
+    <View style={style.cardHeader}>
+      <Text style={style.nombre}>{insumo.nombre}</Text>
+      <View style={style.cardAcciones}>
+        <TouchableOpacity style={style.btnEditar} onPress={() => onEditar(insumo)}>
+          <Text style={style.btnEditarText}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={style.btnEliminar} onPress={() => onEliminar(insumo.id)}>
+          <Text style={style.btnEliminarText}>Eliminar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+    <View style={style.cardBody}>
+      <View style={style.campo}>
+        <Text style={style.campoLabel}>Categoría</Text>
+        <Text style={style.campoValor}>{insumo.categoria}</Text>
+      </View>
+      <View style={style.campo}>
+        <Text style={style.campoLabel}>Stock</Text>
+        <Text style={style.campoValor}>{insumo.stock} unidades</Text>
+      </View>
+      <View style={style.campo}>
+        <Text style={style.campoLabel}>Presentación</Text>
+        <Text style={style.campoValor}>
+          {insumo.cantidad} {insumo.unidadMedida}
+        </Text>
+      </View>
+      <View style={style.campo}>
+        <Text style={style.campoLabel}>Ambulancia</Text>
+        <Text style={style.campoValor}>{insumo.ambulanciaPatente}</Text>
+      </View>
+    </View>
+    <View style={style.divisorCard} />
+  </View>
+));
+
 const Inventario = () => {
   const { insumos, editarInsumo, eliminarInsumo } = useInventario();
-  const insets = useSafeAreaInsets();
-  const [ambulanciaSeleccionada, setAmbulanciaSeleccionada] = useState('');
-  const [busqueda, setBusqueda] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(null);
   const [nombre, setNombre] = useState('');
   const [stock, setStock] = useState('');
   const [categoria, setCategoria] = useState('');
 
-  const patentes = useMemo(() => {
-    const unique = Array.from(new Set(insumos.map((i) => i.ambulanciaPatente)));
-    return unique.sort((a, b) => {
-      const aIsBodega = /bodega/i.test(a);
-      const bIsBodega = /bodega/i.test(b);
-      if (aIsBodega && !bIsBodega) return -1;
-      if (!aIsBodega && bIsBodega) return 1;
-      return 0;
-    });
-  }, [insumos]);
-
-  const seleccion = useMemo(
-    () => ambulanciaSeleccionada || patentes[0],
-    [ambulanciaSeleccionada, patentes],
-  );
-
-  const insumosFiltrados = useMemo(() => {
-    const porAmbulancia = insumos.filter((i) => i.ambulanciaPatente === seleccion);
-    if (!busqueda.trim()) return porAmbulancia;
-    const termino = busqueda.trim().toLowerCase();
-    return porAmbulancia.filter((i) => i.nombre.toLowerCase().includes(termino));
-  }, [insumos, seleccion, busqueda]);
-
-  const abrirModal = (insumo: Insumo) => {
+  const abrirModal = useCallback((insumo: Insumo) => {
     setInsumoSeleccionado(insumo);
     setNombre(insumo.nombre);
     setStock(String(insumo.stock));
     setCategoria(insumo.categoria);
     setModalVisible(true);
-  };
+  }, []);
 
-  const confirmarEdicion = () => {
+  const confirmarEdicion = useCallback(() => {
     if (!insumoSeleccionado) return;
-    const insumoActualizado: Insumo = {
+    editarInsumo(insumoSeleccionado.id, {
       ...insumoSeleccionado,
       nombre,
       stock: Number(stock),
       categoria,
-    };
-    editarInsumo(insumoSeleccionado.id, insumoActualizado);
+    });
     setModalVisible(false);
-  };
+  }, [insumoSeleccionado, nombre, stock, categoria, editarInsumo]);
 
-  const confirmarEliminacion = (id: string) => {
+  const confirmarEliminacion = useCallback((id: string) => {
     Alert.alert('Eliminar insumo', '¿Estás seguro de eliminar este insumo?', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Eliminar', style: 'destructive', onPress: () => eliminarInsumo(id) },
     ]);
-  };
+  }, [eliminarInsumo]);
 
-  const chipSelector = (
-    <View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={style.selectorScroll}
-        contentContainerStyle={style.selectorContainer}
-      >
-        {patentes.map((patente) => (
-          <TouchableOpacity
-            key={patente}
-            style={[style.chip, seleccion === patente && style.chipActivo]}
-            onPress={() => {
-              setAmbulanciaSeleccionada(patente);
-              setBusqueda('');
-            }}
-          >
-            <Text style={[style.chipText, seleccion === patente && style.chipTextActivo]}>
-              {patente}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <TextInput
-        style={style.buscador}
-        placeholder="Buscar insumo..."
-        placeholderTextColor="#aaa"
-        value={busqueda}
-        onChangeText={setBusqueda}
-        clearButtonMode="while-editing"
-      />
-    </View>
-  );
-
-  const renderInsumo = ({ item: insumo }: { item: Insumo }) => (
-    <View style={style.card}>
-      <View style={style.cardHeader}>
-        <Text style={style.nombre}>{insumo.nombre}</Text>
-        <View style={style.cardAcciones}>
-          <TouchableOpacity style={style.btnEditar} onPress={() => abrirModal(insumo)}>
-            <Text style={style.btnEditarText}>Editar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={style.btnEliminar}
-            onPress={() => confirmarEliminacion(insumo.id)}
-          >
-            <Text style={style.btnEliminarText}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={style.cardBody}>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Categoría</Text>
-          <Text style={style.campoValor}>{insumo.categoria}</Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Stock</Text>
-          <Text style={style.campoValor}>{insumo.stock} unidades</Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Presentación</Text>
-          <Text style={style.campoValor}>
-            {insumo.cantidad} {insumo.unidadMedida}
-          </Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Ambulancia</Text>
-          <Text style={style.campoValor}>{insumo.ambulanciaPatente}</Text>
-        </View>
-      </View>
-      <View style={style.divisorCard} />
-    </View>
+  const renderItem = useCallback(
+    ({ item }: { item: Insumo }) => (
+      <InsumoCard insumo={item} onEditar={abrirModal} onEliminar={confirmarEliminacion} />
+    ),
+    [abrirModal, confirmarEliminacion],
   );
 
   return (
     <>
       <AppHeader title="Inventario" />
-
       <FlatList
-        data={insumosFiltrados}
-        keyExtractor={(item, i) => `${item.ambulanciaPatente}-${item.id}-${i}`}
-        renderItem={renderInsumo}
-        ListHeaderComponent={chipSelector}
-        stickyHeaderIndices={[0]}
+        data={insumos}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
       />
-
       <Modal visible={modalVisible} transparent animationType="slide">
         <TouchableOpacity
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}

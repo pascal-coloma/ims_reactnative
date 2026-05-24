@@ -1,6 +1,6 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { Insumo } from '@/data/types';
-import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+import { Insumo } from '@/data/types/types';
+import { createContext, ReactNode, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 type InventarioContextType = {
   insumos: Insumo[];
@@ -57,40 +57,30 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const recargar = () => setRefreshKey((k) => k + 1);
+  const recargar = useCallback(() => setRefreshKey((k) => k + 1), []);
 
-  const agregarInsumo = (insumo: Insumo) => {
+  const agregarInsumo = useCallback((insumo: Insumo) => {
     setInsumos((prev) => [...prev, insumo]);
-  };
+  }, []);
 
-  const buscarInsumo = (termino: string) => {
+  const buscarInsumo = useCallback((termino: string) => {
     return insumos.filter((i) => i.nombre.toLowerCase().includes(termino.toLowerCase()));
-  };
+  }, [insumos]);
 
-  const editarInsumo = (id: string, insumoActualizado: Insumo) => {
+  const editarInsumo = useCallback((id: string, insumoActualizado: Insumo) => {
     setInsumos((prev) => prev.map((i) => (i.id === id ? insumoActualizado : i)));
-  };
+  }, []);
 
-  const eliminarInsumo = (id: string) => {
+  const eliminarInsumo = useCallback((id: string) => {
     setInsumos((prev) => prev.filter((i) => i.id !== id));
-  };
+  }, []);
 
-  return (
-    <InventarioContext.Provider
-      value={{
-        insumos,
-        loading,
-        error,
-        agregarInsumo,
-        buscarInsumo,
-        editarInsumo,
-        eliminarInsumo,
-        recargar,
-      }}
-    >
-      {children}
-    </InventarioContext.Provider>
+  const value = useMemo(
+    () => ({ insumos, loading, error, agregarInsumo, buscarInsumo, editarInsumo, eliminarInsumo, recargar }),
+    [insumos, loading, error, agregarInsumo, buscarInsumo, editarInsumo, eliminarInsumo, recargar],
   );
+
+  return <InventarioContext.Provider value={value}>{children}</InventarioContext.Provider>;
 };
 
 export default InventarioProvider;

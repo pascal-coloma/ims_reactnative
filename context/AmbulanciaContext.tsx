@@ -1,6 +1,6 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { Ambulancia } from '@/data/mock/mockAmbulancia';
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { Ambulancia } from '@/data/constants/mockAmbulancia';
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo } from 'react';
 
 type AmbulanciaContextType = {
   ambulancias: Ambulancia[];
@@ -39,11 +39,9 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  return (
-    <AmbulanciaContext.Provider value={{ ambulancias, loading, error }}>
-      {children}
-    </AmbulanciaContext.Provider>
-  );
+  const value = useMemo(() => ({ ambulancias, loading, error }), [ambulancias, loading, error]);
+
+  return <AmbulanciaContext.Provider value={value}>{children}</AmbulanciaContext.Provider>;
 };
 
 export const useAmbulancias = () => {

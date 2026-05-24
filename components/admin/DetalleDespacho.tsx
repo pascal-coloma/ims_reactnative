@@ -3,6 +3,7 @@ import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
+import { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import EstadoBadge from '../EstadoBadge';
 
@@ -93,4 +94,4 @@ const local = StyleSheet.create({
   },
 });
 
-export default DetalleDespacho;
+export default memo(DetalleDespacho);
