@@ -57,7 +57,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetchConSesion(endpoint);
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-      
+
       const mapearControl = (d: any): Despacho => ({
         id: String(d.id),
         direccionOrigen: d.direccion_origen,
