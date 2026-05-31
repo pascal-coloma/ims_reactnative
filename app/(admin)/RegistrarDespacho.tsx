@@ -1,14 +1,18 @@
 import FormDespacho from '@/components/admin/FormDespacho';
 import FormPaciente from '@/components/admin/FormPaciente';
+import AppHeader from '@/components/AppHeader';
 import { useDespachos } from '@/context/DespachosContext';
 import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
 import { FormCompleta } from '@/data/types/types';
+import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RegistrarDespacho = () => {
   const { agregarDespacho, loading } = useDespachos();
+  const [exito, setExito] = useState(false);
 
   const {
     control,
@@ -19,13 +23,21 @@ const RegistrarDespacho = () => {
     defaultValues: DEFAULT_VALUES_ADMIN,
   });
 
+  useEffect(() => {
+    if (!exito) return;
+    const timer = setTimeout(() => {
+      setExito(false);
+      router.back();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [exito]);
+
   const onSubmit = async (data: FormCompleta) => {
     console.log('data submit:', JSON.stringify(data, null, 2));
-
     try {
       await agregarDespacho(data);
       reset();
-      router.back();
+      setExito(true);
     } catch (e: any) {
       console.error('Falló el envío del despacho', e.message);
     }
@@ -33,6 +45,7 @@ const RegistrarDespacho = () => {
 
   return (
     <>
+      <AppHeader title="Registrar Despacho" />
       <ScrollView>
         <FormPaciente control={control} errors={errors} />
         <FormDespacho control={control} errors={errors} />
@@ -51,6 +64,18 @@ const RegistrarDespacho = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <Modal visible={exito} transparent animationType="fade">
+        <View style={style.modalBackdrop}>
+          <View style={style.modalCard}>
+            <MaterialIcons name="check-circle" size={64} color="#22c55e" style={style.modalIcono} />
+            <Text style={style.modalTitulo}>¡Despacho registrado!</Text>
+            <Text style={style.modalSubtitulo}>
+              El despacho fue creado y asignado exitosamente.
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -87,6 +112,35 @@ const style = StyleSheet.create({
     color: '#E53935',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: '#00000066',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    width: '100%',
+  },
+  modalIcono: {
+    marginBottom: 16,
+  },
+  modalTitulo: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#111',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalSubtitulo: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
 

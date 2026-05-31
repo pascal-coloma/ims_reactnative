@@ -28,7 +28,15 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
 
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-      setAmbulancias(data);
+
+      setAmbulancias(
+        data.map((a: any) => ({
+          id: String(a.ambulancia_id),
+          patente: a.patente,
+          modelo: a.modelo ?? '',
+          estado_disponibilidad: a.estado,
+        })),
+      );
     } catch (e: any) {
       console.error('Error fetching ambulancias:', e);
       setError(e.message ?? 'Error desconocido');
