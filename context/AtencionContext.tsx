@@ -93,11 +93,10 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
           categoria: atencion.cronologia.categoria,
         },
         insumos_utilizados: atencion.insumosUtilizados.map((i) => ({
-          insumo_id: i.insumoId,
-          nombre: i.nombre,
-          cantidad: i.cantidad,
-          unidad: i.unidad,
+          presentacion_id: Number(i.insumoId),
+          cantidad_usada: i.cantidad,
         })),
+        rut_receptor: '',
       };
 
       const atencionResp = await fetchConSesion('/ims/api/atenciones/add/', {
@@ -146,20 +145,17 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchAtencionDetalle = async (id: number) => {
     try {
-      // Paso 1 — obtener URL presignada de S3
       const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
       const s3Url = data.success;
       console.log('S3 URL:', s3Url);
 
-      // Paso 2 — fetch del documento desde S3
       const s3Resp = await fetch(s3Url);
       if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
       const documento = await s3Resp.json();
       console.log('Documento S3:', JSON.stringify(documento, null, 2));
 
-      // Paso 3 — inyectar estado_sello y firma_digital actuales desde RetornarAtencionAPIView
       const resumen = resumenAtenciones.find((a) => a.id === id);
       if (resumen && documento.atencion) {
         documento.atencion.estado_sello = resumen.estado_sello;
@@ -175,7 +171,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchAtencionDetalleLocal = async (id: number) => {
     try {
-      const response = await fetchConSesion(`/ims/api/atenciones/detalle/?id=${id}`);
+      const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
       return await response.json();
     } catch (e: any) {
