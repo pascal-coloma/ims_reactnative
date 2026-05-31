@@ -17,18 +17,18 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
   const [personal, setPersonal] = useState<Personal[]>([]);
 
   const registrarWorker = async (data: NuevoWorker): Promise<WorkerCreado | null> => {
-    try {
-      const response = await fetchConSesion('/ims/api/personal/', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error(`Error ${response.status}`);
-      return await response.json();
-    } catch (e: any) {
-      console.error('Error registrando worker:', e.message);
-      return null;
+    const response = await fetchConSesion('/ims/api/personal/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    console.log(data);
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body?.error ?? `Error ${response.status}`);
     }
+    return await response.json();
   };
+
   // Revision de la autenticacion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
     const fetchPersonal = async () => {

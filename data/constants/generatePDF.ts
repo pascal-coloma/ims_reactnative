@@ -38,7 +38,7 @@ type Cronologia = {
 
 type InsumoUtilizado = {
   insumo__nombre_insumo: string;
-  dosis: number;
+  cantidad: number;
   observaciones: string;
 };
 
@@ -90,7 +90,7 @@ export const generatePDF = async (data: DocumentoAtencion) => {
     <tr>
       <td>${i.insumo__nombre_insumo}</td>
       <td>—</td>
-      <td>${i.dosis}</td>
+      <td>${i.cantidad}</td>
       <td>${i.observaciones ?? '—'}</td>
     </tr>
   `,
