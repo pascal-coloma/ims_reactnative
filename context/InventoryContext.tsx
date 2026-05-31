@@ -30,7 +30,7 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchConSesion('/ims/api/inv/get/');
+      const response = await fetchConSesion('/ims/api/inv/');
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
       setInsumos(

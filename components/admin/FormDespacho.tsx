@@ -101,9 +101,9 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
               <Picker selectedValue={value} onValueChange={onChange}>
                 <Picker.Item label="Seleccione ambulancia" value="" enabled={false} />
                 {ambulancias
-                  .filter((a) => a.estado_disponibilidad === 'disponible')
+                  .filter((a) => a.estado === 'disponible')
                   .map((a) => (
-                    <Picker.Item key={a.id} label={`${a.patente} — ${a.modelo}`} value={a.id} />
+                    <Picker.Item key={a.ambulancia_id} label={a.patente} value={String(a.ambulancia_id)} />
                   ))}
               </Picker>
             </View>

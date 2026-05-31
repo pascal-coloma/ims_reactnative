@@ -4,6 +4,7 @@ import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { FormCompleta } from '@/data/types/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAmbulancias } from './AmbulanciaContext';
 
 type DespachosContextType = {
   despachos: Despacho[];
@@ -56,7 +57,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetchConSesion(endpoint);
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-
+      
       const mapearControl = (d: any): Despacho => ({
         id: String(d.id),
         direccionOrigen: d.direccion_origen,
@@ -71,10 +72,10 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         grupoNombre: d.grupo_nombre ?? undefined,
         ambulancia: d.ambulancia_id
           ? {
-              id: String(d.ambulancia_id),
+              ambulancia_id: Number(d.ambulancia_id),
               patente: '',
-              modelo: '',
-              estado_disponibilidad: 'disponible' as const,
+              estado: 'disponible' as const,
+              stock: [],
             }
           : undefined,
       });
@@ -87,15 +88,15 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         estado: d.estado === 'asignado' ? 'activo' : d.estado,
         fechaLlamado: d.fechaLlamado,
         personalIds: d.personalIds ?? [],
-        grupoNombre: d.grupoNombre ?? d.grupo_nombre ?? undefined,
+        grupoNombre: d.grupoNombre ?? undefined,
         paciente: d.paciente ?? undefined,
         rutPaciente: d.paciente?.rut ?? undefined,
         ambulancia: d.ambulancia
           ? {
-              id: String(d.ambulancia.id),
+              ambulancia_id: Number(d.ambulancia.id),
               patente: d.ambulancia.patente ?? '',
-              modelo: d.ambulancia.modelo ?? '',
-              estado_disponibilidad: d.ambulancia.estado ?? 'disponible',
+              estado: d.ambulancia.estado ?? 'disponible',
+              stock: [],
             }
           : undefined,
       });

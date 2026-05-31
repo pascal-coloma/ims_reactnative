@@ -8,7 +8,7 @@ import EstadoBadge from '../EstadoBadge';
 
 const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
   const { ambulancias } = useAmbulancias();
-  const ambulancia = ambulancias.find((a) => a.id === despacho.ambulancia?.id);
+  const ambulancia = ambulancias.find((a) => a.ambulancia_id === despacho.ambulancia?.ambulancia_id);
 
   return (
     <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
@@ -42,7 +42,7 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
           <View style={local.rutaRow}>
             <MaterialIcons name="airport-shuttle" size={14} color="#888" />
             <Text style={local.dato} numberOfLines={1}>
-              {ambulancia.modelo} — {ambulancia.patente}
+              {ambulancia.patente}
             </Text>
           </View>
         )}
