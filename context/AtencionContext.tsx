@@ -2,7 +2,7 @@ import { fetchConSesion } from '@/context/AuthContext';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Atencion } from '@/data/types/types';
-
+import { SignosVitales, PreInforme, Cronologia } from '@/data/types/types';
 type AtencionResumen = {
   id: number;
   hora_salida: string;
@@ -26,9 +26,9 @@ type AtencionContextType = {
 };
 
 type ModificacionPayload = {
-  controlSignos: import('@/data/types/types').SignosVitales[];
-  preInforme: import('@/data/types/types').PreInforme;
-  cronologia: import('@/data/types/types').Cronologia;
+  controlSignos: SignosVitales[];
+  preInforme: PreInforme;
+  cronologia: Cronologia;
 };
 
 const AtencionContext = createContext<AtencionContextType | null>(null);
@@ -94,9 +94,8 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         },
         insumos_utilizados: atencion.insumosUtilizados.map((i) => ({
           insumo_id: i.insumoId,
-          nombre: i.nombre,
-          cantidad: i.cantidad,
-          unidad: i.unidad,
+          dosis: i.dosis,
+          observaciones: '',
         })),
       };
 
