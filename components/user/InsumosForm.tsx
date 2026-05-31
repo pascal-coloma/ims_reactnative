@@ -24,9 +24,8 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
     if (fields.some((f) => f.insumoId === insumo.id)) return;
     append({
       insumoId: insumo.id,
-      nombre: insumo.nombre,
-      cantidad: 1,
-      unidad: insumo.unidadMedida,
+      dosis: 1,
+      observaciones: '',
     });
     setBusqueda('');
   };
@@ -79,38 +78,41 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
 
       {fields.length > 0 && (
         <View style={local.seleccionados}>
-          {fields.map((field, index) => (
-            <View key={field.id} style={local.insumoRow}>
-              <View style={local.insumoTextos}>
-                <Text style={local.insumoNombre}>{field.nombre}</Text>
-                <Text style={local.insumoDetalle}>{field.unidad}</Text>
+          {fields.map((field, index) => {
+            const insumo = insumos.find((i) => i.id === field.insumoId);
+            return (
+              <View key={field.id} style={local.insumoRow}>
+                <View style={local.insumoTextos}>
+                  <Text style={local.insumoNombre}>{insumo?.nombre}</Text>
+                  <Text style={local.insumoDetalle}>{insumo?.unidadMedida}</Text>
+                </View>
+                <Controller
+                  control={control}
+                  name={`insumosUtilizados.${index}.dosis`}
+                  rules={{ required: true, min: 1 }}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <TextInput
+                        style={[
+                          local.cantidadInput,
+                          errors.insumosUtilizados?.[index]?.dosis && local.cantidadInputError,
+                        ]}
+                        keyboardType="numeric"
+                        value={String(value)}
+                        onChangeText={(text) => onChange(Number(text) || 1)}
+                      />
+                      {errors.insumosUtilizados?.[index]?.dosis && (
+                        <Text style={local.errorText}>≥ 1</Text>
+                      )}
+                    </View>
+                  )}
+                />
+                <TouchableOpacity onPress={() => remove(index)} style={local.removeBtn}>
+                  <MaterialIcons name="close" size={20} color="#E53935" />
+                </TouchableOpacity>
               </View>
-              <Controller
-                control={control}
-                name={`insumosUtilizados.${index}.cantidad`}
-                rules={{ required: true, min: 1 }}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <TextInput
-                      style={[
-                        local.cantidadInput,
-                        errors.insumosUtilizados?.[index]?.cantidad && local.cantidadInputError,
-                      ]}
-                      keyboardType="numeric"
-                      value={String(value)}
-                      onChangeText={(text) => onChange(Number(text) || 1)}
-                    />
-                    {errors.insumosUtilizados?.[index]?.cantidad && (
-                      <Text style={local.errorText}>≥ 1</Text>
-                    )}
-                  </View>
-                )}
-              />
-              <TouchableOpacity onPress={() => remove(index)} style={local.removeBtn}>
-                <MaterialIcons name="close" size={20} color="#E53935" />
-              </TouchableOpacity>
-            </View>
-          ))}
+            );
+          })}
         </View>
       )}
     </View>
