@@ -18,7 +18,6 @@ type FormPacienteProps = {
 const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   return (
     <>
-      <AppHeader title="Registrar Despacho" />
       <View style={style.formulario}>
         <Controller
           control={control}
