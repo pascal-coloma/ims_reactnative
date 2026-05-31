@@ -60,7 +60,7 @@ const RegistrarWorker = () => {
       reset();
     } catch (e: any) {
       console.log('[RegistrarWorker] backend error:', e.message);
-      console.log(e)
+      console.log(e);
       setError(e.message ?? 'Error desconocido');
     } finally {
       setCargando(false);
