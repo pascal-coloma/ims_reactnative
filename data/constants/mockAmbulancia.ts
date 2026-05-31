@@ -1,25 +1,24 @@
+export type AmbulanciaStock = {
+  presentacion_id: number;
+  insumo_nombre: string;
+  insumo_cantidad: number;
+  categoria: string;
+  unidad_medida: string;
+  stock: number;
+};
+
 export type Ambulancia = {
-  id: string;
+  ambulancia_id: number;
   patente: string;
-  modelo: string;
-  estado_disponibilidad: 'disponible' | 'en_despacho' | 'mantencion' | 'fuera_servicio';
+  estado: 'disponible' | 'en_despacho' | 'mantencion' | 'fuera_servicio';
+  stock: AmbulanciaStock[];
 };
 
 export const mockAmbulancias: Ambulancia[] = [
-  {
-    id: '1',
-    patente: 'AMB-001',
-    modelo: 'Mercedes Sprinter 2022',
-    estado_disponibilidad: 'disponible',
-  },
-  { id: '2', patente: 'AMB-002', modelo: 'Ford Transit 2021', estado_disponibilidad: 'disponible' },
-  { id: '3', patente: 'AMB-003', modelo: 'Iveco Daily 2020', estado_disponibilidad: 'mantencion' },
-  {
-    id: '4',
-    patente: 'AMB-004',
-    modelo: 'Renault Master 2023',
-    estado_disponibilidad: 'disponible',
-  },
+  { ambulancia_id: 1, patente: 'AMB-001', estado: 'disponible', stock: [] },
+  { ambulancia_id: 2, patente: 'AMB-002', estado: 'disponible', stock: [] },
+  { ambulancia_id: 3, patente: 'AMB-003', estado: 'mantencion', stock: [] },
+  { ambulancia_id: 4, patente: 'AMB-004', estado: 'disponible', stock: [] },
 ];
 
 export const CATEGORIAS_EMERGENCIA = [

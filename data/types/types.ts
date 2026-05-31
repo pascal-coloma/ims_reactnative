@@ -10,9 +10,8 @@ export type Insumo = {
 
 export type InsumoUtilizado = {
   insumoId: string;
-  nombre: string;
-  cantidad: number;
-  unidad: string;
+  dosis: number;
+  observaciones: string;
 };
 
 export type FormCompleta = {
