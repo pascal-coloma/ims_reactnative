@@ -33,7 +33,6 @@ const RegistrarDespacho = () => {
   }, [exito]);
 
   const onSubmit = async (data: FormCompleta) => {
-    console.log('data submit:', JSON.stringify(data, null, 2));
     try {
       await agregarDespacho(data);
       reset();
