@@ -5,15 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppState } from 'react-native';
-import { OFFLINE_MODE } from '@/data/constants/defaultValues';
-
-const MOCK_USER = {
-  username: 'offline',
-  role: 'medic' as Role,
-  personalId: '1',
-  firstName: 'Ignacio',
-  lastName: 'García',
-};
 
 const BASE_URL = 'https://956.duckdns.org';
 
@@ -222,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const personalResp = await fetchConSesion('/ims/api/personal/');
+        console.log(personalResp);
         if (personalResp.ok) {
           const personalData: any[] = await personalResp.json();
           const match = personalData.find((p) => p.username === username);
@@ -235,9 +227,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn('No se pudo obtener datos de personal:', e);
       }
 
+      const roleMap: Record<string, Role> = {
+        medico: 'medic',
+        tens: 'nurse',
+        chofer: 'driver',
+        control: 'control',
+      };
+      const rawRole: string = data.user_data?.role ?? '';
+      const resolvedRole: Role = roleMap[rawRole] ?? (rawRole as Role) ?? null;
+
       const loggedUser: User = {
         username,
-        role: data.role as Role,
+        role: resolvedRole,
         personalId,
         firstName,
         lastName,
