@@ -1,11 +1,21 @@
 export type Insumo = {
-  id: string;
+  id: string; // presentacion.id — usar como presentacion_id en update/move
   nombre: string;
   categoria: string;
   cantidad: number;
   unidadMedida: string;
   ambulanciaPatente: string;
+  ambulanciaId: number; // resuelto desde /api/ambulancias/ al cargar
   stock: number;
+};
+
+export type NuevoInsumo = {
+  nombre_insumo: string;
+  categoria_id: number;
+  cantidad: number;
+  unidad_medida_id: number;
+  stock: number;
+  ambulancia_id: number;
 };
 
 export type InsumoUtilizado = {
