@@ -52,7 +52,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const esControl = user?.role === 'control';
-      const endpoint = esControl ? '/ims/api/despachos/getall/' : '/ims/api/despachos/get/';
+      const endpoint = '/ims/api/despachos/getall/';
 
       const response = await fetchConSesion(endpoint);
       if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -143,7 +143,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         };
         // Paciente no existe → crear
         console.log('Paso 0 - paciente no existe, creando...');
-        const crearResp = await fetchConSesion('/ims/api/pacientes/', {
+        const crearResp = await fetchConSesion('/ims/api/pacientes/add', {
           method: 'POST',
           body: JSON.stringify(payloadPaciente),
         });
