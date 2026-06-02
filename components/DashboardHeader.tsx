@@ -13,14 +13,14 @@ const DashboardHeader = () => {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const nombre = `${user?.firstName} ${user?.lastName}`;
+  const nombre = `${user?.first_name} ${user?.last_name}`;
 
   return (
     <>
       <View style={[style.container, { paddingTop: insets.top + 8 }]}>
         <View style={style.left}>
           <View style={style.avatar}>
-            <Text style={style.avatarText}>{user?.firstName?.[0]?.toUpperCase() ?? 'U'}</Text>
+            <Text style={style.avatarText}>{user?.first_name?.[0]?.toUpperCase() ?? 'U'}</Text>
           </View>
           <View>
             <Text style={style.welcome}>Bienvenido/a,</Text>

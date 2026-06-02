@@ -23,8 +23,8 @@ type User = {
   username: string;
   role: Role;
   personalId: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
 } | null;
 
 type AuthContextType = {
@@ -71,7 +71,7 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
   const setCookie = response.headers.get('set-cookie');
   if (setCookie) await CookieManager.setFromResponse(BASE_URL, setCookie);
 
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401) {
     await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
     await CookieManager.clearAll();
     _onSessionExpired?.();
@@ -216,8 +216,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem('sessionid', sessionId);
       await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
 
-      let firstName = '';
-      let lastName = '';
+      let first_name = '';
+      let last_name = '';
       let personalId = '';
 
       try {
@@ -226,8 +226,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const personalData: any[] = await personalResp.json();
           const match = personalData.find((p) => p.username === username);
           if (match) {
-            firstName = match.first_name ?? '';
-            lastName = match.last_name ?? '';
+            first_name = match.first_name ?? '';
+            last_name = match.last_name ?? '';
             personalId = match.id?.toString() ?? '';
           }
         }
@@ -239,12 +239,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username,
         role: data.role as Role,
         personalId,
-        firstName,
-        lastName,
+        first_name,
+        last_name,
       };
 
       await AsyncStorage.setItem('user', JSON.stringify(loggedUser));
       setUser(loggedUser);
+      console.log(loggedUser)
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
       console.error('Error login:', e);
