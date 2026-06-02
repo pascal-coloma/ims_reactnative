@@ -24,7 +24,7 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetchConSesion('/ims/api/pacientes/');
+        const response = await fetchConSesion('/ims/api/pacientes/get');
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
         setPacientes(data);
