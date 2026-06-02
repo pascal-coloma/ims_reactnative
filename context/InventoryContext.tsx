@@ -1,15 +1,24 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { Insumo } from '@/data/types/types';
+import { Insumo, NuevoInsumo } from '@/data/types/types';
 import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 
 type InventarioContextType = {
   insumos: Insumo[];
   loading: boolean;
   error: string | null;
-  agregarInsumo: (insumo: Insumo) => void;
   buscarInsumo: (termino: string) => Insumo[];
-  editarInsumo: (id: string, insumo: Insumo) => void;
-  eliminarInsumo: (id: string) => void;
+  agregarInsumos: (items: NuevoInsumo[]) => Promise<void>;
+  actualizarStock: (
+    presentacionId: number,
+    ambulanciaId: number,
+    cantidad: number,
+  ) => Promise<void>;
+  moverInsumo: (
+    presentacionId: number,
+    ambulanciaFromId: number,
+    ambulanciaToId: number,
+    cantidad: number,
+  ) => Promise<void>;
   recargar: () => void;
 };
 
@@ -30,10 +39,20 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchConSesion('/ims/api/inv/');
-      if (!response.ok) throw new Error(`Error ${response.status}`);
-      const data = await response.json();
-      console.log(data);
+      const [invResp, ambResp] = await Promise.all([
+        fetchConSesion('/ims/api/inv/'),
+        fetchConSesion('/ims/api/ambulancias/'),
+      ]);
+      if (!invResp.ok) throw new Error(`Error ${invResp.status}`);
+      if (!ambResp.ok) throw new Error(`Error ${ambResp.status}`);
+
+      const data = await invResp.json();
+      const ambData = await ambResp.json();
+
+      const patenteToId = new Map<string, number>(
+        ambData.map((a: any) => [a.patente, a.ambulancia_id]),
+      );
+
       setInsumos(
         data.map(
           (item: any): Insumo => ({
@@ -43,6 +62,7 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
             cantidad: item.presentacion.cantidad,
             unidadMedida: item.presentacion.unidad_medida,
             ambulanciaPatente: item.ambulancia.patente,
+            ambulanciaId: patenteToId.get(item.ambulancia.patente) ?? 0,
             stock: item.ambulancia.stock,
           }),
         ),
@@ -58,20 +78,53 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
 
   const recargar = () => setRefreshKey((k) => k + 1);
 
-  const agregarInsumo = (insumo: Insumo) => {
-    setInsumos((prev) => [...prev, insumo]);
+  const buscarInsumo = (termino: string) =>
+    insumos.filter((i) => i.nombre.toLowerCase().includes(termino.toLowerCase()));
+
+  const agregarInsumos = async (items: NuevoInsumo[]) => {
+    const response = await fetchConSesion('/ims/api/inv/add/', {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    });
+    if (!response.ok) throw new Error(`Error ${response.status}`);
+    recargar();
   };
 
-  const buscarInsumo = (termino: string) => {
-    return insumos.filter((i) => i.nombre.toLowerCase().includes(termino.toLowerCase()));
+  // cantidad es un delta positivo o negativo que se suma al stock actual
+  const actualizarStock = async (
+    presentacionId: number,
+    ambulanciaId: number,
+    cantidad: number,
+  ) => {
+    const response = await fetchConSesion('/ims/api/inv/update/', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        presentacion_id: presentacionId,
+        ambulancia_id: ambulanciaId,
+        cantidad,
+      }),
+    });
+    if (!response.ok) throw new Error(`Error ${response.status}`);
+    recargar();
   };
 
-  const editarInsumo = (id: string, insumoActualizado: Insumo) => {
-    setInsumos((prev) => prev.map((i) => (i.id === id ? insumoActualizado : i)));
-  };
-
-  const eliminarInsumo = (id: string) => {
-    setInsumos((prev) => prev.filter((i) => i.id !== id));
+  const moverInsumo = async (
+    presentacionId: number,
+    ambulanciaFromId: number,
+    ambulanciaToId: number,
+    cantidad: number,
+  ) => {
+    const response = await fetchConSesion('/ims/api/inv/move/', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        presentacion_id: presentacionId,
+        ambulancia_from_id: ambulanciaFromId,
+        ambulancia_to_id: ambulanciaToId,
+        cantidad,
+      }),
+    });
+    if (!response.ok) throw new Error(`Error ${response.status}`);
+    recargar();
   };
 
   return (
@@ -80,10 +133,10 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
         insumos,
         loading,
         error,
-        agregarInsumo,
         buscarInsumo,
-        editarInsumo,
-        eliminarInsumo,
+        agregarInsumos,
+        actualizarStock,
+        moverInsumo,
         recargar,
       }}
     >
