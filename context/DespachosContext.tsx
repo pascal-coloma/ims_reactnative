@@ -52,7 +52,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const esControl = user?.role === 'control';
-      const endpoint = esControl ? '/ims/api/despachos/getall/' : '/ims/api/despachos/get/';
+      const endpoint = '/ims/api/despachos/getall/';
 
       const response = await fetchConSesion(endpoint);
       if (!response.ok) throw new Error(`Error ${response.status}`);
