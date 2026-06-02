@@ -30,7 +30,7 @@ export default function TOTPScreen() {
         codeToUse,
       );
       setPendingCredentials(null);
-
+      console.log(result);
       if (!result) {
         setError('Error de autenticación');
         return;

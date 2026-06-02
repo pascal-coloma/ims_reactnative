@@ -213,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const personalResp = await fetchConSesion('/ims/api/personal/');
+        console.log(personalResp);
         if (personalResp.ok) {
           const personalData: any[] = await personalResp.json();
           const match = personalData.find((p) => p.username === username);
@@ -226,9 +227,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn('No se pudo obtener datos de personal:', e);
       }
 
+      const roleMap: Record<string, Role> = {
+        medico: 'medic',
+        tens: 'nurse',
+        chofer: 'driver',
+        control: 'control',
+      };
+      const rawRole: string = data.user_data?.role ?? '';
+      const resolvedRole: Role = roleMap[rawRole] ?? (rawRole as Role) ?? null;
+
       const loggedUser: User = {
         username,
-        role: data.role as Role,
+        role: resolvedRole,
         personalId,
         firstName,
         lastName,
