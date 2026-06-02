@@ -2,7 +2,15 @@ import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
 import { Insumo } from '@/data/types/types';
 import { useMemo, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 
 const Inventario = () => {
