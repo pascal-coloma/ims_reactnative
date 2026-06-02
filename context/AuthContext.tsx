@@ -245,7 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await AsyncStorage.setItem('user', JSON.stringify(loggedUser));
       setUser(loggedUser);
-      console.log(loggedUser)
+      console.log(loggedUser);
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
       console.error('Error login:', e);
