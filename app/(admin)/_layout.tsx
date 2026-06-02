@@ -7,6 +7,7 @@ import InventarioProvider from '@/context/InventoryContext';
 import { AmbulanciaProvider } from '@/context/AmbulanciaContext';
 import DespachosProvider from '@/context/DespachosContext';
 import { AtencionProvider } from '@/context/AtencionContext';
+import GrupoProvider from '@/context/GrupoContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AdminLayout() {
@@ -34,87 +35,103 @@ export default function AdminLayout() {
   return (
     <DespachosProvider>
       <PersonalProvider>
-        <PacienteProvider>
-          <AtencionProvider>
-            <InventarioProvider>
-              <AmbulanciaProvider>
-                <Tabs screenOptions={tabBarOptions}>
-                  <Tabs.Screen
-                    name="AdminDashboard"
-                    options={{
-                      title: 'Home',
-                      tabBarIcon: ({ color, size }) => (
-                        <MaterialIcons name="home" size={size} color={color} />
-                      ),
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="Despachos"
-                    options={{
-                      title: 'Despachos',
-                      tabBarIcon: ({ color, size }) => (
-                        <MaterialIcons name="airport-shuttle" size={size} color={color} />
-                      ),
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="Panel"
-                    options={{
-                      title: 'Panel',
-                      tabBarIcon: ({ color, size }) => (
-                        <MaterialIcons name="admin-panel-settings" size={size} color={color} />
-                      ),
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="RegistrarDespacho"
-                    options={{
-                      href: null,
-                      title: 'RegistrarDespacho',
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="detalledespacho"
-                    options={{
-                      href: null,
-                      title: 'detalledespacho',
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="Inventario"
-                    options={{
-                      href: null,
-                      title: 'Inventario',
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="RegistrarWorker"
-                    options={{
-                      href: null,
-                      title: 'RegistrarWorker',
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="ListaAtenciones"
-                    options={{
-                      href: null,
-                      title: 'ListadoAtenciones',
-                    }}
-                  />
-                  <Tabs.Screen
-                    name="ListaPersonal"
-                    options={{ href: null, title: 'ListaPersonal' }}
-                  />
-                  <Tabs.Screen
-                    name="ActualizarStock"
-                    options={{ href: null, title: 'ActualizarStock' }}
-                  />
-                  <Tabs.Screen name="MoverInsumo" options={{ href: null, title: 'MoverInsumo' }} />
-                </Tabs>
-              </AmbulanciaProvider>
-            </InventarioProvider>
-          </AtencionProvider>
-        </PacienteProvider>
+        <GrupoProvider>
+          <PacienteProvider>
+            <AtencionProvider>
+              <InventarioProvider>
+                <AmbulanciaProvider>
+                  <Tabs screenOptions={tabBarOptions}>
+                    <Tabs.Screen
+                      name="AdminDashboard"
+                      options={{
+                        title: 'Home',
+                        tabBarIcon: ({ color, size }) => (
+                          <MaterialIcons name="home" size={size} color={color} />
+                        ),
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="Despachos"
+                      options={{
+                        title: 'Despachos',
+                        tabBarIcon: ({ color, size }) => (
+                          <MaterialIcons name="airport-shuttle" size={size} color={color} />
+                        ),
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="Panel"
+                      options={{
+                        title: 'Panel',
+                        tabBarIcon: ({ color, size }) => (
+                          <MaterialIcons name="admin-panel-settings" size={size} color={color} />
+                        ),
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="RegistrarDespacho"
+                      options={{
+                        href: null,
+                        title: 'RegistrarDespacho',
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="detalledespacho"
+                      options={{
+                        href: null,
+                        title: 'detalledespacho',
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="Inventario"
+                      options={{
+                        href: null,
+                        title: 'Inventario',
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="RegistrarWorker"
+                      options={{
+                        href: null,
+                        title: 'RegistrarWorker',
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="ListaAtenciones"
+                      options={{
+                        href: null,
+                        title: 'ListadoAtenciones',
+                      }}
+                    />
+                    <Tabs.Screen
+                      name="ListaPersonal"
+                      options={{ href: null, title: 'ListaPersonal' }}
+                    />
+                    <Tabs.Screen
+                      name="ActualizarStock"
+                      options={{ href: null, title: 'ActualizarStock' }}
+                    />
+                    <Tabs.Screen
+                      name="MoverInsumo"
+                      options={{ href: null, title: 'MoverInsumo' }}
+                    />
+                    <Tabs.Screen
+                      name="Grupos"
+                      options={{
+                        title: 'Grupos',
+                        tabBarIcon: ({ color, size }) => (
+                          <MaterialIcons name="group" size={size} color={color} />
+                        ),
+                      }}
+                    />
+                    <Tabs.Screen name="CrearGrupo" options={{ href: null, title: 'CrearGrupo' }} />
+                    <Tabs.Screen name="grupo" options={{ href: null, title: 'grupo' }} />
+                  </Tabs>
+                </AmbulanciaProvider>
+              </InventarioProvider>
+            </AtencionProvider>
+          </PacienteProvider>
+        </GrupoProvider>
       </PersonalProvider>
     </DespachosProvider>
   );
