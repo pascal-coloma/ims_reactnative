@@ -1,5 +1,6 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { Ambulancia } from '@/data/constants/mockAmbulancia';
+import { Insumo } from '@/data/types/types';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 type AmbulanciaContextType = {
@@ -28,13 +29,11 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
 
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-
       setAmbulancias(
         data.map((a: any) => ({
           id: String(a.ambulancia_id),
           patente: a.patente,
-          modelo: a.modelo ?? '',
-          estado_disponibilidad: a.estado,
+          estado: a.estado,
         })),
       );
     } catch (e: any) {
