@@ -35,6 +35,7 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
         const response = await fetchConSesion('/ims/api/personal/');
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
+        console.log(data);
         setPersonal(data);
       } catch (error: any) {
         console.error('Error fetching personal:', error.message);
