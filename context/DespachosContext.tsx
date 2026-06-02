@@ -141,7 +141,6 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
           condicion_paciente: data.condicionPaciente,
           telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
         };
-        // Paciente no existe → crear
         console.log('Paso 0 - paciente no existe, creando...');
         const crearResp = await fetchConSesion('/ims/api/pacientes/add', {
           method: 'POST',
