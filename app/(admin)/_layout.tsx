@@ -105,6 +105,14 @@ export default function AdminLayout() {
                     name="ListaPersonal"
                     options={{ href: null, title: 'ListaPersonal' }}
                   />
+                  <Tabs.Screen
+                    name="ActualizarStock"
+                    options={{ href: null, title: 'ActualizarStock' }}
+                  />
+                  <Tabs.Screen
+                    name="MoverInsumo"
+                    options={{ href: null, title: 'MoverInsumo' }}
+                  />
                 </Tabs>
               </AmbulanciaProvider>
             </InventarioProvider>
