@@ -142,7 +142,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         };
         // Paciente no existe → crear
         console.log('Paso 0 - paciente no existe, creando...');
-        const crearResp = await fetchConSesion('/ims/api/pacientes/', {
+        const crearResp = await fetchConSesion('/ims/api/pacientes/add', {
           method: 'POST',
           body: JSON.stringify(payloadPaciente),
         });
