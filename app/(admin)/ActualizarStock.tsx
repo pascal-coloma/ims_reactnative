@@ -86,10 +86,7 @@ const ActualizarStock = () => {
           <View style={style.previewRow}>
             <Text style={style.previewLabel}>Stock resultante</Text>
             <Text
-              style={[
-                style.previewValor,
-                stockActual + Number(delta) < 0 && style.previewError,
-              ]}
+              style={[style.previewValor, stockActual + Number(delta) < 0 && style.previewError]}
             >
               {stockActual + Number(delta)} unidades
             </Text>

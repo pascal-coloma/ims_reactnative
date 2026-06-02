@@ -8,8 +8,17 @@ type InventarioContextType = {
   error: string | null;
   buscarInsumo: (termino: string) => Insumo[];
   agregarInsumos: (items: NuevoInsumo[]) => Promise<void>;
-  actualizarStock: (presentacionId: number, ambulanciaId: number, cantidad: number) => Promise<void>;
-  moverInsumo: (presentacionId: number, ambulanciaFromId: number, ambulanciaToId: number, cantidad: number) => Promise<void>;
+  actualizarStock: (
+    presentacionId: number,
+    ambulanciaId: number,
+    cantidad: number,
+  ) => Promise<void>;
+  moverInsumo: (
+    presentacionId: number,
+    ambulanciaFromId: number,
+    ambulanciaToId: number,
+    cantidad: number,
+  ) => Promise<void>;
   recargar: () => void;
 };
 
@@ -82,10 +91,18 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // cantidad es un delta positivo o negativo que se suma al stock actual
-  const actualizarStock = async (presentacionId: number, ambulanciaId: number, cantidad: number) => {
+  const actualizarStock = async (
+    presentacionId: number,
+    ambulanciaId: number,
+    cantidad: number,
+  ) => {
     const response = await fetchConSesion('/ims/api/inv/update/', {
       method: 'PATCH',
-      body: JSON.stringify({ presentacion_id: presentacionId, ambulancia_id: ambulanciaId, cantidad }),
+      body: JSON.stringify({
+        presentacion_id: presentacionId,
+        ambulancia_id: ambulanciaId,
+        cantidad,
+      }),
     });
     if (!response.ok) throw new Error(`Error ${response.status}`);
     recargar();

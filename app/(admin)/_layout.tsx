@@ -109,10 +109,7 @@ export default function AdminLayout() {
                     name="ActualizarStock"
                     options={{ href: null, title: 'ActualizarStock' }}
                   />
-                  <Tabs.Screen
-                    name="MoverInsumo"
-                    options={{ href: null, title: 'MoverInsumo' }}
-                  />
+                  <Tabs.Screen name="MoverInsumo" options={{ href: null, title: 'MoverInsumo' }} />
                 </Tabs>
               </AmbulanciaProvider>
             </InventarioProvider>
