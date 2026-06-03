@@ -20,7 +20,7 @@ export default function AdminLayout() {
     headerShown: false,
     tabBarActiveTintColor: '#E53935',
     tabBarInactiveTintColor: '#999',
-    tabBarHideOnKeyboard: true,
+    tabBarHideOnKeyboard: false,
     tabBarStyle: {
       height: 60 + insets.bottom,
       paddingBottom: insets.bottom + 4,
@@ -125,7 +125,7 @@ export default function AdminLayout() {
                       }}
                     />
                     <Tabs.Screen name="CrearGrupo" options={{ href: null, title: 'CrearGrupo' }} />
-                    <Tabs.Screen name="grupo" options={{ href: null, title: 'grupo' }} />
+                    <Tabs.Screen name="(grupo)" options={{ href: null, title: 'grupo' }} />
                   </Tabs>
                 </AmbulanciaProvider>
               </InventarioProvider>
