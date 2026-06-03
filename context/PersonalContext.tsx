@@ -1,7 +1,15 @@
-import PERSONAL, { Personal } from '@/data/constants/mockPersonal';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import PERSONAL, { Personal } from '@/data/mock/mockPersonal';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { fetchConSesion } from './AuthContext';
-import { NuevoWorker, WorkerCreado } from '@/data/types/types';
+import { NuevoWorker, WorkerCreado } from '@/data/types';
 
 type PersonalContextType = {
   personal: Personal[];
@@ -16,7 +24,7 @@ const PersonalContext = createContext<PersonalContextType | null>(null);
 const PersonalProvider = ({ children }: { children: ReactNode }) => {
   const [personal, setPersonal] = useState<Personal[]>([]);
 
-  const registrarWorker = async (data: NuevoWorker): Promise<WorkerCreado | null> => {
+  const registrarWorker = useCallback(async (data: NuevoWorker): Promise<WorkerCreado | null> => {
     const response = await fetchConSesion('/ims/api/personal/', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -26,7 +34,7 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
       throw new Error(body?.error ?? `Error ${response.status}`);
     }
     return await response.json();
-  };
+  }, []);
 
   // Revision de la autenticacion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
@@ -43,14 +51,16 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
     fetchPersonal();
   }, []);
 
-  function actualizarDisponibilidad(id: string): void {
+  const actualizarDisponibilidad = useCallback((id: string) => {
     setPersonal((prev) => prev.map((p) => (p.id === id ? { ...p, is_active: false } : p)));
-  }
-  return (
-    <PersonalContext.Provider value={{ personal, actualizarDisponibilidad, registrarWorker }}>
-      {children}
-    </PersonalContext.Provider>
+  }, []);
+
+  const value = useMemo(
+    () => ({ personal, actualizarDisponibilidad, registrarWorker }),
+    [personal, actualizarDisponibilidad, registrarWorker],
   );
+
+  return <PersonalContext.Provider value={value}>{children}</PersonalContext.Provider>;
 };
 
 export default PersonalProvider;

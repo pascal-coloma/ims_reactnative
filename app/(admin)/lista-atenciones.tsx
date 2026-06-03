@@ -1,9 +1,9 @@
 import AppHeader from '@/components/AppHeader';
 import { useAtenciones } from '@/context/AtencionContext';
+import { generatePDF } from '@/utils/pdf';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -13,16 +13,31 @@ import {
   View,
 } from 'react-native';
 
-const MisAtenciones = () => {
-  const { resumenAtenciones, fetchAtenciones, loading, error } = useAtenciones();
+const ListaAtenciones = () => {
+  const { resumenAtenciones, fetchAtenciones, fetchAtencionDetalle, loading, error } =
+    useAtenciones();
+  const [generando, setGenerando] = useState<number | null>(null);
 
   useEffect(() => {
     fetchAtenciones();
   }, []);
 
+  const handleGenerarPDF = async (id: number) => {
+    setGenerando(id);
+    try {
+      const datos = await fetchAtencionDetalle(id);
+      if (!datos) throw new Error('Sin datos');
+      await generatePDF(datos);
+    } catch (e) {
+      console.error('Error generando PDF:', e);
+    } finally {
+      setGenerando(null);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      <AppHeader title="Mis Atenciones" />
+      <AppHeader title="Atenciones" />
 
       <ScrollView>
         {loading && (
@@ -46,11 +61,13 @@ const MisAtenciones = () => {
         {resumenAtenciones.map((a) => (
           <View key={a.id} style={styles.container}>
             <View style={local.rowHeader}>
-              <Text style={styles.title}>Atención #{a.id}</Text>
+              <Text style={styles.title}>Atención #{a.id} </Text>
               <View
                 style={[
                   local.badge,
-                  { backgroundColor: a.estado_sello === 'Pendiente' ? '#FEF9C3' : '#DCFCE7' },
+                  {
+                    backgroundColor: a.estado_sello === 'Pendiente' ? '#FEF9C3' : '#DCFCE7',
+                  },
                 ]}
               >
                 <Text
@@ -65,7 +82,7 @@ const MisAtenciones = () => {
               </View>
             </View>
 
-            <Text style={styles.title}>{a.paciente__nombre_completo}</Text>
+            <Text style={styles.title}>{a.paciente__nombre_completo ?? `Atención #${a.id}`}</Text>
             <Text style={styles.subtitle}>
               {new Date(a.hora_salida).toLocaleDateString('es-CL', {
                 day: '2-digit',
@@ -77,13 +94,18 @@ const MisAtenciones = () => {
             </Text>
 
             <TouchableOpacity
-              style={local.btnEditar}
-              onPress={() =>
-                router.push({ pathname: '/(user)/ModificarAtencion', params: { id: String(a.id) } })
-              }
+              style={[local.btnPDF, generando === a.id && local.btnPDFDisabled]}
+              onPress={() => handleGenerarPDF(a.id)}
+              disabled={generando === a.id}
             >
-              <MaterialIcons name="edit" size={18} color="#1976D2" />
-              <Text style={local.btnEditarTexto}>Editar</Text>
+              {generando === a.id ? (
+                <ActivityIndicator size="small" color="#E53935" />
+              ) : (
+                <MaterialIcons name="picture-as-pdf" size={18} color="#E53935" />
+              )}
+              <Text style={local.btnPDFTexto}>
+                {generando === a.id ? 'Generando...' : 'Generar PDF'}
+              </Text>
             </TouchableOpacity>
 
             <View style={local.divisor} />
@@ -106,7 +128,7 @@ const local = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 12,
   },
-  btnEditar: {
+  btnPDF: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -115,11 +137,14 @@ const local = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: '#1976D2',
+    borderColor: '#E53935',
     alignSelf: 'flex-start',
   },
-  btnEditarTexto: {
-    color: '#1976D2',
+  btnPDFDisabled: {
+    borderColor: '#ccc',
+  },
+  btnPDFTexto: {
+    color: '#E53935',
     fontWeight: '600',
     fontSize: 13,
   },
@@ -131,4 +156,4 @@ const local = StyleSheet.create({
   },
 });
 
-export default MisAtenciones;
+export default ListaAtenciones;

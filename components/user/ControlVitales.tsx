@@ -8,7 +8,7 @@ import {
   useFormContext,
 } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FormUsuario } from '@/data/types/types';
+import { FormUsuario } from '@/data/types';
 
 type ControlVitalesProps = {
   control: Control<FormUsuario>;

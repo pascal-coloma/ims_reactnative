@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import InventarioProvider, { useInventario } from '@/context/InventoryContext';
-import { Insumo } from '@/data/types/types';
+import { Insumo } from '@/data/types';
 
 jest.mock('@/context/AuthContext', () => ({
   useAuth: jest.fn(() => ({

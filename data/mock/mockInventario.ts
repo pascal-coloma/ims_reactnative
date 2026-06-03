@@ -1,4 +1,4 @@
-import { Insumo } from '@/data/types/types';
+import { Insumo } from '@/data/types';
 
 const mockInsumos: Insumo[] = [
   {

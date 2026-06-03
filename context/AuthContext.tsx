@@ -6,7 +6,7 @@ import CookieManager from '@react-native-cookies/cookies';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppState } from 'react-native';
 
-const BASE_URL = 'https://956.duckdns.org';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://956.duckdns.org';
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 
