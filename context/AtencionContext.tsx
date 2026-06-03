@@ -1,8 +1,8 @@
 import { fetchConSesion } from '@/context/AuthContext';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Atencion } from '@/data/types/types';
-import { SignosVitales, PreInforme, Cronologia } from '@/data/types/types';
+import { Atencion } from '@/data/types';
+import { SignosVitales, PreInforme, Cronologia } from '@/data/types';
 type AtencionResumen = {
   id: number;
   hora_salida: string;

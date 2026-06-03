@@ -1,4 +1,4 @@
-import { Paciente } from '@/data/constants/mockPaciente';
+import { Paciente } from '@/data/mock/mockPaciente';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { fetchConSesion, useAuth } from './AuthContext';
 

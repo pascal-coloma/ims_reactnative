@@ -1,7 +1,7 @@
-import PERSONAL, { Personal } from '@/data/constants/mockPersonal';
+import PERSONAL, { Personal } from '@/data/mock/mockPersonal';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { fetchConSesion } from './AuthContext';
-import { NuevoWorker, WorkerCreado } from '@/data/types/types';
+import { NuevoWorker, WorkerCreado } from '@/data/types';
 
 type PersonalContextType = {
   personal: Personal[];

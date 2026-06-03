@@ -1,6 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
-import { Insumo } from '@/data/types/types';
+import { Insumo } from '@/data/types';
 import { useMemo, useState } from 'react';
 import {
   FlatList,

@@ -1,4 +1,4 @@
-import mockNotificaciones from '@/data/constants/mockNotificaciones';
+import mockNotificaciones from '@/data/mock/mockNotificaciones';
 import { useEffect, useRef } from 'react';
 import {
   Animated,
