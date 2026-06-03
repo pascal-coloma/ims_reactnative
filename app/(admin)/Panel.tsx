@@ -93,6 +93,15 @@ const Panel = () => {
             </View>
           </View>
         </Link>
+        <Link href={'/(admin)/Grupos'}>
+          <View style={style.patientCard}>
+            <MaterialIcons name="group" size={40} color="#372121" />
+            <View style={{ padding: 5 }}>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Ver Grupos</Text>
+              <Text>Gestión de grupos de trabajo</Text>
+            </View>
+          </View>
+        </Link>
       </ScrollView>
     </>
   );

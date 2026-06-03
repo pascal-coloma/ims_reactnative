@@ -21,7 +21,6 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    console.log(data);
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
       throw new Error(body?.error ?? `Error ${response.status}`);
