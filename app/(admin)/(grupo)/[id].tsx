@@ -8,7 +8,9 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -118,119 +120,130 @@ const DetalleGrupo = () => {
   const miembroAConfirmar = grupo.miembros.find((m) => m.rut === confirmarRut);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
-      <Modal
-        visible={confirmarRut !== null}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setConfirmarRut(null)}
-      >
-        <Pressable style={local.modalOverlay} onPress={() => setConfirmarRut(null)}>
-          <Pressable style={local.modalCard} onPress={() => {}}>
-            <View style={local.modalIconWrap}>
-              <MaterialIcons name="person-remove" size={28} color="#E53935" />
-            </View>
-            <Text style={local.modalTitle}>Remover miembro</Text>
-            <Text style={local.modalBody}>
-              ¿Deseas remover a{' '}
-              <Text style={{ fontWeight: 'bold' }}>{miembroAConfirmar?.nombre}</Text> del grupo?
-            </Text>
-            <View style={local.modalActions}>
-              <TouchableOpacity style={local.modalCancelBtn} onPress={() => setConfirmarRut(null)}>
-                <Text style={local.modalCancelText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={local.modalConfirmBtn} onPress={handleRemover}>
-                <Text style={local.modalConfirmText}>Remover</Text>
-              </TouchableOpacity>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-
-      <AppHeader title={grupo.grupo_nombre} />
-
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-        <Text style={local.seccion}>Miembros ({grupo.miembros.length})</Text>
-
-        {grupo.miembros.length === 0 ? (
-          <Text style={local.vacio}>Sin miembros</Text>
-        ) : (
-          grupo.miembros.map((m) => (
-            <View key={m.rut} style={local.card}>
-              <View style={[local.avatar, { backgroundColor: ROL_COLOR[m.rol] ?? '#999' }]}>
-                <Text style={local.avatarText}>{m.nombre[0]?.toUpperCase()}</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+        <Modal
+          visible={confirmarRut !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setConfirmarRut(null)}
+        >
+          <Pressable style={local.modalOverlay} onPress={() => setConfirmarRut(null)}>
+            <Pressable style={local.modalCard} onPress={() => {}}>
+              <View style={local.modalIconWrap}>
+                <MaterialIcons name="person-remove" size={28} color="#E53935" />
               </View>
-              <View style={local.cardBody}>
-                <Text style={local.nombre}>{m.nombre}</Text>
-                <Text style={local.rut}>{m.rut}</Text>
-              </View>
-              <View style={[local.rolPill, { backgroundColor: ROL_COLOR[m.rol] ?? '#999' }]}>
-                <Text style={local.rolTexto}>{traducirRol(m.rol)}</Text>
-              </View>
-              <TouchableOpacity
-                style={local.removerBtn}
-                onPress={() => setConfirmarRut(m.rut)}
-                disabled={accionando}
-              >
-                <MaterialIcons name="person-remove" size={18} color="#E53935" />
-              </TouchableOpacity>
-            </View>
-          ))
-        )}
-
-        <Text style={[local.seccion, { marginTop: 24 }]}>Agregar miembro</Text>
-
-        {noSuscritos.length === 0 ? (
-          <Text style={local.vacio}>Todo el personal activo ya está en el grupo</Text>
-        ) : (
-          <>
-            {noSuscritos.map((p) => {
-              const pid = parseInt(p.id, 10);
-              const seleccionado = personalSeleccionado === pid;
-              return (
+              <Text style={local.modalTitle}>Remover miembro</Text>
+              <Text style={local.modalBody}>
+                ¿Deseas remover a{' '}
+                <Text style={{ fontWeight: 'bold' }}>{miembroAConfirmar?.nombre}</Text> del grupo?
+              </Text>
+              <View style={local.modalActions}>
                 <TouchableOpacity
-                  key={p.id}
-                  style={[local.selectorItem, seleccionado && local.selectorItemActivo]}
-                  onPress={() => setPersonalSeleccionado(seleccionado ? null : pid)}
+                  style={local.modalCancelBtn}
+                  onPress={() => setConfirmarRut(null)}
                 >
-                  <View style={[local.radio, seleccionado && local.radioActivo]}>
-                    {seleccionado && <View style={local.radioDot} />}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={local.itemNombre}>
-                      {p.first_name} {p.last_name}
-                    </Text>
-                    <Text style={local.itemRut}>{p.rut}</Text>
-                  </View>
-                  <View
-                    style={[local.rolPill, { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' }]}
-                  >
-                    <Text style={local.rolTexto}>{traducirRol(p.rol_nombre)}</Text>
-                  </View>
+                  <Text style={local.modalCancelText}>Cancelar</Text>
                 </TouchableOpacity>
-              );
-            })}
+                <TouchableOpacity style={local.modalConfirmBtn} onPress={handleRemover}>
+                  <Text style={local.modalConfirmText}>Remover</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
 
-            <TouchableOpacity
-              style={[
-                styles.button,
-                { marginTop: 16, opacity: personalSeleccionado === null || accionando ? 0.5 : 1 },
-              ]}
-              onPress={handleAgregar}
-              disabled={personalSeleccionado === null || accionando}
-            >
-              {accionando ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.buttonText}>Agregar</Text>
-              )}
-            </TouchableOpacity>
-          </>
-        )}
+        <AppHeader title={grupo.grupo_nombre} />
 
-        {error && <Text style={local.error}>{error}</Text>}
-      </ScrollView>
-    </View>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+          <Text style={local.seccion}>Miembros ({grupo.miembros.length})</Text>
+
+          {grupo.miembros.length === 0 ? (
+            <Text style={local.vacio}>Sin miembros</Text>
+          ) : (
+            grupo.miembros.map((m) => (
+              <View key={m.rut} style={local.card}>
+                <View style={[local.avatar, { backgroundColor: ROL_COLOR[m.rol] ?? '#999' }]}>
+                  <Text style={local.avatarText}>{m.nombre[0]?.toUpperCase()}</Text>
+                </View>
+                <View style={local.cardBody}>
+                  <Text style={local.nombre}>{m.nombre}</Text>
+                  <Text style={local.rut}>{m.rut}</Text>
+                </View>
+                <View style={[local.rolPill, { backgroundColor: ROL_COLOR[m.rol] ?? '#999' }]}>
+                  <Text style={local.rolTexto}>{traducirRol(m.rol)}</Text>
+                </View>
+                <TouchableOpacity
+                  style={local.removerBtn}
+                  onPress={() => setConfirmarRut(m.rut)}
+                  disabled={accionando}
+                >
+                  <MaterialIcons name="person-remove" size={18} color="#E53935" />
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+
+          <Text style={[local.seccion, { marginTop: 24 }]}>Agregar miembro</Text>
+
+          {noSuscritos.length === 0 ? (
+            <Text style={local.vacio}>Todo el personal activo ya está en el grupo</Text>
+          ) : (
+            <>
+              {noSuscritos.map((p) => {
+                const pid = parseInt(p.id, 10);
+                const seleccionado = personalSeleccionado === pid;
+                return (
+                  <TouchableOpacity
+                    key={p.id}
+                    style={[local.selectorItem, seleccionado && local.selectorItemActivo]}
+                    onPress={() => setPersonalSeleccionado(seleccionado ? null : pid)}
+                  >
+                    <View style={[local.radio, seleccionado && local.radioActivo]}>
+                      {seleccionado && <View style={local.radioDot} />}
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={local.itemNombre}>
+                        {p.first_name} {p.last_name}
+                      </Text>
+                      <Text style={local.itemRut}>{p.rut}</Text>
+                    </View>
+                    <View
+                      style={[
+                        local.rolPill,
+                        { backgroundColor: ROL_COLOR[p.rol_nombre] ?? '#999' },
+                      ]}
+                    >
+                      <Text style={local.rolTexto}>{traducirRol(p.rol_nombre)}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { marginTop: 16, opacity: personalSeleccionado === null || accionando ? 0.5 : 1 },
+                ]}
+                onPress={handleAgregar}
+                disabled={personalSeleccionado === null || accionando}
+              >
+                {accionando ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>Agregar</Text>
+                )}
+              </TouchableOpacity>
+            </>
+          )}
+
+          {error && <Text style={local.error}>{error}</Text>}
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

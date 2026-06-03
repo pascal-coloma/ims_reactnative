@@ -29,7 +29,7 @@ const Grupos = () => {
               <TouchableOpacity
                 key={g.grupo_id}
                 style={local.card}
-                onPress={() => router.push(`/(admin)/grupo/${g.grupo_id}`)}
+                onPress={() => router.push(`/(admin)/(grupo)/${g.grupo_id}`)}
               >
                 <View style={local.cardIcon}>
                   <MaterialIcons name="group" size={28} color="#E53935" />
