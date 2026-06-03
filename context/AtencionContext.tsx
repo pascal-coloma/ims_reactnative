@@ -1,8 +1,9 @@
 import { fetchConSesion } from '@/context/AuthContext';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { Atencion } from '@/data/types/types';
-import { SignosVitales, PreInforme, Cronologia } from '@/data/types/types';
+import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from 'react';
+import { Atencion } from '@/data/types';
+import { SignosVitales, PreInforme, Cronologia } from '@/data/types';
+
 type AtencionResumen = {
   id: number;
   hora_salida: string;
@@ -39,7 +40,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
+  const agregarAtencion = useCallback(async (atencion: Atencion, ambulanciaId: string) => {
     if (OFFLINE_MODE) {
       setAtenciones((prev) => [...prev, atencion]);
       return;
@@ -118,9 +119,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAtenciones = async () => {
+  const fetchAtenciones = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -141,35 +142,38 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAtencionDetalle = async (id: number) => {
-    try {
-      const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
-      if (!response.ok) throw new Error(`Error ${response.status}`);
-      const data = await response.json();
-      const s3Url = data.success;
-      console.log('S3 URL:', s3Url);
+  const fetchAtencionDetalle = useCallback(
+    async (id: number) => {
+      try {
+        const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
+        if (!response.ok) throw new Error(`Error ${response.status}`);
+        const data = await response.json();
+        const s3Url = data.success;
+        console.log('S3 URL:', s3Url);
 
-      const s3Resp = await fetch(s3Url);
-      if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
-      const documento = await s3Resp.json();
-      console.log('Documento S3:', JSON.stringify(documento, null, 2));
+        const s3Resp = await fetch(s3Url);
+        if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
+        const documento = await s3Resp.json();
+        console.log('Documento S3:', JSON.stringify(documento, null, 2));
 
-      const resumen = resumenAtenciones.find((a) => a.id === id);
-      if (resumen && documento.atencion) {
-        documento.atencion.estado_sello = resumen.estado_sello;
-        documento.atencion.sello_electronico = resumen.firma_digital;
+        const resumen = resumenAtenciones.find((a) => a.id === id);
+        if (resumen && documento.atencion) {
+          documento.atencion.estado_sello = resumen.estado_sello;
+          documento.atencion.sello_electronico = resumen.firma_digital;
+        }
+
+        return documento;
+      } catch (e: any) {
+        setError(e.message ?? 'Error desconocido');
+        return null;
       }
+    },
+    [resumenAtenciones],
+  );
 
-      return documento;
-    } catch (e: any) {
-      setError(e.message ?? 'Error desconocido');
-      return null;
-    }
-  };
-
-  const fetchAtencionDetalleLocal = async (id: number) => {
+  const fetchAtencionDetalleLocal = useCallback(async (id: number) => {
     try {
       const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -178,9 +182,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       setError(e.message ?? 'Error desconocido');
       return null;
     }
-  };
+  }, []);
 
-  const modificarAtencion = async (atencionId: number, data: ModificacionPayload) => {
+  const modificarAtencion = useCallback(async (atencionId: number, data: ModificacionPayload) => {
     setLoading(true);
     setError(null);
     try {
@@ -234,29 +238,41 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const buscarPorDespacho = (despachoId: string) =>
-    atenciones.find((a) => a.despachoId === despachoId);
-
-  return (
-    <AtencionContext.Provider
-      value={{
-        atenciones,
-        resumenAtenciones,
-        agregarAtencion,
-        fetchAtenciones,
-        fetchAtencionDetalle,
-        fetchAtencionDetalleLocal,
-        modificarAtencion,
-        buscarPorDespacho,
-        loading,
-        error,
-      }}
-    >
-      {children}
-    </AtencionContext.Provider>
+  const buscarPorDespacho = useCallback(
+    (despachoId: string) => atenciones.find((a) => a.despachoId === despachoId),
+    [atenciones],
   );
+
+  const value = useMemo(
+    () => ({
+      atenciones,
+      resumenAtenciones,
+      agregarAtencion,
+      fetchAtenciones,
+      fetchAtencionDetalle,
+      fetchAtencionDetalleLocal,
+      modificarAtencion,
+      buscarPorDespacho,
+      loading,
+      error,
+    }),
+    [
+      atenciones,
+      resumenAtenciones,
+      agregarAtencion,
+      fetchAtenciones,
+      fetchAtencionDetalle,
+      fetchAtencionDetalleLocal,
+      modificarAtencion,
+      buscarPorDespacho,
+      loading,
+      error,
+    ],
+  );
+
+  return <AtencionContext.Provider value={value}>{children}</AtencionContext.Provider>;
 };
 
 export const useAtenciones = () => {

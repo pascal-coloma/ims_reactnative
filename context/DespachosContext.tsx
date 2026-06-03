@@ -1,8 +1,17 @@
-import mockDespachos, { Despacho } from '@/data/constants/mockDespachos';
+import mockDespachos, { Despacho } from '@/data/mock/mockDespachos';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
-import { FormCompleta } from '@/data/types/types';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  ReactNode,
+  useRef,
+} from 'react';
+import { FormCompleta } from '@/data/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAmbulancias } from './AmbulanciaContext';
 
@@ -36,13 +45,13 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const recargar = () => setRefreshKey((prev) => prev + 1);
+  const recargar = useCallback(() => setRefreshKey((prev) => prev + 1), []);
 
   useEffect(() => {
     if (user) fetchDespachos();
   }, [refreshKey]);
 
-  const fetchDespachos = async () => {
+  const fetchDespachos = useCallback(async () => {
     if (OFFLINE_MODE) {
       setDespachos(mockDespachos);
       setDespachoActivo(mockDespachos.find((d) => d.estado === 'activo') ?? null);
@@ -110,140 +119,161 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.role, refreshKey]);
 
-  const agregarDespacho = async (data: FormCompleta): Promise<void> => {
-    console.log('agregarDespacho llamado');
-    console.log('data:', JSON.stringify(data, null, 2));
-    const rutLimpio = data.rut.replace(/\./g, '');
-    console.log('rutLimpio:', rutLimpio);
+  const agregarDespacho = useCallback(
+    async (data: FormCompleta): Promise<void> => {
+      console.log('agregarDespacho llamado');
+      console.log('data:', JSON.stringify(data, null, 2));
+      const rutLimpio = data.rut.replace(/\./g, '');
+      console.log('rutLimpio:', rutLimpio);
 
-    setLoading(true);
-    setError(null);
-    try {
-      const buscarResp = await fetchConSesion(
-        `/ims/api/pacientes/?rut=${encodeURIComponent(rutLimpio)}`,
-      );
-
-      if (!buscarResp.ok) {
-        const payloadPaciente = {
-          rut: rutLimpio,
-          nombre_completo: [
-            data.primerNombre,
-            data.segundoNombre ?? '',
-            data.apellidoPaterno,
-            data.apellidoMaterno,
-          ]
-            .filter(Boolean)
-            .join(' '),
-          fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
-          direccion: data.direccionOrigen,
-          condicion_paciente: data.condicionPaciente,
-          telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
-        };
-        console.log('Paso 0 - paciente no existe, creando...');
-        const crearResp = await fetchConSesion('/ims/api/pacientes/add', {
-          method: 'POST',
-          body: JSON.stringify(payloadPaciente),
-        });
-        if (!crearResp.ok) {
-          const errorText = await crearResp.text().catch(() => 'no body');
-          console.log('Error creando paciente:', errorText);
-          throw new Error(`Error creando paciente: ${crearResp.status}`);
-        }
-        console.log('Paso 0 - paciente creado');
-      } else {
-        console.log('Paso 0 - paciente existente encontrado');
-      }
-      const despachoResp = await fetchConSesion('/ims/api/despachos/add/', {
-        method: 'POST',
-        body: JSON.stringify({
-          direccion_origen: data.direccionOrigen,
-          direccion_destino: data.direccionDestino,
-          descripcion_llamado: data.descripcionLlamado,
-          paciente_rut: rutLimpio,
-        }),
-      });
-      if (!despachoResp.ok) {
-        const errorText = await despachoResp.text().catch(() => 'no body');
-        console.log('Error despacho body:', errorText);
-        throw new Error(`Error creando despacho: ${despachoResp.status}`);
-      }
-      const despachoData = await despachoResp.json();
-      console.log('Paso 1 - despacho:', despachoData);
-
-      // Paso 2 — asignar
-      const asignarResp = await fetchConSesion('/ims/api/despachos/asignar/', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          amb_id: Number(data.unidad),
-          despacho_id: despachoData.despacho.id,
-          grupo_id: Number(data.grupoAsignado),
-        }),
-      });
-      if (!asignarResp.ok) {
-        const errorText = await asignarResp.text().catch(() => 'no body');
-        console.log('Error asignar body:', errorText);
-        throw new Error(`Error asignando despacho: ${asignarResp.status}`);
-      }
-      console.log('Paso 2 - asignado');
-
+      setLoading(true);
+      setError(null);
       try {
-        await fetchDespachos();
-      } catch (e) {
-        console.warn('fetchDespachos falló pero el despacho fue creado');
+        const buscarResp = await fetchConSesion(
+          `/ims/api/pacientes/?rut=${encodeURIComponent(rutLimpio)}`,
+        );
+
+        if (!buscarResp.ok) {
+          const payloadPaciente = {
+            rut: rutLimpio,
+            nombre_completo: [
+              data.primerNombre,
+              data.segundoNombre ?? '',
+              data.apellidoPaterno,
+              data.apellidoMaterno,
+            ]
+              .filter(Boolean)
+              .join(' '),
+            fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
+            direccion: data.direccionOrigen,
+            condicion_paciente: data.condicionPaciente,
+            telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
+          };
+          console.log('Paso 0 - paciente no existe, creando...');
+          const crearResp = await fetchConSesion('/ims/api/pacientes/add', {
+            method: 'POST',
+            body: JSON.stringify(payloadPaciente),
+          });
+          if (!crearResp.ok) {
+            const errorText = await crearResp.text().catch(() => 'no body');
+            console.log('Error creando paciente:', errorText);
+            throw new Error(`Error creando paciente: ${crearResp.status}`);
+          }
+          console.log('Paso 0 - paciente creado');
+        } else {
+          console.log('Paso 0 - paciente existente encontrado');
+        }
+        const despachoResp = await fetchConSesion('/ims/api/despachos/add/', {
+          method: 'POST',
+          body: JSON.stringify({
+            direccion_origen: data.direccionOrigen,
+            direccion_destino: data.direccionDestino,
+            descripcion_llamado: data.descripcionLlamado,
+            paciente_rut: rutLimpio,
+          }),
+        });
+        if (!despachoResp.ok) {
+          const errorText = await despachoResp.text().catch(() => 'no body');
+          console.log('Error despacho body:', errorText);
+          throw new Error(`Error creando despacho: ${despachoResp.status}`);
+        }
+        const despachoData = await despachoResp.json();
+        console.log('Paso 1 - despacho:', despachoData);
+
+        // Paso 2 — asignar
+        const asignarResp = await fetchConSesion('/ims/api/despachos/asignar/', {
+          method: 'PATCH',
+          body: JSON.stringify({
+            amb_id: Number(data.unidad),
+            despacho_id: despachoData.despacho.id,
+            grupo_id: Number(data.grupoAsignado),
+          }),
+        });
+        if (!asignarResp.ok) {
+          const errorText = await asignarResp.text().catch(() => 'no body');
+          console.log('Error asignar body:', errorText);
+          throw new Error(`Error asignando despacho: ${asignarResp.status}`);
+        }
+        console.log('Paso 2 - asignado');
+
+        try {
+          await fetchDespachos();
+        } catch (e) {
+          console.warn('fetchDespachos falló pero el despacho fue creado');
+        }
+      } catch (e: any) {
+        console.error('Error en agregarDespacho:', e);
+        setError(e.message ?? 'Error desconocido');
+        throw e;
+      } finally {
+        setLoading(false);
       }
-    } catch (e: any) {
-      console.error('Error en agregarDespacho:', e);
-      setError(e.message ?? 'Error desconocido');
-      throw e;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const actualizarDespacho = (id: string, despacho: Partial<Despacho>) => {
-    setDespachos((prev) => prev.map((d) => (d.id === id ? { ...d, ...despacho } : d)));
-  };
-
-  const seleccionarDespacho = (id: string) => {
-    const despacho = despachos.find((d) => d.id === id);
-    setDespachoActivo(despacho ?? null);
-  };
-
-  const despachosPorPersonal = (personalId: string) => {
-    return despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo');
-  };
-
-  const setDespachoActivoPorUsuario = (personalId: string) => {
-    const despacho = despachos.find(
-      (d) => d.personalIds?.includes(personalId) && d.estado === 'activo',
-    );
-    setDespachoActivo(despacho ?? null);
-  };
-
-  const limpiarDespachoActivo = () => setDespachoActivo(null);
-
-  return (
-    <DespachosContext.Provider
-      value={{
-        despachos,
-        despachoActivo,
-        agregarDespacho,
-        actualizarDespacho,
-        seleccionarDespacho,
-        despachosPorPersonal,
-        setDespachoActivoPorUsuario,
-        limpiarDespachoActivo,
-        loading,
-        error,
-        fetchDespachos,
-        recargar,
-      }}
-    >
-      {children}
-    </DespachosContext.Provider>
+    },
+    [fetchDespachos],
   );
+
+  const actualizarDespacho = useCallback((id: string, despacho: Partial<Despacho>) => {
+    setDespachos((prev) => prev.map((d) => (d.id === id ? { ...d, ...despacho } : d)));
+  }, []);
+
+  const seleccionarDespacho = useCallback(
+    (id: string) => {
+      setDespachoActivo(despachos.find((d) => d.id === id) ?? null);
+    },
+    [despachos],
+  );
+
+  const despachosPorPersonal = useCallback(
+    (personalId: string) =>
+      despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo'),
+    [despachos],
+  );
+
+  const setDespachoActivoPorUsuario = useCallback(
+    (personalId: string) => {
+      setDespachoActivo(
+        despachos.find((d) => d.personalIds?.includes(personalId) && d.estado === 'activo') ?? null,
+      );
+    },
+    [despachos],
+  );
+
+  const limpiarDespachoActivo = useCallback(() => setDespachoActivo(null), []);
+
+  const value = useMemo(
+    () => ({
+      despachos,
+      despachoActivo,
+      agregarDespacho,
+      actualizarDespacho,
+      seleccionarDespacho,
+      despachosPorPersonal,
+      setDespachoActivoPorUsuario,
+      limpiarDespachoActivo,
+      loading,
+      error,
+      fetchDespachos,
+      recargar,
+    }),
+    [
+      despachos,
+      despachoActivo,
+      agregarDespacho,
+      actualizarDespacho,
+      seleccionarDespacho,
+      despachosPorPersonal,
+      setDespachoActivoPorUsuario,
+      limpiarDespachoActivo,
+      loading,
+      error,
+      fetchDespachos,
+      recargar,
+    ],
+  );
+
+  return <DespachosContext.Provider value={value}>{children}</DespachosContext.Provider>;
 };
 
 export default DespachosProvider;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import DespachosProvider, { useDespachos } from '@/context/DespachosContext';
-import { Despacho } from '@/data/constants/mockDespachos';
+import { Despacho } from '@/data/mock/mockDespachos';
 
 jest.mock('@/context/AuthContext', () => ({
   useAuth: jest.fn(() => ({

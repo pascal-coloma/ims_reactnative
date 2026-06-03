@@ -4,6 +4,8 @@ import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
+export { ErrorBoundary } from 'expo-router';
+
 function RootContent() {
   const { loading } = useAuth();
 

@@ -1,6 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
-import { Insumo } from '@/data/types/types';
+import { Insumo } from '@/data/types';
 import { useMemo, useState } from 'react';
 import {
   FlatList,
@@ -107,7 +107,7 @@ const Inventario = () => {
           style={style.btnActualizar}
           onPress={() =>
             router.push({
-              pathname: '/(admin)/ActualizarStock',
+              pathname: '/(admin)/actualizar-stock',
               params: {
                 id: insumo.id,
                 nombre: insumo.nombre,
@@ -124,7 +124,7 @@ const Inventario = () => {
           style={style.btnMover}
           onPress={() =>
             router.push({
-              pathname: '/(admin)/MoverInsumo',
+              pathname: '/(admin)/mover-insumo',
               params: {
                 id: insumo.id,
                 nombre: insumo.nombre,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { AmbulanciaProvider, useAmbulancias } from '@/context/AmbulanciaContext';
-import { mockAmbulancias } from '@/data/constants/mockAmbulancia';
+import { mockAmbulancias } from '@/data/mock/mockAmbulancia';
 
 jest.mock('@/context/AuthContext', () => ({
   fetchConSesion: jest.fn(),

@@ -7,7 +7,7 @@ import { useAtenciones } from '@/context/AtencionContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { useInventario } from '@/context/InventoryContext';
 import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
-import { FormUsuario } from '@/data/types/types';
+import { FormUsuario } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import { FormProvider, useForm } from 'react-hook-form';
 import {

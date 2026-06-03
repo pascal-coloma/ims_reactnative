@@ -3,7 +3,7 @@ import FormPaciente from '@/components/admin/FormPaciente';
 import AppHeader from '@/components/AppHeader';
 import { useDespachos } from '@/context/DespachosContext';
 import { DEFAULT_VALUES_ADMIN } from '@/data/constants/defaultValues';
-import { FormCompleta } from '@/data/types/types';
+import { FormCompleta } from '@/data/types';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';

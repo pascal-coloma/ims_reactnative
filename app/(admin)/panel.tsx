@@ -39,7 +39,7 @@ const Panel = () => {
           </View>
         </View>
         <Text style={[style.title, { backgroundColor: 'white' }]}>Acciones Rápidas</Text>
-        <Link href={'/(admin)/RegistrarDespacho'}>
+        <Link href={'/(admin)/registrar-despacho'}>
           <View style={style.patientCard}>
             <MaterialIcons name="checklist" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
@@ -48,7 +48,7 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/RegistrarWorker'}>
+        <Link href={'/(admin)/registrar-worker'}>
           <View style={style.patientCard}>
             <MaterialIcons name="input" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
@@ -57,7 +57,7 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/ListaPersonal'}>
+        <Link href={'/(admin)/lista-personal'}>
           <View style={style.patientCard}>
             <MaterialIcons name="person" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
@@ -66,7 +66,7 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/Despachos'}>
+        <Link href={'/(admin)/despachos'}>
           <View style={style.patientCard}>
             <MaterialIcons name="airport-shuttle" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
@@ -75,7 +75,7 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/ListaAtenciones'}>
+        <Link href={'/(admin)/lista-atenciones'}>
           <View style={style.patientCard}>
             <MaterialIcons name="list" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
@@ -84,7 +84,7 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/Inventario'}>
+        <Link href={'/(admin)/inventario'}>
           <View style={style.patientCard}>
             <MaterialIcons name="inventory" size={40} color="#372121" />
             <View style={{ padding: 5 }}>
@@ -93,7 +93,7 @@ const Panel = () => {
             </View>
           </View>
         </Link>
-        <Link href={'/(admin)/Grupos'}>
+        <Link href={'/(admin)/grupos'}>
           <View style={style.patientCard}>
             <MaterialIcons name="group" size={40} color="#372121" />
             <View style={{ padding: 5 }}>

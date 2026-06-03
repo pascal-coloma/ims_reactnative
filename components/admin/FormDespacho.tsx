@@ -1,6 +1,6 @@
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { fetchConSesion } from '@/context/AuthContext';
-import { FormCompleta, Grupo } from '@/data/types/types';
+import { FormCompleta, Grupo } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import { Picker } from '@react-native-picker/picker';
 import { useEffect, useState } from 'react';
