@@ -1,13 +1,7 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
-import PersonalProvider from '@/context/PersonalContext';
-import PacienteProvider from '@/context/PacienteContext';
-import InventarioProvider from '@/context/InventoryContext';
-import { AmbulanciaProvider } from '@/context/AmbulanciaContext';
-import DespachosProvider from '@/context/DespachosContext';
-import { AtencionProvider } from '@/context/AtencionContext';
-import GrupoProvider from '@/context/GrupoContext';
+import AdminProviders from '@/components/admin/AdminProviders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AdminLayout() {
@@ -33,14 +27,8 @@ export default function AdminLayout() {
   };
 
   return (
-    <DespachosProvider>
-      <PersonalProvider>
-        <GrupoProvider>
-          <PacienteProvider>
-            <AtencionProvider>
-              <InventarioProvider>
-                <AmbulanciaProvider>
-                  <Tabs screenOptions={tabBarOptions}>
+    <AdminProviders>
+      <Tabs screenOptions={tabBarOptions}>
                     <Tabs.Screen
                       name="AdminDashboard"
                       options={{
@@ -126,13 +114,7 @@ export default function AdminLayout() {
                     />
                     <Tabs.Screen name="CrearGrupo" options={{ href: null, title: 'CrearGrupo' }} />
                     <Tabs.Screen name="(grupo)" options={{ href: null, title: 'grupo' }} />
-                  </Tabs>
-                </AmbulanciaProvider>
-              </InventarioProvider>
-            </AtencionProvider>
-          </PacienteProvider>
-        </GrupoProvider>
-      </PersonalProvider>
-    </DespachosProvider>
+      </Tabs>
+    </AdminProviders>
   );
 }
