@@ -1,4 +1,4 @@
-import { FormCompleta, FormUsuario } from '../types/types';
+import { FormCompleta, FormUsuario } from '../types';
 
 export const OFFLINE_MODE = false;
 

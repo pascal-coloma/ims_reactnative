@@ -1,8 +1,9 @@
 import { fetchConSesion } from '@/context/AuthContext';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from 'react';
 import { Atencion } from '@/data/types';
 import { SignosVitales, PreInforme, Cronologia } from '@/data/types';
+
 type AtencionResumen = {
   id: number;
   hora_salida: string;
@@ -39,7 +40,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const agregarAtencion = async (atencion: Atencion, ambulanciaId: string) => {
+  const agregarAtencion = useCallback(async (atencion: Atencion, ambulanciaId: string) => {
     if (OFFLINE_MODE) {
       setAtenciones((prev) => [...prev, atencion]);
       return;
@@ -118,9 +119,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAtenciones = async () => {
+  const fetchAtenciones = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -141,9 +142,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAtencionDetalle = async (id: number) => {
+  const fetchAtencionDetalle = useCallback(async (id: number) => {
     try {
       const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -167,9 +168,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       setError(e.message ?? 'Error desconocido');
       return null;
     }
-  };
+  }, [resumenAtenciones]);
 
-  const fetchAtencionDetalleLocal = async (id: number) => {
+  const fetchAtencionDetalleLocal = useCallback(async (id: number) => {
     try {
       const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -178,9 +179,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       setError(e.message ?? 'Error desconocido');
       return null;
     }
-  };
+  }, []);
 
-  const modificarAtencion = async (atencionId: number, data: ModificacionPayload) => {
+  const modificarAtencion = useCallback(async (atencionId: number, data: ModificacionPayload) => {
     setLoading(true);
     setError(null);
     try {
@@ -234,26 +235,32 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const buscarPorDespacho = (despachoId: string) =>
-    atenciones.find((a) => a.despachoId === despachoId);
+  const buscarPorDespacho = useCallback(
+    (despachoId: string) => atenciones.find((a) => a.despachoId === despachoId),
+    [atenciones],
+  );
+
+  const value = useMemo(
+    () => ({
+      atenciones,
+      resumenAtenciones,
+      agregarAtencion,
+      fetchAtenciones,
+      fetchAtencionDetalle,
+      fetchAtencionDetalleLocal,
+      modificarAtencion,
+      buscarPorDespacho,
+      loading,
+      error,
+    }),
+    [atenciones, resumenAtenciones, agregarAtencion, fetchAtenciones, fetchAtencionDetalle,
+     fetchAtencionDetalleLocal, modificarAtencion, buscarPorDespacho, loading, error],
+  );
 
   return (
-    <AtencionContext.Provider
-      value={{
-        atenciones,
-        resumenAtenciones,
-        agregarAtencion,
-        fetchAtenciones,
-        fetchAtencionDetalle,
-        fetchAtencionDetalleLocal,
-        modificarAtencion,
-        buscarPorDespacho,
-        loading,
-        error,
-      }}
-    >
+    <AtencionContext.Provider value={value}>
       {children}
     </AtencionContext.Provider>
   );
