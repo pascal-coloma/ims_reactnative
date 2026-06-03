@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { ErrorBoundary } from 'expo-router';
 
 function RootContent() {
   const { loading } = useAuth();
@@ -22,11 +23,13 @@ function RootContent() {
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <StatusBar style="dark" backgroundColor="#fff" />
-        <RootContent />
-      </AuthProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <StatusBar style="dark" backgroundColor="#fff" />
+          <RootContent />
+        </AuthProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
