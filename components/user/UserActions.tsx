@@ -19,14 +19,14 @@ const UserActions = () => {
 
     const ultimo = misDespachos[misDespachos.length - 1];
     seleccionarDespacho(ultimo.id);
-    router.push('/(user)/RegistrarAtencion');
+    router.push('/(user)/registrar-atencion');
   };
 
   return (
     <View style={styles.container}>
       <Text style={style.title}>Acciones Rápidas</Text>
       <View style={style.cardsRow}>
-        <Link href={'/(user)/Despachos'} style={style.linkStyle}>
+        <Link href={'/(user)/despachos'} style={style.linkStyle}>
           <View style={style.dispatchCard}>
             <MaterialIcons name="airport-shuttle" size={50} color="white" />
             <View>
@@ -51,7 +51,7 @@ const UserActions = () => {
 
       <TouchableOpacity
         style={style.misAtencionesCard}
-        onPress={() => router.push('/(user)/MisAtenciones')}
+        onPress={() => router.push('/(user)/mis-atenciones')}
       >
         <MaterialIcons name="assignment" size={28} color="#1976D2" />
         <View>

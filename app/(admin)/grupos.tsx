@@ -48,7 +48,7 @@ const Grupos = () => {
       )}
 
       <View style={local.footer}>
-        <TouchableOpacity style={local.crearBtn} onPress={() => router.push('/(admin)/CrearGrupo')}>
+        <TouchableOpacity style={local.crearBtn} onPress={() => router.push('/(admin)/crear-grupo')}>
           <MaterialIcons name="add" size={20} color="#fff" />
           <Text style={local.crearBtnText}>Crear grupo</Text>
         </TouchableOpacity>
