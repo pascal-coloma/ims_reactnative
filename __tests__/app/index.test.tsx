@@ -37,7 +37,7 @@ describe('Index routing', () => {
       loading: false,
     });
     render(<Index />);
-    expect(screen.getByTestId('redirect:/(admin)/AdminDashboard')).toBeTruthy();
+    expect(screen.getByTestId('redirect:/(admin)/dashboard')).toBeTruthy();
   });
 
   it('redirects non-control roles to UserDashboard', () => {
@@ -46,6 +46,6 @@ describe('Index routing', () => {
       loading: false,
     });
     render(<Index />);
-    expect(screen.getByTestId('redirect:/(user)/UserDashboard')).toBeTruthy();
+    expect(screen.getByTestId('redirect:/(user)/dashboard')).toBeTruthy();
   });
 });

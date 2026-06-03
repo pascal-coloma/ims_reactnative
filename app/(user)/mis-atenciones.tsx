@@ -79,7 +79,7 @@ const MisAtenciones = () => {
             <TouchableOpacity
               style={local.btnEditar}
               onPress={() =>
-                router.push({ pathname: '/(user)/ModificarAtencion', params: { id: String(a.id) } })
+                router.push({ pathname: '/(user)/modificar-atencion', params: { id: String(a.id) } })
               }
             >
               <MaterialIcons name="edit" size={18} color="#1976D2" />
