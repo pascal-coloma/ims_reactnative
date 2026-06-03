@@ -213,7 +213,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const personalResp = await fetchConSesion('/ims/api/personal/');
-        console.log(personalResp);
         if (personalResp.ok) {
           const personalData: any[] = await personalResp.json();
           const match = personalData.find((p) => p.username === username);
@@ -246,7 +245,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await AsyncStorage.setItem('user', JSON.stringify(loggedUser));
       setUser(loggedUser);
-      console.log(loggedUser);
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
       console.error('Error login:', e);
