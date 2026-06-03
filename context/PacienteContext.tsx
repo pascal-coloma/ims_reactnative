@@ -1,5 +1,5 @@
 import { Paciente } from '@/data/mock/mockPaciente';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { fetchConSesion, useAuth } from './AuthContext';
 
 type PacienteContextType = {
@@ -40,19 +40,22 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
     fetchPacientes();
   }, [user?.role]);
 
-  const agregarPaciente = (paciente: Paciente) => {
-    setPacientes([...pacientes, paciente]);
-  };
+  const agregarPaciente = useCallback((paciente: Paciente) => {
+    setPacientes((prev) => [...prev, paciente]);
+  }, []);
 
-  const buscarPaciente = (rut: string) => {
-    const paciente = pacientes.find((p) => p.rut == rut);
-    return paciente;
-  };
+  const buscarPaciente = useCallback(
+    (rut: string) => pacientes.find((p) => p.rut == rut),
+    [pacientes],
+  );
+
+  const value = useMemo(
+    () => ({ pacientes, agregarPaciente, buscarPaciente, loading, error }),
+    [pacientes, agregarPaciente, buscarPaciente, loading, error],
+  );
 
   return (
-    <PacienteContext.Provider
-      value={{ pacientes, agregarPaciente, buscarPaciente, loading, error }}
-    >
+    <PacienteContext.Provider value={value}>
       {children}
     </PacienteContext.Provider>
   );

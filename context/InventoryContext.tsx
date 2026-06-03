@@ -1,6 +1,6 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { Insumo, NuevoInsumo } from '@/data/types';
-import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 type InventarioContextType = {
   insumos: Insumo[];
@@ -35,7 +35,7 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     if (!authLoading && user) fetchInsumos();
   }, [authLoading, refreshKey]);
 
-  const fetchInsumos = async () => {
+  const fetchInsumos = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -74,24 +74,27 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authLoading, refreshKey]);
 
-  const recargar = () => setRefreshKey((k) => k + 1);
+  const recargar = useCallback(() => setRefreshKey((k) => k + 1), []);
 
-  const buscarInsumo = (termino: string) =>
-    insumos.filter((i) => i.nombre.toLowerCase().includes(termino.toLowerCase()));
+  const buscarInsumo = useCallback(
+    (termino: string) =>
+      insumos.filter((i) => i.nombre.toLowerCase().includes(termino.toLowerCase())),
+    [insumos],
+  );
 
-  const agregarInsumos = async (items: NuevoInsumo[]) => {
+  const agregarInsumos = useCallback(async (items: NuevoInsumo[]) => {
     const response = await fetchConSesion('/ims/api/inv/add/', {
       method: 'POST',
       body: JSON.stringify({ items }),
     });
     if (!response.ok) throw new Error(`Error ${response.status}`);
     recargar();
-  };
+  }, [recargar]);
 
   // cantidad es un delta positivo o negativo que se suma al stock actual
-  const actualizarStock = async (
+  const actualizarStock = useCallback(async (
     presentacionId: number,
     ambulanciaId: number,
     cantidad: number,
@@ -106,9 +109,9 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     });
     if (!response.ok) throw new Error(`Error ${response.status}`);
     recargar();
-  };
+  }, [recargar]);
 
-  const moverInsumo = async (
+  const moverInsumo = useCallback(async (
     presentacionId: number,
     ambulanciaFromId: number,
     ambulanciaToId: number,
@@ -125,21 +128,15 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     });
     if (!response.ok) throw new Error(`Error ${response.status}`);
     recargar();
-  };
+  }, [recargar]);
+
+  const value = useMemo(
+    () => ({ insumos, loading, error, buscarInsumo, agregarInsumos, actualizarStock, moverInsumo, recargar }),
+    [insumos, loading, error, buscarInsumo, agregarInsumos, actualizarStock, moverInsumo, recargar],
+  );
 
   return (
-    <InventarioContext.Provider
-      value={{
-        insumos,
-        loading,
-        error,
-        buscarInsumo,
-        agregarInsumos,
-        actualizarStock,
-        moverInsumo,
-        recargar,
-      }}
-    >
+    <InventarioContext.Provider value={value}>
       {children}
     </InventarioContext.Provider>
   );

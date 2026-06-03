@@ -1,7 +1,7 @@
 import mockDespachos, { Despacho } from '@/data/mock/mockDespachos';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import { createContext, useCallback, useContext, useState, useEffect, useMemo, ReactNode, useRef } from 'react';
 import { FormCompleta } from '@/data/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAmbulancias } from './AmbulanciaContext';
@@ -36,13 +36,13 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const recargar = () => setRefreshKey((prev) => prev + 1);
+  const recargar = useCallback(() => setRefreshKey((prev) => prev + 1), []);
 
   useEffect(() => {
     if (user) fetchDespachos();
   }, [refreshKey]);
 
-  const fetchDespachos = async () => {
+  const fetchDespachos = useCallback(async () => {
     if (OFFLINE_MODE) {
       setDespachos(mockDespachos);
       setDespachoActivo(mockDespachos.find((d) => d.estado === 'activo') ?? null);
@@ -110,9 +110,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.role, refreshKey]);
 
-  const agregarDespacho = async (data: FormCompleta): Promise<void> => {
+  const agregarDespacho = useCallback(async (data: FormCompleta): Promise<void> => {
     console.log('agregarDespacho llamado');
     console.log('data:', JSON.stringify(data, null, 2));
     const rutLimpio = data.rut.replace(/\./g, '');
@@ -200,47 +200,52 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchDespachos]);
 
-  const actualizarDespacho = (id: string, despacho: Partial<Despacho>) => {
+  const actualizarDespacho = useCallback((id: string, despacho: Partial<Despacho>) => {
     setDespachos((prev) => prev.map((d) => (d.id === id ? { ...d, ...despacho } : d)));
-  };
+  }, []);
 
-  const seleccionarDespacho = (id: string) => {
-    const despacho = despachos.find((d) => d.id === id);
-    setDespachoActivo(despacho ?? null);
-  };
+  const seleccionarDespacho = useCallback((id: string) => {
+    setDespachoActivo(despachos.find((d) => d.id === id) ?? null);
+  }, [despachos]);
 
-  const despachosPorPersonal = (personalId: string) => {
-    return despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo');
-  };
+  const despachosPorPersonal = useCallback(
+    (personalId: string) =>
+      despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo'),
+    [despachos],
+  );
 
-  const setDespachoActivoPorUsuario = (personalId: string) => {
-    const despacho = despachos.find(
-      (d) => d.personalIds?.includes(personalId) && d.estado === 'activo',
+  const setDespachoActivoPorUsuario = useCallback((personalId: string) => {
+    setDespachoActivo(
+      despachos.find((d) => d.personalIds?.includes(personalId) && d.estado === 'activo') ?? null,
     );
-    setDespachoActivo(despacho ?? null);
-  };
+  }, [despachos]);
 
-  const limpiarDespachoActivo = () => setDespachoActivo(null);
+  const limpiarDespachoActivo = useCallback(() => setDespachoActivo(null), []);
+
+  const value = useMemo(
+    () => ({
+      despachos,
+      despachoActivo,
+      agregarDespacho,
+      actualizarDespacho,
+      seleccionarDespacho,
+      despachosPorPersonal,
+      setDespachoActivoPorUsuario,
+      limpiarDespachoActivo,
+      loading,
+      error,
+      fetchDespachos,
+      recargar,
+    }),
+    [despachos, despachoActivo, agregarDespacho, actualizarDespacho, seleccionarDespacho,
+     despachosPorPersonal, setDespachoActivoPorUsuario, limpiarDespachoActivo,
+     loading, error, fetchDespachos, recargar],
+  );
 
   return (
-    <DespachosContext.Provider
-      value={{
-        despachos,
-        despachoActivo,
-        agregarDespacho,
-        actualizarDespacho,
-        seleccionarDespacho,
-        despachosPorPersonal,
-        setDespachoActivoPorUsuario,
-        limpiarDespachoActivo,
-        loading,
-        error,
-        fetchDespachos,
-        recargar,
-      }}
-    >
+    <DespachosContext.Provider value={value}>
       {children}
     </DespachosContext.Provider>
   );
