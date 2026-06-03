@@ -1,6 +1,14 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { Insumo, NuevoInsumo } from '@/data/types';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 type InventarioContextType = {
   insumos: Insumo[];
@@ -84,62 +92,72 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     [insumos],
   );
 
-  const agregarInsumos = useCallback(async (items: NuevoInsumo[]) => {
-    const response = await fetchConSesion('/ims/api/inv/add/', {
-      method: 'POST',
-      body: JSON.stringify({ items }),
-    });
-    if (!response.ok) throw new Error(`Error ${response.status}`);
-    recargar();
-  }, [recargar]);
+  const agregarInsumos = useCallback(
+    async (items: NuevoInsumo[]) => {
+      const response = await fetchConSesion('/ims/api/inv/add/', {
+        method: 'POST',
+        body: JSON.stringify({ items }),
+      });
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      recargar();
+    },
+    [recargar],
+  );
 
   // cantidad es un delta positivo o negativo que se suma al stock actual
-  const actualizarStock = useCallback(async (
-    presentacionId: number,
-    ambulanciaId: number,
-    cantidad: number,
-  ) => {
-    const response = await fetchConSesion('/ims/api/inv/update/', {
-      method: 'PATCH',
-      body: JSON.stringify({
-        presentacion_id: presentacionId,
-        ambulancia_id: ambulanciaId,
-        cantidad,
-      }),
-    });
-    if (!response.ok) throw new Error(`Error ${response.status}`);
-    recargar();
-  }, [recargar]);
+  const actualizarStock = useCallback(
+    async (presentacionId: number, ambulanciaId: number, cantidad: number) => {
+      const response = await fetchConSesion('/ims/api/inv/update/', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          presentacion_id: presentacionId,
+          ambulancia_id: ambulanciaId,
+          cantidad,
+        }),
+      });
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      recargar();
+    },
+    [recargar],
+  );
 
-  const moverInsumo = useCallback(async (
-    presentacionId: number,
-    ambulanciaFromId: number,
-    ambulanciaToId: number,
-    cantidad: number,
-  ) => {
-    const response = await fetchConSesion('/ims/api/inv/move/', {
-      method: 'PATCH',
-      body: JSON.stringify({
-        presentacion_id: presentacionId,
-        ambulancia_from_id: ambulanciaFromId,
-        ambulancia_to_id: ambulanciaToId,
-        cantidad,
-      }),
-    });
-    if (!response.ok) throw new Error(`Error ${response.status}`);
-    recargar();
-  }, [recargar]);
+  const moverInsumo = useCallback(
+    async (
+      presentacionId: number,
+      ambulanciaFromId: number,
+      ambulanciaToId: number,
+      cantidad: number,
+    ) => {
+      const response = await fetchConSesion('/ims/api/inv/move/', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          presentacion_id: presentacionId,
+          ambulancia_from_id: ambulanciaFromId,
+          ambulancia_to_id: ambulanciaToId,
+          cantidad,
+        }),
+      });
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      recargar();
+    },
+    [recargar],
+  );
 
   const value = useMemo(
-    () => ({ insumos, loading, error, buscarInsumo, agregarInsumos, actualizarStock, moverInsumo, recargar }),
+    () => ({
+      insumos,
+      loading,
+      error,
+      buscarInsumo,
+      agregarInsumos,
+      actualizarStock,
+      moverInsumo,
+      recargar,
+    }),
     [insumos, loading, error, buscarInsumo, agregarInsumos, actualizarStock, moverInsumo, recargar],
   );
 
-  return (
-    <InventarioContext.Provider value={value}>
-      {children}
-    </InventarioContext.Provider>
-  );
+  return <InventarioContext.Provider value={value}>{children}</InventarioContext.Provider>;
 };
 
 export default InventarioProvider;

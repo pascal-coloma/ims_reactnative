@@ -144,31 +144,34 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const fetchAtencionDetalle = useCallback(async (id: number) => {
-    try {
-      const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
-      if (!response.ok) throw new Error(`Error ${response.status}`);
-      const data = await response.json();
-      const s3Url = data.success;
-      console.log('S3 URL:', s3Url);
+  const fetchAtencionDetalle = useCallback(
+    async (id: number) => {
+      try {
+        const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
+        if (!response.ok) throw new Error(`Error ${response.status}`);
+        const data = await response.json();
+        const s3Url = data.success;
+        console.log('S3 URL:', s3Url);
 
-      const s3Resp = await fetch(s3Url);
-      if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
-      const documento = await s3Resp.json();
-      console.log('Documento S3:', JSON.stringify(documento, null, 2));
+        const s3Resp = await fetch(s3Url);
+        if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
+        const documento = await s3Resp.json();
+        console.log('Documento S3:', JSON.stringify(documento, null, 2));
 
-      const resumen = resumenAtenciones.find((a) => a.id === id);
-      if (resumen && documento.atencion) {
-        documento.atencion.estado_sello = resumen.estado_sello;
-        documento.atencion.sello_electronico = resumen.firma_digital;
+        const resumen = resumenAtenciones.find((a) => a.id === id);
+        if (resumen && documento.atencion) {
+          documento.atencion.estado_sello = resumen.estado_sello;
+          documento.atencion.sello_electronico = resumen.firma_digital;
+        }
+
+        return documento;
+      } catch (e: any) {
+        setError(e.message ?? 'Error desconocido');
+        return null;
       }
-
-      return documento;
-    } catch (e: any) {
-      setError(e.message ?? 'Error desconocido');
-      return null;
-    }
-  }, [resumenAtenciones]);
+    },
+    [resumenAtenciones],
+  );
 
   const fetchAtencionDetalleLocal = useCallback(async (id: number) => {
     try {
@@ -255,15 +258,21 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
     }),
-    [atenciones, resumenAtenciones, agregarAtencion, fetchAtenciones, fetchAtencionDetalle,
-     fetchAtencionDetalleLocal, modificarAtencion, buscarPorDespacho, loading, error],
+    [
+      atenciones,
+      resumenAtenciones,
+      agregarAtencion,
+      fetchAtenciones,
+      fetchAtencionDetalle,
+      fetchAtencionDetalleLocal,
+      modificarAtencion,
+      buscarPorDespacho,
+      loading,
+      error,
+    ],
   );
 
-  return (
-    <AtencionContext.Provider value={value}>
-      {children}
-    </AtencionContext.Provider>
-  );
+  return <AtencionContext.Provider value={value}>{children}</AtencionContext.Provider>;
 };
 
 export const useAtenciones = () => {

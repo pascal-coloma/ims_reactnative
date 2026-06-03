@@ -56,7 +56,10 @@ export default function AdminLayout() {
             ),
           }}
         />
-        <Tabs.Screen name="registrar-despacho" options={{ href: null, title: 'RegistrarDespacho' }} />
+        <Tabs.Screen
+          name="registrar-despacho"
+          options={{ href: null, title: 'RegistrarDespacho' }}
+        />
         <Tabs.Screen name="detalledespacho" options={{ href: null, title: 'detalledespacho' }} />
         <Tabs.Screen name="inventario" options={{ href: null, title: 'Inventario' }} />
         <Tabs.Screen name="registrar-worker" options={{ href: null, title: 'RegistrarWorker' }} />

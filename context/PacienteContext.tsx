@@ -1,5 +1,13 @@
 import { Paciente } from '@/data/mock/mockPaciente';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { fetchConSesion, useAuth } from './AuthContext';
 
 type PacienteContextType = {
@@ -54,11 +62,7 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
     [pacientes, agregarPaciente, buscarPaciente, loading, error],
   );
 
-  return (
-    <PacienteContext.Provider value={value}>
-      {children}
-    </PacienteContext.Provider>
-  );
+  return <PacienteContext.Provider value={value}>{children}</PacienteContext.Provider>;
 };
 
 export default PacienteProvider;

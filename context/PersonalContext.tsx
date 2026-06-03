@@ -1,5 +1,13 @@
 import PERSONAL, { Personal } from '@/data/mock/mockPersonal';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { fetchConSesion } from './AuthContext';
 import { NuevoWorker, WorkerCreado } from '@/data/types';
 
@@ -52,11 +60,7 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
     [personal, actualizarDisponibilidad, registrarWorker],
   );
 
-  return (
-    <PersonalContext.Provider value={value}>
-      {children}
-    </PersonalContext.Provider>
-  );
+  return <PersonalContext.Provider value={value}>{children}</PersonalContext.Provider>;
 };
 
 export default PersonalProvider;
