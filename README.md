@@ -71,7 +71,7 @@ All authenticated requests go through `fetchConSesion`, which reads `sessionid` 
 
 ### Attention registration (field personnel)
 
-On entering `RegistrarAtencion`, `useFocusEffect` selects the last active dispatch for the authenticated user. The form is pre-populated from the dispatch record via `fetchConSesion`.
+On entering `registrar-atencion`, `useFocusEffect` selects the last active dispatch for the authenticated user. The form is pre-populated from the dispatch record via `fetchConSesion`.
 
 Submitted payload includes:
 
@@ -111,42 +111,56 @@ Stored to AWS S3 with SHA-256 hash for document integrity.
 | GET | `/ims/api/atenciones/` | Attention summary or `?id=N` for S3 presigned URL |
 | POST | `/ims/api/atenciones/add/` | Register attention |
 
-Base URL: `https://956.duckdns.org`
+Base URL: configured via `EXPO_PUBLIC_API_URL` environment variable (see `.env.example`)
 
 ---
 
 ## Project Structure
 
 ```
-mobile/
-  app/                    Expo Router screens
-  components/
-    admin/                Admin-specific components
-    user/                 Field personnel components
-    AppHeader.tsx         Navigation header with safe area insets
-    DashboardHeader.tsx   Dashboard header with avatar and drawers
-    EstadoBadge.tsx       Reusable dispatch status badge
-  context/
-    AuthContext.tsx        Session management, fetchConSesion, session expiry handler
-    DespachosContext.tsx   Dispatch state and operations
-    AtencionContext.tsx    Attention registration and retrieval
-    PersonalContext.tsx    Personnel list and worker registration
-    AmbulanciaContext.tsx  Ambulance list
-    PacienteContext.tsx    Patient list and search
-    InventoryContext.tsx   Medical supplies (mock — backend pending)
-  data/
-    constants/
-      generatePDF.ts      PDF generation from S3 document JSON
-      defaultValues.ts    react-hook-form default values
-    types/
-      types.ts            Shared TypeScript types
-  utils/
-    format.ts             formatearRut, validarRut, formatearFecha, validarFecha,
-                          formatearTelefono, formatearFechaHora, formatearHora
-    labels.ts             traducirRol — role to display name mapping
-    despacho.ts           ESTADO_COLOR — status to color mapping
-  styles/
-    globalStyles.ts       Shared StyleSheet tokens
+app/
+  (auth)/               login, TOTP verification, password recovery
+  (admin)/              control role screens (kebab-case filenames)
+    AdminProviders.tsx  — provider tree composed via components/admin/AdminProviders
+  (user)/               field personnel screens (kebab-case filenames)
+  index.tsx             entry point — redirects based on user state and role
+  _layout.tsx           root layout — exports ErrorBoundary, mounts AuthProvider
+
+components/
+  admin/
+    AdminProviders.tsx  Composes all admin context providers in one place
+    ...                 Admin-specific UI components
+  user/                 Field personnel UI components
+  AppHeader.tsx         Navigation header with safe area insets
+  DashboardHeader.tsx   Dashboard header with avatar and drawers
+  EstadoBadge.tsx       Reusable dispatch status badge
+
+context/                All providers use useCallback + useMemo to stabilize references
+  AuthContext.tsx        Session management, fetchConSesion, session expiry handler
+  DespachosContext.tsx   Dispatch state and operations
+  AtencionContext.tsx    Attention registration and retrieval
+  PersonalContext.tsx    Personnel list and worker registration
+  AmbulanciaContext.tsx  Ambulance list
+  PacienteContext.tsx    Patient list and search
+  InventoryContext.tsx   Medical supplies
+  GrupoContext.tsx       Group management
+
+data/
+  constants/
+    defaultValues.ts    react-hook-form default values
+  mock/                 Static mock data (used when OFFLINE_MODE is true)
+  types/
+    index.ts            Shared TypeScript types
+
+utils/
+  pdf.ts                PDF generation from S3 document JSON
+  format.ts             formatearRut, validarRut, formatearFecha, validarFecha,
+                        formatearTelefono, formatearFechaHora, formatearHora
+  labels.ts             traducirRol — role to display name mapping
+  despacho.ts           ESTADO_COLOR — status to color mapping
+
+styles/
+  globalStyles.ts       Shared StyleSheet tokens
 ```
 
 ---
@@ -158,6 +172,15 @@ mobile/
 - Node.js 20+
 - Expo CLI
 - Android Studio with emulator configured (API 33+)
+
+### Environment
+
+Copy `.env.example` to `.env` and set the API URL:
+
+```bash
+cp .env.example .env
+# Edit .env and set EXPO_PUBLIC_API_URL
+```
 
 ### Install
 
