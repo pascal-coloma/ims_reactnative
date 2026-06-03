@@ -18,7 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Grupo } from '@/data/types/types';
+import { Grupo } from '@/data/types';
 import { fetchConSesion } from '@/context/AuthContext';
 
 const ROL_COLOR: Record<string, string> = {

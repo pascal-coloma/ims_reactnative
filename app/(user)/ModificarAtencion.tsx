@@ -3,7 +3,7 @@ import Cronologia from '@/components/user/Cronologia';
 import PreInformeForm from '@/components/user/PreInforme';
 import AppHeader from '@/components/AppHeader';
 import { useAtenciones } from '@/context/AtencionContext';
-import { FormUsuario } from '@/data/types/types';
+import { FormUsuario } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, router } from 'expo-router';

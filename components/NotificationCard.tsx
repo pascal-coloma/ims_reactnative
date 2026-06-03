@@ -1,4 +1,4 @@
-import { Notificacion } from '@/data/constants/mockNotificaciones';
+import { Notificacion } from '@/data/mock/mockNotificaciones';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 

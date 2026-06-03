@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { fetchConSesion } from './AuthContext';
-import { Grupo } from '@/data/types/types';
+import { Grupo } from '@/data/types';
 
 type GrupoContextType = {
   grupos: Grupo[];

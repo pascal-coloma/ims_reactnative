@@ -1,4 +1,4 @@
-import { Despacho } from '@/data/constants/mockDespachos';
+import { Despacho } from '@/data/mock/mockDespachos';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';

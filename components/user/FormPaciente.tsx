@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Control, Controller, FieldErrors, useFormContext } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { FormUsuario } from '@/data/types/types';
+import { FormUsuario } from '@/data/types';
 import { useDespachos } from '@/context/DespachosContext';
 import { useEffect, useState } from 'react';
 import { fetchConSesion } from '@/context/AuthContext';

@@ -1,6 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import { useAtenciones } from '@/context/AtencionContext';
-import { generatePDF } from '@/data/constants/generatePDF';
+import { generatePDF } from '@/utils/pdf';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
