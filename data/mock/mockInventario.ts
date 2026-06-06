@@ -8,6 +8,7 @@ const mockInsumos: Insumo[] = [
     cantidad: 500,
     unidadMedida: 'mg',
     ambulanciaPatente: 'MOCK-01',
+    ambulanciaId: 0,
     stock: 10,
   },
   {
@@ -17,6 +18,7 @@ const mockInsumos: Insumo[] = [
     cantidad: 400,
     unidadMedida: 'mg',
     ambulanciaPatente: 'MOCK-01',
+    ambulanciaId: 0,
     stock: 8,
   },
   {
@@ -26,6 +28,7 @@ const mockInsumos: Insumo[] = [
     cantidad: 1,
     unidadMedida: 'mg',
     ambulanciaPatente: 'MOCK-01',
+    ambulanciaId: 0,
     stock: 5,
   },
   {
@@ -35,6 +38,7 @@ const mockInsumos: Insumo[] = [
     cantidad: 500,
     unidadMedida: 'ml',
     ambulanciaPatente: 'MOCK-01',
+    ambulanciaId: 0,
     stock: 6,
   },
   {
@@ -44,6 +48,7 @@ const mockInsumos: Insumo[] = [
     cantidad: 5,
     unidadMedida: 'mg',
     ambulanciaPatente: 'MOCK-01',
+    ambulanciaId: 0,
     stock: 4,
   },
 ];

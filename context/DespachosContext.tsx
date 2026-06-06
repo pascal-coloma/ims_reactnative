@@ -81,10 +81,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         grupoNombre: d.grupo_nombre ?? undefined,
         ambulancia: d.ambulancia_id
           ? {
-              ambulancia_id: Number(d.ambulancia_id),
+              id: String(d.ambulancia_id),
               patente: '',
               estado: 'disponible' as const,
-              stock: [],
             }
           : undefined,
       });
@@ -102,10 +101,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         rutPaciente: d.paciente?.rut ?? undefined,
         ambulancia: d.ambulancia
           ? {
-              ambulancia_id: Number(d.ambulancia.id),
+              id: String(d.ambulancia.id),
               patente: d.ambulancia.patente ?? '',
               estado: d.ambulancia.estado ?? 'disponible',
-              stock: [],
             }
           : undefined,
       });
