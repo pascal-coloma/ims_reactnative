@@ -1,4 +1,4 @@
-import mockNotificaciones from '@/data/mock/mockNotificaciones';
+import { useNotifications } from '@/context/NotificationContext';
 import { useEffect, useRef } from 'react';
 import {
   Animated,
@@ -23,6 +23,7 @@ const DRAWER_WIDTH = width * 0.7;
 const NotificationDrawer = ({ visible, onClose }: Props) => {
   const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
   const insets = useSafeAreaInsets();
+  const { notifications, dismissNotification, markAllRead } = useNotifications();
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -30,7 +31,8 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
       duration: 280,
       useNativeDriver: true,
     }).start();
-  }, [visible]);
+    if (visible) markAllRead();
+  }, [visible, markAllRead]);
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
@@ -44,9 +46,17 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
             <Text style={style.cerrar}>✕</Text>
           </TouchableOpacity>
         </View>
-        {mockNotificaciones.map((n, i) => (
-          <NotificationCard key={i} notificacion={n} />
-        ))}
+        {notifications.length === 0 ? (
+          <Text style={style.empty}>Sin notificaciones</Text>
+        ) : (
+          notifications.map((n) => (
+            <NotificationCard
+              key={n.id}
+              notification={n}
+              onPress={() => dismissNotification(n.id)}
+            />
+          ))
+        )}
       </Animated.View>
     </Modal>
   );
@@ -54,7 +64,11 @@ const NotificationDrawer = ({ visible, onClose }: Props) => {
 
 const style = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   drawer: {
@@ -85,6 +99,12 @@ const style = StyleSheet.create({
   cerrar: {
     fontSize: 18,
     color: '#94a3b8',
+  },
+  empty: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#94a3b8',
+    fontSize: 14,
   },
 });
 

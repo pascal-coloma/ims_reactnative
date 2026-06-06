@@ -5,12 +5,14 @@ import NotificationDrawer from './NotificationDrawer';
 import SettingsDrawer from './SettingsDrawer';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useNotifications } from '@/context/NotificationContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DashboardHeader = () => {
   const [notifVisible, setNotifVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
   const insets = useSafeAreaInsets();
 
   const nombre = `${user?.first_name} ${user?.last_name}`;
@@ -30,7 +32,14 @@ const DashboardHeader = () => {
         <View style={{ flex: 1 }} />
         <View style={style.right}>
           <TouchableOpacity onPress={() => setNotifVisible(true)}>
-            <MaterialIcons name="notifications-none" size={24} color="#000" />
+            <View style={style.bellContainer}>
+              <MaterialIcons name="notifications-none" size={24} color="#000" />
+              {unreadCount > 0 && (
+                <View style={style.badge}>
+                  <Text style={style.badgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+                </View>
+              )}
+            </View>
           </TouchableOpacity>
           <NotificationDrawer visible={notifVisible} onClose={() => setNotifVisible(false)} />
           <TouchableOpacity onPress={() => setSettingsVisible(true)}>
@@ -79,6 +88,28 @@ const style = StyleSheet.create({
   right: {
     flexDirection: 'row',
     gap: 16,
+  },
+  bellContainer: {
+    width: 24,
+    height: 24,
+  },
+  badge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#E53935',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    lineHeight: 12,
   },
 });
 

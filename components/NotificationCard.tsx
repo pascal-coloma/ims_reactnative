@@ -1,38 +1,49 @@
-import { Notificacion } from '@/data/mock/mockNotificaciones';
+import { type FcmNotification } from '@/context/NotificationContext';
 import { MaterialIcons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const tipoConfig: Record<Notificacion['tipo'], { icon: string; color: string; bg: string }> = {
-  despacho: { icon: 'airport-shuttle', color: '#2563eb', bg: '#eff6ff' },
-  reasignacion: { icon: 'people', color: '#d97706', bg: '#fffbeb' },
-  alerta_stock: { icon: 'warning', color: '#dc2626', bg: '#fef2f2' },
-  sistema: { icon: 'info', color: '#16a34a', bg: '#f0fdf4' },
+type Props = {
+  notification: FcmNotification;
+  onPress: () => void;
 };
 
-const NotificationCard = ({ notificacion }: { notificacion: Notificacion }) => {
-  const config = tipoConfig[notificacion.tipo];
-
-  return (
-    <View style={style.card}>
-      <View style={[style.iconContainer, { backgroundColor: config.bg }]}>
-        <MaterialIcons name={config.icon as any} size={20} color={config.color} />
-      </View>
-      <View style={style.contenido}>
-        <Text style={[style.titulo, { color: config.color }]}>{notificacion.titulo}</Text>
-        <Text style={style.mensaje}>{notificacion.mensaje}</Text>
-      </View>
+const NotificationCard = ({ notification, onPress }: Props) => (
+  <TouchableOpacity
+    onPress={onPress}
+    activeOpacity={0.7}
+    style={[style.card, !notification.read && style.unread]}
+  >
+    <View style={[style.iconContainer, !notification.read ? style.iconBgUnread : style.iconBgRead]}>
+      <MaterialIcons
+        name="notifications"
+        size={20}
+        color={notification.read ? '#64748b' : '#2563eb'}
+      />
     </View>
-  );
-};
+    <View style={style.contenido}>
+      <Text style={[style.titulo, !notification.read && style.tituloUnread]}>
+        {notification.title}
+      </Text>
+      <Text style={style.mensaje}>{notification.body}</Text>
+    </View>
+  </TouchableOpacity>
+);
 
 const style = StyleSheet.create({
   card: {
     flexDirection: 'row',
     gap: 12,
     paddingVertical: 12,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
     alignItems: 'flex-start',
+  },
+  unread: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 8,
+    borderBottomWidth: 0,
+    marginBottom: 1,
   },
   iconContainer: {
     width: 38,
@@ -41,13 +52,24 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconBgUnread: {
+    backgroundColor: '#dbeafe',
+  },
+  iconBgRead: {
+    backgroundColor: '#f1f5f9',
+  },
   contenido: {
     flex: 1,
     gap: 4,
   },
   titulo: {
     fontSize: 13,
+    fontWeight: '400',
+    color: '#64748b',
+  },
+  tituloUnread: {
     fontWeight: '600',
+    color: '#1e40af',
   },
   mensaje: {
     fontSize: 12,
