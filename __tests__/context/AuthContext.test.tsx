@@ -25,7 +25,7 @@ const mockSetFromResponse = CookieManager.setFromResponse as jest.Mock;
 const mockClearAll = CookieManager.clearAll as jest.Mock;
 
 const mockFetch = jest.fn();
-global.fetch = mockFetch;
+globalThis.fetch = mockFetch as typeof fetch;
 
 const noCookies = {};
 const sessionCookies = {
@@ -128,7 +128,7 @@ describe('useAuth — login', () => {
   const mockLoginPostResponse = (ok: boolean) => ({
     ok,
     status: ok ? 200 : 401,
-    json: jest.fn().mockResolvedValue({ role: 'medic' }),
+    json: jest.fn().mockResolvedValue({ user_data: { role: 'medico' } }),
     headers: {
       get: (h: string) =>
         h === 'set-cookie' ? 'sessionid=sess-abc; csrftoken=csrf-abc; Path=/' : null,

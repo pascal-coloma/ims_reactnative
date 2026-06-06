@@ -3,10 +3,11 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
+import { registerFcmToken, setupTokenRefresh } from '@/utils/firebaseMessaging';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://956.duckdns.org';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.imsambulancias.cl';
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 
@@ -125,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     restore();
 
+    const unsubTokenRefresh = setupTokenRefresh();
     const sub = AppState.addEventListener('change', async (state) => {
       if (state !== 'active') return;
 
@@ -160,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       sub.remove();
+      unsubTokenRefresh();
       setSessionExpiredHandler(() => {});
     };
   }, []);
@@ -245,6 +248,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await AsyncStorage.setItem('user', JSON.stringify(loggedUser));
       setUser(loggedUser);
+      registerFcmToken().catch((e) => console.warn('FCM token registration failed:', e));
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
       console.error('Error login:', e);

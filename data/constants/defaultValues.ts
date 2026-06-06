@@ -31,6 +31,7 @@ export const DEFAULT_VALUES_USUARIO: FormUsuario = {
   direccionDestino: '',
   condicionPaciente: '',
   comuna: '',
+  rutReceptor: '',
   controlSignos: [],
   insumosUtilizados: [],
   preInforme: { preInforme: '', motivoLlamado: '', estadoPaciente: 'estable' },

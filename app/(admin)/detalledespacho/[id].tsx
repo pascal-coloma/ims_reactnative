@@ -16,9 +16,7 @@ const DetalleDespachoScreen = () => {
   const { personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
   const despacho = despachos.find((d) => d.id === id);
-  const ambulancia = ambulancias.find(
-    (a) => a.ambulancia_id === despacho?.ambulancia?.ambulancia_id,
-  );
+  const ambulancia = ambulancias.find((a) => a.id === despacho?.ambulancia?.id);
   const equipoDespacho = personal.filter((p) => despacho?.personalIds?.includes(String(p.id)));
 
   if (!despacho) {
