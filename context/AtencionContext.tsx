@@ -95,7 +95,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         },
         insumos_utilizados: atencion.insumosUtilizados.map((i) => ({
           presentacion_id: Number(i.insumoId),
-          cantidad_usada: i.cantidad,
+          cantidad_usada: i.dosis,
         })),
         rut_receptor: '',
       };

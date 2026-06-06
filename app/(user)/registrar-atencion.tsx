@@ -73,7 +73,7 @@ const RegistrarAtencion = () => {
           cronologia,
           insumosUtilizados,
         },
-        String(despachoActivo.ambulancia?.ambulancia_id ?? ''),
+        despachoActivo.ambulancia?.id ?? '',
       );
       reset();
       setExito(true);

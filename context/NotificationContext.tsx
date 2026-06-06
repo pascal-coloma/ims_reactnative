@@ -36,26 +36,26 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(
-      (message: FirebaseMessagingTypes.RemoteMessage) => {
-        setNotifications((prev) => [
-          {
-            id: message.messageId ?? Date.now().toString(),
-            title: message.notification?.title ?? '',
-            body: message.notification?.body ?? '',
-            read: false,
-            receivedAt: new Date(),
-          },
-          ...prev,
-        ]);
-        setUnreadCount((prev) => prev + 1);
-      },
-    );
+    const unsubscribe = messaging().onMessage((message: FirebaseMessagingTypes.RemoteMessage) => {
+      setNotifications((prev) => [
+        {
+          id: message.messageId ?? Date.now().toString(),
+          title: message.notification?.title ?? '',
+          body: message.notification?.body ?? '',
+          read: false,
+          receivedAt: new Date(),
+        },
+        ...prev,
+      ]);
+      setUnreadCount((prev) => prev + 1);
+    });
     return unsubscribe;
   }, []);
 
   return (
-    <NotificationContext.Provider value={{ notifications, unreadCount, dismissNotification, markAllRead }}>
+    <NotificationContext.Provider
+      value={{ notifications, unreadCount, dismissNotification, markAllRead }}
+    >
       {children}
     </NotificationContext.Provider>
   );

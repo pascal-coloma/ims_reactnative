@@ -34,7 +34,7 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
     }).start();
   }, [visible]);
 
-  const iniciales = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
+  const iniciales = `${user?.first_name?.[0] ?? ''}${user?.last_name?.[0] ?? ''}`.toUpperCase();
   const rolLabel = traducirRol(user?.role ?? '');
 
   return (
@@ -55,7 +55,7 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
             <Text style={local.avatarGrandeTexto}>{iniciales}</Text>
           </View>
           <Text style={local.nombreTexto}>
-            {user?.firstName} {user?.lastName}
+            {user?.first_name} {user?.last_name}
           </Text>
           <View style={local.rolBadge}>
             <Text style={local.rolTexto}>{rolLabel}</Text>
@@ -96,7 +96,11 @@ const SettingsDrawer = ({ visible, onClose }: Props) => {
 
 const local = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   drawer: {
