@@ -9,19 +9,21 @@ import { useInventario } from '@/context/InventoryContext';
 import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types';
 import styles from '@/styles/globalStyles';
-import { FormProvider, useForm } from 'react-hook-form';
+import { formatearRut, validarRut } from '@/utils/format';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import {
   Alert,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   Modal,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { router } from 'expo-router';
 import AppHeader from '@/components/AppHeader';
 
@@ -55,33 +57,44 @@ const RegistrarAtencion = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit = async (data: FormUsuario) => {
-    if (!despachoActivo) {
-      Alert.alert('Error', 'No tienes un despacho activo asignado');
-      return;
-    }
-    try {
-      const { controlSignos, preInforme, cronologia, insumosUtilizados, ...camposPaciente } = data;
-      await agregarAtencion(
-        {
-          id: Date.now().toString(),
-          despachoId: despachoActivo.id,
-          fechaRegistro: new Date().toISOString(),
-          paciente: camposPaciente,
+  const onSubmit = useCallback(
+    async (data: FormUsuario) => {
+      if (!despachoActivo) {
+        Alert.alert('Error', 'No tienes un despacho activo asignado');
+        return;
+      }
+      try {
+        const {
           controlSignos,
           preInforme,
           cronologia,
           insumosUtilizados,
-        },
-        despachoActivo.ambulancia?.id ?? '',
-      );
-      reset();
-      setExito(true);
-    } catch (e: any) {
-      console.error('Error en onSubmit:', e?.message);
-      Alert.alert('Error', 'No se pudo registrar la atención. Intenta nuevamente.');
-    }
-  };
+          rutReceptor,
+          ...camposPaciente
+        } = data;
+        await agregarAtencion(
+          {
+            id: crypto.randomUUID(),
+            despachoId: despachoActivo.id,
+            fechaRegistro: new Date().toISOString(),
+            paciente: camposPaciente,
+            controlSignos,
+            preInforme,
+            cronologia,
+            insumosUtilizados,
+            rutReceptor,
+          },
+          despachoActivo.ambulancia?.id ?? '',
+        );
+        reset();
+        setExito(true);
+      } catch (e: any) {
+        console.error('Error en onSubmit:', e?.message);
+        Alert.alert('Error', 'No se pudo registrar la atención. Intenta nuevamente.');
+      }
+    },
+    [despachoActivo, agregarAtencion, reset],
+  );
 
   return (
     <>
@@ -103,6 +116,46 @@ const RegistrarAtencion = () => {
             <InsumosForm control={methods.control} errors={errors} />
             <PreInformeForm control={methods.control} errors={errors} />
             <Cronologia control={methods.control} errors={errors} />
+
+            <View style={local.rutReceptorContainer}>
+              <Text style={styles.title}>Receptor</Text>
+              <Controller
+                control={methods.control}
+                name="rutReceptor"
+                rules={{
+                  required: 'Campo requerido',
+                  validate: (v) => validarRut(v) || 'RUT inválido',
+                }}
+                render={({ field: { onChange, onBlur, value } }) => {
+                  const completo = (value ?? '').replace(/[^0-9kK]/g, '').length >= 8;
+                  const valido = !completo || validarRut(value ?? '');
+                  return (
+                    <>
+                      <Text style={local.rutLabel}>RUT de quien recibe al paciente</Text>
+                      <TextInput
+                        placeholder="12.345.678-9"
+                        onBlur={onBlur}
+                        onChangeText={(t) => onChange(formatearRut(t))}
+                        value={value}
+                        style={[
+                          local.rutInput,
+                          completo && !valido && { borderColor: '#E53935' },
+                          completo && valido && { borderColor: '#22c55e' },
+                        ]}
+                        keyboardType="default"
+                        autoCapitalize="none"
+                      />
+                      {completo && !valido && <Text style={local.rutError}>RUT inválido</Text>}
+                      {errors.rutReceptor && !completo && (
+                        <Text style={local.rutError}>
+                          {errors.rutReceptor.message || 'Campo requerido'}
+                        </Text>
+                      )}
+                    </>
+                  );
+                }}
+              />
+            </View>
           </ScrollView>
 
           <View style={[local.botonesContainer]}>
@@ -196,6 +249,31 @@ const local = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
+  },
+  rutReceptorContainer: {
+    padding: 20,
+    backgroundColor: 'white',
+    marginTop: 8,
+  },
+  rutLabel: {
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: 4,
+    color: '#333',
+  },
+  rutInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 4,
+    fontSize: 16,
+  },
+  rutError: {
+    color: '#E53935',
+    textAlign: 'right',
+    marginBottom: 5,
+    fontSize: 13,
   },
 });
 

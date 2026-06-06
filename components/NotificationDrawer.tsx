@@ -1,5 +1,5 @@
 import { useNotifications } from '@/context/NotificationContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -21,7 +21,7 @@ const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.7;
 
 const NotificationDrawer = ({ visible, onClose }: Props) => {
-  const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
+  const [translateX] = useState(() => new Animated.Value(DRAWER_WIDTH));
   const insets = useSafeAreaInsets();
   const { notifications, dismissNotification, markAllRead } = useNotifications();
 

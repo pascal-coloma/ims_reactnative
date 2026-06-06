@@ -48,6 +48,7 @@ export type FormUsuario = CamposPaciente & {
   preInforme: PreInforme;
   cronologia: Cronologia;
   insumosUtilizados: InsumoUtilizado[];
+  rutReceptor: string;
 };
 
 export type SignosVitales = {
@@ -104,6 +105,7 @@ export type Atencion = {
   preInforme: PreInforme;
   cronologia: Cronologia;
   insumosUtilizados: InsumoUtilizado[];
+  rutReceptor: string;
 };
 
 export type NuevoWorker = {
