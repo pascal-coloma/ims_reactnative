@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -23,7 +23,7 @@ type Props = {
 
 const SettingsDrawer = ({ visible, onClose }: Props) => {
   const { user, logout } = useAuth();
-  const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
+  const [translateX] = useState(() => new Animated.Value(DRAWER_WIDTH));
   const insets = useSafeAreaInsets();
 
   useEffect(() => {

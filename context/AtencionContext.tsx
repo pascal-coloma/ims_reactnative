@@ -97,7 +97,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
           presentacion_id: Number(i.insumoId),
           cantidad_usada: i.dosis,
         })),
-        rut_receptor: '',
+        rut_receptor: atencion.rutReceptor,
       };
 
       const atencionResp = await fetchConSesion('/ims/api/atenciones/add/', {

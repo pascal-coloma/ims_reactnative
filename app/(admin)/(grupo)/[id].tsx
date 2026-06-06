@@ -5,7 +5,7 @@ import styles from '@/styles/globalStyles';
 import { traducirRol } from '@/utils/labels';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -40,7 +40,7 @@ const DetalleGrupo = () => {
   const [personalSeleccionado, setPersonalSeleccionado] = useState<number | null>(null);
   const [confirmarRut, setConfirmarRut] = useState<string | null>(null);
 
-  const cargarGrupo = async () => {
+  const cargarGrupo = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetchConSesion(`/ims/api/grupo/?group_id=${id}`);
@@ -52,10 +52,22 @@ const DetalleGrupo = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
-    cargarGrupo();
+    fetchConSesion(`/ims/api/grupo/?group_id=${id}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`Error ${r.status}`);
+        return r.json() as Promise<Grupo[]>;
+      })
+      .then((list) => {
+        setGrupo(list[0] ?? null);
+        setLoading(false);
+      })
+      .catch((e: unknown) => {
+        setError(e instanceof Error ? e.message : 'Error al cargar grupo');
+        setLoading(false);
+      });
   }, [id]);
 
   const handleRemover = async () => {
