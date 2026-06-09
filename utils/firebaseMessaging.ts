@@ -1,11 +1,17 @@
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  getToken,
+  onTokenRefresh,
+  requestPermission,
+  AuthorizationStatus,
+} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { fetchConSesion } from '@/context/AuthContext';
+import { fetchConSesion } from '@/utils/api';
 
 const FCM_TOKEN_KEY = 'fcm_token';
 
-async function requestPermission(): Promise<boolean> {
+async function requestFcmPermission(): Promise<boolean> {
   if (Platform.OS === 'android') {
     if (Platform.Version >= 33) {
       const result = await PermissionsAndroid.request(
@@ -15,11 +21,8 @@ async function requestPermission(): Promise<boolean> {
     }
     return true;
   }
-  const status = await messaging().requestPermission();
-  return (
-    status === messaging.AuthorizationStatus.AUTHORIZED ||
-    status === messaging.AuthorizationStatus.PROVISIONAL
-  );
+  const status = await requestPermission(getMessaging());
+  return status === AuthorizationStatus.AUTHORIZED || status === AuthorizationStatus.PROVISIONAL;
 }
 
 async function postToken(token: string): Promise<void> {
@@ -31,10 +34,11 @@ async function postToken(token: string): Promise<void> {
 }
 
 export async function registerFcmToken(): Promise<void> {
-  const granted = await requestPermission();
+  const granted = await requestFcmPermission();
   if (!granted) return;
 
-  const token = await messaging().getToken();
+  const token = await getToken(getMessaging());
+  console.log(token);
   const cached = await AsyncStorage.getItem(FCM_TOKEN_KEY);
   if (cached === token) return;
 
@@ -42,7 +46,7 @@ export async function registerFcmToken(): Promise<void> {
 }
 
 export function setupTokenRefresh(): () => void {
-  return messaging().onTokenRefresh(async (token) => {
+  return onTokenRefresh(getMessaging(), async (token) => {
     await postToken(token);
   });
 }
