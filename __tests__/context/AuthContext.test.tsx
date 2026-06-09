@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CookieManager from '@react-native-cookies/cookies';
+import CookieManager from '@preeternal/react-native-cookie-manager';
 import {
   AuthProvider,
   useAuth,
@@ -9,7 +9,7 @@ import {
   setSessionExpiredHandler,
 } from '@/context/AuthContext';
 
-jest.mock('@react-native-cookies/cookies', () => ({
+jest.mock('@preeternal/react-native-cookie-manager', () => ({
   __esModule: true,
   default: {
     get: jest.fn(),

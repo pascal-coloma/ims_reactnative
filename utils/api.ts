@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CookieManager from '@react-native-cookies/cookies';
+import CookieManager from '@preeternal/react-native-cookie-manager';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.imsambulancias.cl';
 

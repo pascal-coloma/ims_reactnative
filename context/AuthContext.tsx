@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CookieManager from '@react-native-cookies/cookies';
+import CookieManager from '@preeternal/react-native-cookie-manager';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { registerFcmToken, setupTokenRefresh } from '@/utils/firebaseMessaging';
