@@ -8,17 +8,16 @@ export type AmbulanciaStock = {
 };
 
 export type Ambulancia = {
-  ambulancia_id: number;
+  id: string;
   patente: string;
   estado: 'disponible' | 'en_despacho' | 'mantencion' | 'fuera_servicio';
-  stock: AmbulanciaStock[];
 };
 
 export const mockAmbulancias: Ambulancia[] = [
-  { ambulancia_id: 1, patente: 'AMB-001', estado: 'disponible', stock: [] },
-  { ambulancia_id: 2, patente: 'AMB-002', estado: 'disponible', stock: [] },
-  { ambulancia_id: 3, patente: 'AMB-003', estado: 'mantencion', stock: [] },
-  { ambulancia_id: 4, patente: 'AMB-004', estado: 'disponible', stock: [] },
+  { id: '1', patente: 'AMB-001', estado: 'disponible' },
+  { id: '2', patente: 'AMB-002', estado: 'disponible' },
+  { id: '3', patente: 'AMB-003', estado: 'mantencion' },
+  { id: '4', patente: 'AMB-004', estado: 'disponible' },
 ];
 
 export const CATEGORIAS_EMERGENCIA = [

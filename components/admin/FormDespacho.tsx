@@ -103,11 +103,7 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
                 {ambulancias
                   .filter((a) => a.estado === 'disponible')
                   .map((a) => (
-                    <Picker.Item
-                      key={a.ambulancia_id}
-                      label={a.patente}
-                      value={String(a.ambulancia_id)}
-                    />
+                    <Picker.Item key={a.id} label={a.patente} value={a.id} />
                   ))}
               </Picker>
             </View>
