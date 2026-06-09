@@ -40,9 +40,7 @@
       ],
       "expo-web-browser",
       "@react-native-community/datetimepicker",
-      "@react-native-firebase/messaging",
-      "expo-image",
-      "expo-sharing"
+      "@react-native-firebase/messaging"
     ],
     "experiments": {
       "typedRoutes": true,
