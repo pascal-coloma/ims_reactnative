@@ -17,15 +17,13 @@ type PersonalContextType = {
   registrarWorker: (data: NuevoWorker) => Promise<WorkerCreado | null>;
 };
 
-// funcionamiento del retorno de los permisos adquiridos por el endpoint dentro de la clase DataPersonal.
-// Uso del serializer como
 const PersonalContext = createContext<PersonalContextType | null>(null);
 
 const PersonalProvider = ({ children }: { children: ReactNode }) => {
   const [personal, setPersonal] = useState<Personal[]>([]);
 
   const registrarWorker = useCallback(async (data: NuevoWorker): Promise<WorkerCreado | null> => {
-    const response = await fetchConSesion('/ims/api/personal/', {
+    const response = await fetchConSesion('/ims/api/personal/add/', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -36,7 +34,6 @@ const PersonalProvider = ({ children }: { children: ReactNode }) => {
     return await response.json();
   }, []);
 
-  // Revision de la autenticacion y el uso de cookies para el fetch del personal en base a sus credenciales.
   useEffect(() => {
     const fetchPersonal = async () => {
       try {

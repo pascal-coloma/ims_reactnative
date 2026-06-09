@@ -1,7 +1,11 @@
 // Copyright 2025 Pascal Coloma
 // SPDX-License-Identifier: Apache-2.0
 
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  onMessage,
+  type FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 
 export type FcmNotification = {
@@ -36,19 +40,22 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage((message: FirebaseMessagingTypes.RemoteMessage) => {
-      setNotifications((prev) => [
-        {
-          id: message.messageId ?? Date.now().toString(),
-          title: message.notification?.title ?? '',
-          body: message.notification?.body ?? '',
-          read: false,
-          receivedAt: new Date(),
-        },
-        ...prev,
-      ]);
-      setUnreadCount((prev) => prev + 1);
-    });
+    const unsubscribe = onMessage(
+      getMessaging(),
+      (message: FirebaseMessagingTypes.RemoteMessage) => {
+        setNotifications((prev) => [
+          {
+            id: message.messageId ?? Date.now().toString(),
+            title: message.notification?.title ?? '',
+            body: message.notification?.body ?? '',
+            read: false,
+            receivedAt: new Date(),
+          },
+          ...prev,
+        ]);
+        setUnreadCount((prev) => prev + 1);
+      },
+    );
     return unsubscribe;
   }, []);
 

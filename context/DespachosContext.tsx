@@ -61,7 +61,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const esControl = user?.role === 'control';
-      const endpoint = '/ims/api/despachos/getall/';
+      const endpoint = esControl ? '/ims/api/despachos/getall/' : '/ims/api/despachos/get/';
 
       const response = await fetchConSesion(endpoint);
       if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -78,7 +78,6 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
         paciente: d.paciente ?? undefined,
         rutPaciente: d.paciente?.rut ?? undefined,
         personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
-        grupoNombre: d.grupo_nombre ?? undefined,
         ambulancia: d.ambulancia_id
           ? {
               id: String(d.ambulancia_id),
@@ -130,7 +129,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       setError(null);
       try {
         const buscarResp = await fetchConSesion(
-          `/ims/api/pacientes/?rut=${encodeURIComponent(rutLimpio)}`,
+          `/ims/api/pacientes/get/?rut=${encodeURIComponent(rutLimpio)}`,
         );
 
         if (!buscarResp.ok) {
@@ -150,7 +149,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
           };
           console.log('Paso 0 - paciente no existe, creando...');
-          const crearResp = await fetchConSesion('/ims/api/pacientes/add', {
+          const crearResp = await fetchConSesion('/ims/api/pacientes/add/', {
             method: 'POST',
             body: JSON.stringify(payloadPaciente),
           });
