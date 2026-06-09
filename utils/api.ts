@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CookieManager from '@react-native-cookies/cookies';
 
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.imsambulancias.cl';
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
 
 let _onSessionExpired: (() => void) | null = null;
 
