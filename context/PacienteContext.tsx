@@ -32,9 +32,7 @@ const PacienteProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        // actualmente retornando 405, method not allowed
-        // mover clase GetPacientes hacia RegistroPacientesAPI
-        const response = await fetchConSesion('/ims/api/pacientes/get');
+        const response = await fetchConSesion('/ims/api/pacientes/get/');
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
         setPacientes(data);

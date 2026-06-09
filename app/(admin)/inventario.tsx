@@ -1,7 +1,7 @@
 import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
 import { Insumo } from '@/data/types';
-import { useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   ScrollView,
@@ -13,11 +13,94 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
+type InsumoCardProps = {
+  insumo: Insumo;
+  index: number;
+  onActualizar: (insumo: Insumo) => void;
+  onMover: (insumo: Insumo) => void;
+};
+
+const InsumoCard = memo(function InsumoCard({
+  insumo,
+  index,
+  onActualizar,
+  onMover,
+}: InsumoCardProps) {
+  return (
+    <View style={[style.card, { backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8fafc' }]}>
+      <View style={style.cardHeader}>
+        <Text style={style.nombre}>{insumo.nombre}</Text>
+      </View>
+      <View style={style.cardBody}>
+        <View style={style.campo}>
+          <Text style={style.campoLabel}>Categoría</Text>
+          <Text style={style.campoValor}>{insumo.categoria}</Text>
+        </View>
+        <View style={style.campo}>
+          <Text style={style.campoLabel}>Stock</Text>
+          <Text style={style.campoValor}>{insumo.stock} unidades</Text>
+        </View>
+        <View style={style.campo}>
+          <Text style={style.campoLabel}>Presentación</Text>
+          <Text style={style.campoValor}>
+            {insumo.cantidad} {insumo.unidadMedida}
+          </Text>
+        </View>
+        <View style={style.campo}>
+          <Text style={style.campoLabel}>
+            {/bodega/i.test(insumo.ambulanciaPatente) ? 'Ubicación' : 'Ambulancia'}
+          </Text>
+          <Text style={style.campoValor}>{insumo.ambulanciaPatente}</Text>
+        </View>
+      </View>
+      <View style={style.cardAcciones}>
+        <TouchableOpacity style={style.btnActualizar} onPress={() => onActualizar(insumo)}>
+          <Text style={style.btnActualizarText}>Actualizar Stock</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={style.btnMover} onPress={() => onMover(insumo)}>
+          <Text style={style.btnMoverText}>Mover</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={style.divisorCard} />
+    </View>
+  );
+});
+
 const Inventario = () => {
   const { insumos } = useInventario();
   const router = useRouter();
   const [ambulanciaSeleccionada, setAmbulanciaSeleccionada] = useState('');
   const [busqueda, setBusqueda] = useState('');
+
+  const handleActualizar = useCallback(
+    (insumo: Insumo) =>
+      router.push({
+        pathname: '/(admin)/actualizar-stock',
+        params: {
+          id: insumo.id,
+          nombre: insumo.nombre,
+          stock: String(insumo.stock),
+          ambulanciaId: String(insumo.ambulanciaId),
+          ambulanciaPatente: insumo.ambulanciaPatente,
+        },
+      }),
+    [router],
+  );
+
+  const handleMover = useCallback(
+    (insumo: Insumo) =>
+      router.push({
+        pathname: '/(admin)/mover-insumo',
+        params: {
+          id: insumo.id,
+          nombre: insumo.nombre,
+          stock: String(insumo.stock),
+          ambulanciaId: String(insumo.ambulanciaId),
+          ambulanciaPatente: insumo.ambulanciaPatente,
+        },
+      }),
+    [router],
+  );
   const patentes = useMemo(() => {
     const unique = Array.from(new Set(insumos.map((i) => i.ambulanciaPatente)));
     return unique.sort((a, b) => {
@@ -75,71 +158,16 @@ const Inventario = () => {
     </View>
   );
 
-  const renderInsumo = ({ item: insumo, index }: { item: Insumo; index: number }) => (
-    <View style={[style.card, { backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8fafc' }]}>
-      <View style={style.cardHeader}>
-        <Text style={style.nombre}>{insumo.nombre}</Text>
-      </View>
-      <View style={style.cardBody}>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Categoría</Text>
-          <Text style={style.campoValor}>{insumo.categoria}</Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Stock</Text>
-          <Text style={style.campoValor}>{insumo.stock} unidades</Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>Presentación</Text>
-          <Text style={style.campoValor}>
-            {insumo.cantidad} {insumo.unidadMedida}
-          </Text>
-        </View>
-        <View style={style.campo}>
-          <Text style={style.campoLabel}>
-            {/bodega/i.test(insumo.ambulanciaPatente) ? 'Ubicación' : 'Ambulancia'}
-          </Text>
-          <Text style={style.campoValor}>{insumo.ambulanciaPatente}</Text>
-        </View>
-      </View>
-      <View style={style.cardAcciones}>
-        <TouchableOpacity
-          style={style.btnActualizar}
-          onPress={() =>
-            router.push({
-              pathname: '/(admin)/actualizar-stock',
-              params: {
-                id: insumo.id,
-                nombre: insumo.nombre,
-                stock: String(insumo.stock),
-                ambulanciaId: String(insumo.ambulanciaId),
-                ambulanciaPatente: insumo.ambulanciaPatente,
-              },
-            })
-          }
-        >
-          <Text style={style.btnActualizarText}>Actualizar Stock</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={style.btnMover}
-          onPress={() =>
-            router.push({
-              pathname: '/(admin)/mover-insumo',
-              params: {
-                id: insumo.id,
-                nombre: insumo.nombre,
-                stock: String(insumo.stock),
-                ambulanciaId: String(insumo.ambulanciaId),
-                ambulanciaPatente: insumo.ambulanciaPatente,
-              },
-            })
-          }
-        >
-          <Text style={style.btnMoverText}>Mover</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={style.divisorCard} />
-    </View>
+  const renderInsumo = useCallback(
+    ({ item, index }: { item: Insumo; index: number }) => (
+      <InsumoCard
+        insumo={item}
+        index={index}
+        onActualizar={handleActualizar}
+        onMover={handleMover}
+      />
+    ),
+    [handleActualizar, handleMover],
   );
 
   return (
