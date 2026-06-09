@@ -6,8 +6,9 @@ import CookieManager from '@react-native-cookies/cookies';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { registerFcmToken, setupTokenRefresh } from '@/utils/firebaseMessaging';
+import { BASE_URL, setSessionExpiredHandler, fetchConSesion } from '@/utils/api';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.imsambulancias.cl';
+export { fetchConSesion, setSessionExpiredHandler };
 
 type Role = 'control' | 'medic' | 'nurse' | 'driver' | null;
 
@@ -34,43 +35,6 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
-
-let _onSessionExpired: (() => void) | null = null;
-
-export const setSessionExpiredHandler = (fn: () => void) => {
-  _onSessionExpired = fn;
-};
-
-export const fetchConSesion = async (url: string, options: RequestInit = {}) => {
-  const cookies = await CookieManager.get(BASE_URL);
-  const sessionid = cookies['sessionid']?.value;
-  const csrftoken = cookies['csrftoken']?.value;
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    Origin: BASE_URL,
-    ...(sessionid ? { Cookie: `sessionid=${sessionid}; csrftoken=${csrftoken ?? ''}` } : {}),
-    ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
-    ...(options.headers as Record<string, string>),
-  };
-
-  const response = await fetch(`${BASE_URL}${url}`, {
-    ...options,
-    credentials: 'include',
-    headers,
-  });
-
-  const setCookie = response.headers.get('set-cookie');
-  if (setCookie) await CookieManager.setFromResponse(BASE_URL, setCookie);
-
-  if (response.status === 401) {
-    await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
-    await CookieManager.clearAll();
-    _onSessionExpired?.();
-  }
-
-  return response;
-};
 
 const fetchCsrfToken = async (): Promise<string> => {
   const getResp = await fetch(`${BASE_URL}/ims/api/login/`, {
