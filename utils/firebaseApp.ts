@@ -1,7 +1,7 @@
-import { initializeApp, getApps } from '@react-native-firebase/app';
+import { getApps, initializeApp } from '@react-native-firebase/app';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBEHhWjps4107qv3_903pkunGazofp0lO8',
+  apiKey: process.env.FIREBASE_API_KEY,
   projectId: 'ims-ambulancias',
   storageBucket: 'ims-ambulancias.firebasestorage.app',
   messagingSenderId: '562177550205',
