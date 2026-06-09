@@ -1,3 +1,4 @@
+import '@/utils/firebaseApp';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { Stack } from 'expo-router';
@@ -5,7 +6,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -13,7 +14,7 @@ function RootContent() {
   const { loading } = useAuth();
 
   useEffect(() => {
-    messaging().setBackgroundMessageHandler(async () => {});
+    setBackgroundMessageHandler(getMessaging(), async () => {});
   }, []);
 
   if (loading) {
