@@ -1,7 +1,7 @@
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -33,19 +33,28 @@ const ListaDespachos = () => {
     }, []),
   );
 
-  const refrescarSwipe = async () => {
+  const refrescarSwipe = useCallback(async () => {
     setRefreshing(true);
     await recargar();
     setRefreshing(false);
-  };
+  }, [recargar]);
 
-  const despachosFiltrados = despachos
-    .filter((d) => filtroActivo === 'todos' || d.estado === filtroActivo)
-    .filter((d) => {
-      if (!busqueda.trim()) return true;
-      const q = busqueda.toLowerCase();
-      return d.rutPaciente?.toLowerCase().includes(q) || d.id.toLowerCase().includes(q);
-    });
+  const despachosFiltrados = useMemo(
+    () =>
+      despachos
+        .filter((d) => filtroActivo === 'todos' || d.estado === filtroActivo)
+        .filter((d) => {
+          if (!busqueda.trim()) return true;
+          const q = busqueda.toLowerCase();
+          return d.rutPaciente?.toLowerCase().includes(q) || d.id.toLowerCase().includes(q);
+        }),
+    [despachos, filtroActivo, busqueda],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: (typeof despachosFiltrados)[0] }) => <DetalleDespacho despacho={item} />,
+    [],
+  );
 
   return (
     <>
@@ -77,7 +86,7 @@ const ListaDespachos = () => {
         }
         data={despachosFiltrados}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <DetalleDespacho despacho={item} />}
+        renderItem={renderItem}
         ListEmptyComponent={
           <View style={styles.container}>
             <Text style={styles.subtitle}>Sin despachos</Text>
