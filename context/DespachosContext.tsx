@@ -14,6 +14,7 @@ import {
 import { FormCompleta } from '@/data/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAmbulancias } from './AmbulanciaContext';
+import { useNotifications } from './NotificationContext';
 
 type DespachosContextType = {
   despachos: Despacho[];
@@ -46,10 +47,22 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const recargar = useCallback(() => setRefreshKey((prev) => prev + 1), []);
+  const { lastMessageId } = useNotifications();
+  const primerMensajeRef = useRef(true);
 
   useEffect(() => {
     if (user) fetchDespachos();
   }, [refreshKey]);
+
+  // Refresca al recibir un push (ej. emergencia, asignación, finalizado).
+  // Se ignora el valor inicial para no duplicar el fetch del efecto anterior.
+  useEffect(() => {
+    if (primerMensajeRef.current) {
+      primerMensajeRef.current = false;
+      return;
+    }
+    if (user && lastMessageId) fetchDespachos();
+  }, [lastMessageId]);
 
   const fetchDespachos = useCallback(async () => {
     if (OFFLINE_MODE) {
