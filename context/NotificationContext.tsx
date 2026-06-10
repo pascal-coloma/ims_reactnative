@@ -22,6 +22,7 @@ type NotificationContextType = {
   unreadCount: number;
   dismissNotification: (id: string) => void;
   markAllRead: () => void;
+  lastMessageId: string | null;
 };
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
@@ -29,6 +30,7 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<FcmNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [lastMessageId, setLastMessageId] = useState<string | null>(null);
 
   const dismissNotification = useCallback(
     (id: string) => setNotifications((prev) => prev.filter((n) => n.id !== id)),
@@ -44,9 +46,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onMessage(
       getMessaging(),
       (message: FirebaseMessagingTypes.RemoteMessage) => {
+        const id = message.messageId ?? Date.now().toString();
         setNotifications((prev) => [
           {
-            id: message.messageId ?? Date.now().toString(),
+            id,
             title: message.notification?.title ?? '',
             body: message.notification?.body ?? '',
             read: false,
@@ -55,6 +58,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           ...prev,
         ]);
         setUnreadCount((prev) => prev + 1);
+        setLastMessageId(id);
         Alert.alert(message.notification?.title ?? '', message.notification?.body ?? '');
       },
     );
@@ -63,7 +67,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   return (
     <NotificationContext.Provider
-      value={{ notifications, unreadCount, dismissNotification, markAllRead }}
+      value={{ notifications, unreadCount, dismissNotification, markAllRead, lastMessageId }}
     >
       {children}
     </NotificationContext.Provider>
