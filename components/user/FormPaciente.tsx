@@ -34,19 +34,31 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
 
   // La dirección de destino siempre proviene del despacho activo y no es editable.
   useEffect(() => {
-    setValue('direccionDestino', despachoActivo?.direccionDestino ?? '');
-  }, [despachoActivo?.direccionDestino, setValue]);
-
-  // Si el despacho activo ya tiene un paciente asociado, sus datos completan
-  // el formulario (campos deshabilitados) directamente desde el despacho.
-  useEffect(() => {
-    if (!paciente) return;
-    const [primerNombre, apellidoPaterno] = paciente.nombre_completo.split(' ');
-    setValue('primerNombre', primerNombre ?? '');
-    setValue('apellidoPaterno', apellidoPaterno ?? '');
-    setValue('rut', paciente.rut);
-    setValue('direccionOrigen', despachoActivo?.direccionOrigen ?? '');
-  }, [paciente?.rut, paciente?.nombre_completo, despachoActivo?.direccionOrigen, setValue]);
+    const buscar = async () => {
+      if (!paciente?.rut) return;
+      try {
+        const resp = await fetchConSesion(
+          `/ims/api/pacientes/get/?rut=${encodeURIComponent(paciente.rut)}`,
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          setPacienteDetalle(data);
+          // ← sincroniza con el form
+          setValue('rut', data.rut);
+          setValue('primerNombre', data.nombre_completo?.split(' ')[0] ?? '');
+          setValue('apellidoPaterno', data.nombre_completo?.split(' ')[1] ?? '');
+          setValue('fechaNacimiento', data.fecha_nacimiento ?? '');
+          setValue('telefono', data.telefono ?? '');
+          setValue('condicionPaciente', data.condicion_paciente ?? '');
+          setValue('direccionOrigen', despachoActivo?.direccionOrigen ?? '');
+          setValue('direccionDestino', despachoActivo?.direccionDestino ?? '');
+        }
+      } catch (e) {
+        console.error('Error buscando paciente:', e);
+      }
+    };
+    buscar();
+  }, [paciente?.rut]);
 
   return (
     <View style={style.formulario}>
