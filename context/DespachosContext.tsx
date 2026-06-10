@@ -186,6 +186,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             amb_id: Number(data.unidad),
             despacho_id: despachoData.despacho.id,
             grupo_id: Number(data.grupoAsignado),
+            is_emergency: data.isEmergency ?? false,
           }),
         });
         if (!asignarResp.ok) {

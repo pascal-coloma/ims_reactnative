@@ -1,8 +1,9 @@
 import { Controller, Control, FieldErrors, useFieldArray } from 'react-hook-form';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormUsuario } from '@/data/types';
 import { useInventario } from '@/context/InventoryContext';
+import { useDespachos } from '@/context/DespachosContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import styles from '@/styles/globalStyles';
 
@@ -11,13 +12,58 @@ type InsumosProps = {
   errors: FieldErrors<FormUsuario>;
 };
 
+type DosisInputProps = {
+  value: number;
+  onChange: (value: number) => void;
+  hasError?: boolean;
+};
+
+const DosisInput = ({ value, onChange, hasError }: DosisInputProps) => {
+  const [texto, setTexto] = useState(String(value));
+
+  useEffect(() => {
+    setTexto(String(value));
+  }, [value]);
+
+  const handleChangeText = (text: string) => {
+    const limpio = text.replace(/[^0-9]/g, '');
+    setTexto(limpio);
+    if (limpio !== '') onChange(Number(limpio));
+  };
+
+  const handleBlur = () => {
+    if (texto === '' || Number(texto) < 1) {
+      setTexto('1');
+      onChange(1);
+    }
+  };
+
+  return (
+    <View>
+      <TextInput
+        style={[local.cantidadInput, hasError && local.cantidadInputError]}
+        keyboardType="numeric"
+        value={texto}
+        onChangeText={handleChangeText}
+        onBlur={handleBlur}
+      />
+      {hasError && <Text style={local.errorText}>≥ 1</Text>}
+    </View>
+  );
+};
+
 const InsumosForm = ({ control, errors }: InsumosProps) => {
   const [busqueda, setBusqueda] = useState('');
   const { insumos, recargar, loading } = useInventario();
+  const { despachoActivo } = useDespachos();
   const { fields, append, remove } = useFieldArray({ control, name: 'insumosUtilizados' });
 
+  // Insumos solo de la ambulancia asignada al despacho activo
+  const ambulanciaId = despachoActivo?.ambulancia?.id ? Number(despachoActivo.ambulancia.id) : null;
+  const insumosAmbulancia = insumos.filter((i) => i.ambulanciaId === ambulanciaId);
+
   const insumosFiltrados = busqueda.trim()
-    ? insumos.filter((i) => i.nombre.toLowerCase().includes(busqueda.toLowerCase()))
+    ? insumosAmbulancia.filter((i) => i.nombre.toLowerCase().includes(busqueda.toLowerCase()))
     : [];
 
   const agregarInsumo = (insumo: (typeof insumos)[0]) => {
@@ -52,9 +98,9 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
           {insumosFiltrados.length === 0 ? (
             <Text style={local.sinResultados}>Sin resultados para `&quot;`{busqueda}`&ldquo`</Text>
           ) : (
-            insumosFiltrados.map((insumo) => (
+            insumosFiltrados.map((insumo, i) => (
               <TouchableOpacity
-                key={insumo.id}
+                key={i}
                 style={local.resultadoItem}
                 onPress={() => agregarInsumo(insumo)}
               >
@@ -79,37 +125,46 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
       {fields.length > 0 && (
         <View style={local.seleccionados}>
           {fields.map((field, index) => {
-            const insumo = insumos.find((i) => i.id === field.insumoId);
+            const insumo = insumosAmbulancia.find((i) => i.id === field.insumoId);
             return (
-              <View key={field.id} style={local.insumoRow}>
-                <View style={local.insumoTextos}>
-                  <Text style={local.insumoNombre}>{insumo?.nombre}</Text>
-                  <Text style={local.insumoDetalle}>{insumo?.unidadMedida}</Text>
+              <View key={field.id} style={local.insumoItem}>
+                <View style={local.insumoRow}>
+                  <View style={local.insumoTextos}>
+                    <Text style={local.insumoNombre}>{insumo?.nombre}</Text>
+                    <Text style={local.insumoDetalle}>
+                      {insumo?.cantidad} {insumo?.unidadMedida}
+                    </Text>
+                  </View>
+                  <Controller
+                    control={control}
+                    name={`insumosUtilizados.${index}.dosis`}
+                    rules={{ required: true, min: 1 }}
+                    render={({ field: { onChange, value } }) => (
+                      <DosisInput
+                        value={value}
+                        onChange={onChange}
+                        hasError={!!errors.insumosUtilizados?.[index]?.dosis}
+                      />
+                    )}
+                  />
+                  <TouchableOpacity onPress={() => remove(index)} style={local.removeBtn}>
+                    <MaterialIcons name="close" size={20} color="#E53935" />
+                  </TouchableOpacity>
                 </View>
                 <Controller
                   control={control}
-                  name={`insumosUtilizados.${index}.dosis`}
-                  rules={{ required: true, min: 1 }}
-                  render={({ field: { onChange, value } }) => (
-                    <View>
-                      <TextInput
-                        style={[
-                          local.cantidadInput,
-                          errors.insumosUtilizados?.[index]?.dosis && local.cantidadInputError,
-                        ]}
-                        keyboardType="numeric"
-                        value={String(value)}
-                        onChangeText={(text) => onChange(Number(text) || 1)}
-                      />
-                      {errors.insumosUtilizados?.[index]?.dosis && (
-                        <Text style={local.errorText}>≥ 1</Text>
-                      )}
-                    </View>
+                  name={`insumosUtilizados.${index}.observaciones`}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      style={local.observacionesInput}
+                      placeholder="Observaciones (opcional)"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      maxLength={255}
+                    />
                   )}
                 />
-                <TouchableOpacity onPress={() => remove(index)} style={local.removeBtn}>
-                  <MaterialIcons name="close" size={20} color="#E53935" />
-                </TouchableOpacity>
               </View>
             );
           })}
@@ -166,15 +221,28 @@ const local = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
   },
+  insumoItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    width: '100%',
+  },
   insumoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
     width: '100%',
     gap: 8,
+  },
+  observacionesInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginHorizontal: 12,
+    marginBottom: 10,
+    fontSize: 13,
   },
   insumoTextos: { flex: 1 },
   insumoNombre: { fontSize: 14, fontWeight: '500', color: '#111' },
