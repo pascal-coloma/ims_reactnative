@@ -153,7 +153,6 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
         const s3Url = data.success;
-        console.log('S3 URL:', s3Url);
 
         const s3Resp = await fetch(s3Url);
         if (!s3Resp.ok) {
