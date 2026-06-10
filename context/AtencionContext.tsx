@@ -96,6 +96,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         insumos_utilizados: atencion.insumosUtilizados.map((i) => ({
           presentacion_id: Number(i.insumoId),
           cantidad_usada: i.dosis,
+          observaciones: i.observaciones ?? '',
         })),
         rut_receptor: atencion.rutReceptor,
       };
@@ -182,7 +183,15 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
       if (!response.ok) throw new Error(`Error ${response.status}`);
-      return await response.json();
+      const data = await response.json();
+      const s3Url = data.success;
+
+      const s3Resp = await fetch(s3Url);
+      if (!s3Resp.ok) {
+        const body = await s3Resp.text().catch(() => '');
+        throw new Error(`Error descargando documento de S3 (${s3Resp.status}): ${body}`);
+      }
+      return await s3Resp.json();
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
       return null;
