@@ -16,7 +16,7 @@ type AtencionResumen = {
 type AtencionContextType = {
   atenciones: Atencion[];
   resumenAtenciones: AtencionResumen[];
-  agregarAtencion: (atencion: Atencion, ambulanciaId: string) => Promise<void>;
+  agregarAtencion: (atencion: Atencion, ambulanciaId: string) => Promise<any>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;
   fetchAtencionDetalleLocal: (id: number) => Promise<any>;
@@ -43,7 +43,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
   const agregarAtencion = useCallback(async (atencion: Atencion, ambulanciaId: string) => {
     if (OFFLINE_MODE) {
       setAtenciones((prev) => [...prev, atencion]);
-      return;
+      return null;
     }
     setLoading(true);
     setError(null);
@@ -113,6 +113,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       console.log('Paso 1 - atención registrada:', result);
 
       setAtenciones((prev) => [...prev, atencion]);
+      return result;
     } catch (e: any) {
       setError(e.message ?? 'Error desconocido');
       throw e;
@@ -154,7 +155,10 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         console.log('S3 URL:', s3Url);
 
         const s3Resp = await fetch(s3Url);
-        if (!s3Resp.ok) throw new Error('Error descargando documento de S3');
+        if (!s3Resp.ok) {
+          const body = await s3Resp.text().catch(() => '');
+          throw new Error(`Error descargando documento de S3 (${s3Resp.status}): ${body}`);
+        }
         const documento = await s3Resp.json();
         console.log('Documento S3:', JSON.stringify(documento, null, 2));
 
@@ -166,6 +170,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
 
         return documento;
       } catch (e: any) {
+        console.error('Error en fetchAtencionDetalle:', e);
         setError(e.message ?? 'Error desconocido');
         return null;
       }
