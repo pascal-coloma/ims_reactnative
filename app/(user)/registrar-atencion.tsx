@@ -74,7 +74,6 @@ const RegistrarAtencion = () => {
         } = data;
         await agregarAtencion(
           {
-            id: crypto.randomUUID(),
             despachoId: despachoActivo.id,
             fechaRegistro: new Date().toISOString(),
             paciente: camposPaciente,
