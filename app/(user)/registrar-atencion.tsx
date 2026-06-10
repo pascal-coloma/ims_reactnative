@@ -86,7 +86,7 @@ const RegistrarAtencion = () => {
           },
           despachoActivo.ambulancia?.id ?? '',
         );
-        setFirmado(result?.estado_sello === 'Firmado');
+        setFirmado(result?.success === 'Succeeded');
         reset();
         setExito(true);
       } catch (e: any) {

@@ -121,7 +121,10 @@ const Inventario = () => {
     const porAmbulancia = insumos.filter((i) => i.ambulanciaPatente === seleccion);
     if (!busqueda.trim()) return porAmbulancia;
     const termino = busqueda.trim().toLowerCase();
-    return porAmbulancia.filter((i) => i.nombre.toLowerCase().includes(termino));
+    return porAmbulancia.filter(
+      (i) =>
+        i.nombre.toLowerCase().includes(termino) || i.categoria.toLowerCase().includes(termino),
+    );
   }, [insumos, seleccion, busqueda]);
 
   const chipSelector = (
@@ -149,7 +152,7 @@ const Inventario = () => {
       </ScrollView>
       <TextInput
         style={style.buscador}
-        placeholder="Buscar insumo..."
+        placeholder="Buscar insumo o categoría..."
         placeholderTextColor="#aaa"
         value={busqueda}
         onChangeText={setBusqueda}
