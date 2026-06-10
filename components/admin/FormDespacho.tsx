@@ -5,7 +5,7 @@ import styles from '@/styles/globalStyles';
 import { Picker } from '@react-native-picker/picker';
 import { useEffect, useState } from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 type FormDespachoProps = {
   control: Control<FormCompleta>;
@@ -134,6 +134,16 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
         )}
       />
       {errors.grupoAsignado && <Text style={style.campoRequerido}>Campo requerido</Text>}
+      <Controller
+        control={control}
+        name="isEmergency"
+        render={({ field: { onChange, value } }) => (
+          <View style={style.switchRow}>
+            <Text style={style.label}>Emergencia</Text>
+            <Switch value={value ?? false} onValueChange={onChange} />
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -168,6 +178,12 @@ const style = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 5,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
 });
 
