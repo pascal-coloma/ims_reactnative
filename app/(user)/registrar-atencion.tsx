@@ -32,6 +32,7 @@ const RegistrarAtencion = () => {
   const { despachoActivo } = useDespachos();
   const { recargar: recargarInventario, loading: loadingInventario } = useInventario();
   const [exito, setExito] = useState(false);
+  const [firmado, setFirmado] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const refrescarSwipe = () => {
@@ -72,7 +73,7 @@ const RegistrarAtencion = () => {
           rutReceptor,
           ...camposPaciente
         } = data;
-        await agregarAtencion(
+        const result = await agregarAtencion(
           {
             despachoId: despachoActivo.id,
             fechaRegistro: new Date().toISOString(),
@@ -85,6 +86,7 @@ const RegistrarAtencion = () => {
           },
           despachoActivo.ambulancia?.id ?? '',
         );
+        setFirmado(result?.estado_sello === 'Firmado');
         reset();
         setExito(true);
       } catch (e: any) {
@@ -182,7 +184,9 @@ const RegistrarAtencion = () => {
             />
             <Text style={local.modalTitulo}>¡Atención registrada!</Text>
             <Text style={local.modalSubtitulo}>
-              La atención fue registrada y firmada exitosamente.
+              {firmado
+                ? 'La atención fue registrada y firmada exitosamente.'
+                : 'La atención fue registrada. La firma del documento está pendiente.'}
             </Text>
             <TouchableOpacity
               style={[styles.button, { marginTop: 24, width: '100%' }]}

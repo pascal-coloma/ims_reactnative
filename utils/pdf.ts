@@ -37,9 +37,20 @@ type Cronologia = {
 };
 
 type InsumoUtilizado = {
-  insumo__nombre_insumo: string;
-  cantidad: number;
+  insumo__insumo__nombre_insumo: string;
+  cantidad_usada: number;
   observaciones: string;
+};
+
+type Paciente = {
+  nombre_completo: string;
+  rut: string;
+};
+
+type RegistradoPor = {
+  nombre_completo: string;
+  rut: string;
+  rol: string;
 };
 
 type DocumentoAtencion = {
@@ -52,6 +63,9 @@ type DocumentoAtencion = {
     sello_electronico: string;
     estado_sello: string;
   };
+  paciente: Paciente;
+  registrado_por: RegistradoPor;
+  recibido_por: string;
   signos_vitales: SignosVitales[];
   preinforme: PreInforme;
   cronologia: Cronologia;
@@ -61,7 +75,17 @@ type DocumentoAtencion = {
 };
 
 export const generatePDF = async (data: DocumentoAtencion) => {
-  const { atencion, signos_vitales, preinforme, cronologia, insumos_utilizados, Hash } = data;
+  const {
+    atencion,
+    paciente,
+    registrado_por,
+    recibido_por,
+    signos_vitales,
+    preinforme,
+    cronologia,
+    insumos_utilizados,
+    Hash,
+  } = data;
 
   const signosRows = signos_vitales
     .map(
@@ -88,9 +112,9 @@ export const generatePDF = async (data: DocumentoAtencion) => {
     .map(
       (i) => `
     <tr>
-      <td>${i.insumo__nombre_insumo}</td>
+      <td>${i.insumo__insumo__nombre_insumo}</td>
       <td>—</td>
-      <td>${i.cantidad}</td>
+      <td>${i.cantidad_usada}</td>
       <td>${i.observaciones ?? '—'}</td>
     </tr>
   `,
@@ -320,6 +344,21 @@ export const generatePDF = async (data: DocumentoAtencion) => {
         </div>
       </div>
 
+      <!-- PACIENTE -->
+      <div class="section">
+        <div class="section-title">Datos del Paciente</div>
+        <div class="section-body">
+          <div class="field-row">
+            <span class="field-label">Nombre</span>
+            <span class="field-value">${paciente?.nombre_completo ?? '—'}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">RUT</span>
+            <span class="field-value">${paciente?.rut ?? '—'}</span>
+          </div>
+        </div>
+      </div>
+
       <!-- MAIN GRID -->
       <div class="main-grid">
 
@@ -344,6 +383,10 @@ export const generatePDF = async (data: DocumentoAtencion) => {
               <div class="field-row">
                 <span class="field-label">Ambulancia N°</span>
                 <span class="field-value">${atencion.ambulancia}</span>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Registrado por</span>
+                <span class="field-value">${registrado_por?.nombre_completo ?? '—'} (${registrado_por?.rut ?? '—'}) — ${registrado_por?.rol ?? '—'}</span>
               </div>
             </div>
           </div>
@@ -468,7 +511,8 @@ export const generatePDF = async (data: DocumentoAtencion) => {
       <div class="firma-row">
         <div class="firma-box">
           <div class="firma-label">Médico Receptor</div>
-          <div style="min-height: 30px;"></div>
+          <div style="font-size:10px; margin-bottom: 4px;">RUT: ${recibido_por || '—'}</div>
+          <div style="min-height: 18px;"></div>
           <div class="firma-line">Nombre y firma</div>
         </div>
         <div class="firma-box">
