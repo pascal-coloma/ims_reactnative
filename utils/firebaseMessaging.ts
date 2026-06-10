@@ -34,7 +34,10 @@ async function postToken(token: string): Promise<void> {
 
 export async function registerFcmToken(): Promise<void> {
   const granted = await requestFcmPermission();
-  if (!granted) return;
+  if (!granted) {
+    console.warn('FCM token registration skipped: notification permission denied');
+    return;
+  }
 
   const token = await getToken(getMessaging());
   console.log(token);
