@@ -41,6 +41,7 @@ export type FormCompleta = {
   descripcionLlamado: string;
   grupoAsignado: string;
   unidad: string;
+  isEmergency?: boolean;
 };
 
 export type FormUsuario = CamposPaciente & {
@@ -97,7 +98,6 @@ export type Cronologia = {
 };
 
 export type Atencion = {
-  id: string;
   despachoId: string;
   fechaRegistro: string;
   paciente: CamposPaciente;

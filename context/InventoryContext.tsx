@@ -41,12 +41,43 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!authLoading && user) fetchInsumos();
-  }, [authLoading, refreshKey]);
+  }, [authLoading, refreshKey, user?.role]);
 
   const fetchInsumos = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      // El driver no tiene permiso de lectura de inventario en el backend.
+      if (user?.role === 'driver') {
+        setInsumos([]);
+        return;
+      }
+
+      // /ims/api/inv/ es exclusivo de control; medic/nurse usan /ims/api/ambulancias/
+      if (user?.role !== 'control') {
+        const ambResp = await fetchConSesion('/ims/api/ambulancias/');
+        if (!ambResp.ok) throw new Error(`Error ${ambResp.status}`);
+        const ambData = await ambResp.json();
+
+        setInsumos(
+          ambData.flatMap((ambulancia: any) =>
+            (ambulancia.stock ?? []).map(
+              (item: any): Insumo => ({
+                id: String(item.presentacion_id),
+                nombre: item.insumo_nombre,
+                categoria: item.categoria,
+                cantidad: item.insumo_cantidad,
+                unidadMedida: item.unidad_medida,
+                ambulanciaPatente: ambulancia.patente,
+                ambulanciaId: ambulancia.ambulancia_id,
+                stock: item.stock,
+              }),
+            ),
+          ),
+        );
+        return;
+      }
+
       const [invResp, ambResp] = await Promise.all([
         fetchConSesion('/ims/api/inv/'),
         fetchConSesion('/ims/api/ambulancias/'),
@@ -82,7 +113,7 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [authLoading, refreshKey]);
+  }, [authLoading, refreshKey, user?.role]);
 
   const recargar = useCallback(() => setRefreshKey((k) => k + 1), []);
 

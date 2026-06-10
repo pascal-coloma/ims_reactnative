@@ -6,6 +6,7 @@ import {
   onMessage,
   type FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 
 export type FcmNotification = {
@@ -54,6 +55,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           ...prev,
         ]);
         setUnreadCount((prev) => prev + 1);
+        Alert.alert(message.notification?.title ?? '', message.notification?.body ?? '');
       },
     );
     return unsubscribe;

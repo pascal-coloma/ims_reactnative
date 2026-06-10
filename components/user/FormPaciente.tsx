@@ -3,8 +3,7 @@ import { Control, Controller, FieldErrors, useFormContext } from 'react-hook-for
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormUsuario } from '@/data/types';
 import { useDespachos } from '@/context/DespachosContext';
-import { useEffect, useState } from 'react';
-import { fetchConSesion } from '@/context/AuthContext';
+import { useEffect } from 'react';
 import { formatearRut } from '@/utils/format';
 
 type FormPacienteProps = {
@@ -32,8 +31,8 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
   const { despachoActivo } = useDespachos();
   const paciente = despachoActivo?.paciente ?? null;
   const { setValue } = useFormContext<FormUsuario>();
-  const [pacienteDetalle, setPacienteDetalle] = useState<any>(null);
 
+  // La dirección de destino siempre proviene del despacho activo y no es editable.
   useEffect(() => {
     const buscar = async () => {
       if (!paciente?.rut) return;
@@ -81,7 +80,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               placeholder="Ingrese primer nombre"
               onBlur={onBlur}
               onChangeText={onChange}
-              value={paciente?.nombre_completo?.split(' ')[0] ?? value}
+              value={value}
               style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
               editable={!paciente}
             />
@@ -99,7 +98,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               placeholder="Ingrese apellido paterno"
               onBlur={onBlur}
               onChangeText={onChange}
-              value={paciente?.nombre_completo?.split(' ')[1] ?? value}
+              value={value}
               style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
               editable={!paciente}
             />
@@ -122,7 +121,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                   placeholder="12.345.678-9"
                   onBlur={onBlur}
                   onChangeText={(text) => onChange(formatearRut(text))}
-                  value={paciente?.rut ?? value}
+                  value={value}
                   style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
                   editable={!paciente}
                   keyboardType="default"
@@ -137,12 +136,12 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
             <Controller
               control={control}
               name="fechaNacimiento"
-              rules={{ required: true }}
+              rules={{ required: !paciente }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   placeholder="AAAA-MM-DD"
                   onChangeText={onChange}
-                  value={pacienteDetalle?.fecha_nacimiento ?? value}
+                  value={value}
                   style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
                   editable={!paciente}
                   keyboardType="numeric"
@@ -162,7 +161,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               placeholder="Teléfono de contacto"
               onBlur={onBlur}
               onChangeText={onChange}
-              value={pacienteDetalle?.telefono ?? value}
+              value={value}
               style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
               editable={!paciente}
               keyboardType="numeric"
@@ -180,7 +179,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               placeholder="Describe la condición del paciente"
               onBlur={onBlur}
               onChangeText={onChange}
-              value={pacienteDetalle?.condicion_paciente ?? value}
+              value={value}
               style={[
                 style.input,
                 { height: 80, textAlignVertical: 'top' },
@@ -206,7 +205,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               placeholder="Ingrese dirección de origen"
               onBlur={onBlur}
               onChangeText={onChange}
-              value={pacienteDetalle?.direccion ?? value}
+              value={value}
               style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
               editable={!paciente}
             />
@@ -227,7 +226,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               placeholder="Ingrese dirección de destino"
               onBlur={onBlur}
               onChangeText={onChange}
-              value={despachoActivo?.direccionDestino ?? value}
+              value={value}
               style={[style.input, { backgroundColor: '#F7F7F7' }]}
               editable={false}
             />
