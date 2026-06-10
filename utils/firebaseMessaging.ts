@@ -26,10 +26,13 @@ async function requestFcmPermission(): Promise<boolean> {
 }
 
 async function postToken(token: string): Promise<void> {
-  await fetchConSesion('/ims/api/token/post/', {
+  const res = await fetchConSesion('/ims/api/token/post/', {
     method: 'POST',
     body: JSON.stringify({ token }),
   });
+  if (!res.ok) {
+    throw new Error(`token/post/ -> ${res.status}`);
+  }
   await AsyncStorage.setItem(FCM_TOKEN_KEY, token);
 }
 
@@ -46,7 +49,7 @@ export async function registerFcmToken(): Promise<void> {
 }
 
 export function setupTokenRefresh(): () => void {
-  return onTokenRefresh(getMessaging(), async (token) => {
-    await postToken(token);
+  return onTokenRefresh(getMessaging(), (token) => {
+    postToken(token).catch((e) => console.warn('FCM token refresh failed:', e));
   });
 }
