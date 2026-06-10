@@ -10,8 +10,20 @@ jest.mock('@/context/AuthContext', () => ({
   fetchConSesion: jest.fn(),
 }));
 
+jest.mock('@/context/NotificationContext', () => ({
+  useNotifications: jest.fn(() => ({
+    notifications: [],
+    unreadCount: 0,
+    dismissNotification: jest.fn(),
+    markAllRead: jest.fn(),
+    lastMessageId: null,
+  })),
+}));
+
 import { fetchConSesion } from '@/context/AuthContext';
+import { useNotifications } from '@/context/NotificationContext';
 const mockFetchConSesion = fetchConSesion as jest.Mock;
+const mockUseNotifications = useNotifications as jest.Mock;
 
 const despachoActivo: Despacho = {
   id: 'D1',
@@ -43,6 +55,13 @@ beforeEach(() => {
     ok: true,
     json: jest.fn().mockResolvedValue(despachosApiResponse),
   });
+  mockUseNotifications.mockReturnValue({
+    notifications: [],
+    unreadCount: 0,
+    dismissNotification: jest.fn(),
+    markAllRead: jest.fn(),
+    lastMessageId: null,
+  });
 });
 
 describe('DespachosContext', () => {
@@ -60,6 +79,42 @@ describe('DespachosContext', () => {
       await act(async () => {});
       expect(result.current.despachos).toEqual([]);
       expect(result.current.error).not.toBeNull();
+    });
+
+    it('refetches when a new push notification arrives', async () => {
+      const { rerender } = renderHook(() => useDespachos(), { wrapper });
+      await act(async () => {});
+      expect(mockFetchConSesion).toHaveBeenCalledTimes(1);
+
+      mockUseNotifications.mockReturnValue({
+        notifications: [],
+        unreadCount: 0,
+        dismissNotification: jest.fn(),
+        markAllRead: jest.fn(),
+        lastMessageId: 'msg-1',
+      });
+      rerender({});
+      await act(async () => {});
+
+      expect(mockFetchConSesion).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not refetch again for the same notification', async () => {
+      mockUseNotifications.mockReturnValue({
+        notifications: [],
+        unreadCount: 0,
+        dismissNotification: jest.fn(),
+        markAllRead: jest.fn(),
+        lastMessageId: 'msg-1',
+      });
+      const { rerender } = renderHook(() => useDespachos(), { wrapper });
+      await act(async () => {});
+      expect(mockFetchConSesion).toHaveBeenCalledTimes(1);
+
+      rerender({});
+      await act(async () => {});
+
+      expect(mockFetchConSesion).toHaveBeenCalledTimes(1);
     });
   });
 
