@@ -81,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         setUser(JSON.parse(saved));
+        registerFcmToken().catch((e) => console.warn('FCM token registration failed:', e));
       } catch (e) {
         console.error('Error restaurando sesión:', e);
       } finally {
