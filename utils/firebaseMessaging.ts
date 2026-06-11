@@ -5,11 +5,8 @@ import {
   requestPermission,
   AuthorizationStatus,
 } from '@react-native-firebase/messaging';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { fetchConSesion } from '@/utils/api';
-
-const FCM_TOKEN_KEY = 'fcm_token';
 
 async function requestFcmPermission(): Promise<boolean> {
   if (Platform.OS === 'android') {
@@ -30,7 +27,6 @@ async function postToken(token: string): Promise<void> {
     method: 'POST',
     body: JSON.stringify({ token }),
   });
-  await AsyncStorage.setItem(FCM_TOKEN_KEY, token);
 }
 
 export async function registerFcmToken(): Promise<void> {
@@ -39,9 +35,6 @@ export async function registerFcmToken(): Promise<void> {
 
   const token = await getToken(getMessaging());
   console.log(token);
-  const cached = await AsyncStorage.getItem(FCM_TOKEN_KEY);
-  if (cached === token) return;
-
   await postToken(token);
 }
 
