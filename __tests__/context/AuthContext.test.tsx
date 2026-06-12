@@ -19,6 +19,11 @@ jest.mock('@preeternal/react-native-cookie-manager', () => ({
   },
 }));
 
+jest.mock('@/utils/firebaseMessaging', () => ({
+  registerFcmToken: jest.fn().mockResolvedValue(undefined),
+  setupTokenRefresh: jest.fn(() => () => {}),
+}));
+
 const mockGet = CookieManager.get as jest.Mock;
 const mockSet = CookieManager.set as jest.Mock;
 const mockSetFromResponse = CookieManager.setFromResponse as jest.Mock;
@@ -54,14 +59,14 @@ describe('fetchConSesion', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      url: 'https://956.duckdns.org/ims/api/test/',
+      url: 'https://api.imsambulancias.cl/ims/api/test/',
       headers: { get: () => null },
     });
 
     await fetchConSesion('/ims/api/test/');
 
     const [url, options] = mockFetch.mock.calls[0];
-    expect(url).toBe('https://956.duckdns.org/ims/api/test/');
+    expect(url).toBe('https://api.imsambulancias.cl/ims/api/test/');
     expect(options.headers['Cookie']).toContain('sessionid=test-session-id');
     expect(options.headers['X-CSRFToken']).toBe('test-csrf-token');
   });
@@ -71,7 +76,7 @@ describe('fetchConSesion', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      url: 'https://956.duckdns.org/ims/api/test/',
+      url: 'https://api.imsambulancias.cl/ims/api/test/',
       headers: { get: () => null },
     });
 
@@ -86,7 +91,7 @@ describe('fetchConSesion', () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 401,
-      url: 'https://956.duckdns.org/ims/api/test/',
+      url: 'https://api.imsambulancias.cl/ims/api/test/',
       headers: { get: () => null },
     });
 
@@ -105,14 +110,14 @@ describe('fetchConSesion', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      url: 'https://956.duckdns.org/ims/api/test/',
+      url: 'https://api.imsambulancias.cl/ims/api/test/',
       headers: { get: (h: string) => (h === 'set-cookie' ? 'sessionid=abc; Path=/' : null) },
     });
 
     await fetchConSesion('/ims/api/test/');
 
     expect(mockSetFromResponse).toHaveBeenCalledWith(
-      'https://956.duckdns.org',
+      'https://api.imsambulancias.cl',
       'sessionid=abc; Path=/',
     );
   });
@@ -126,6 +131,74 @@ describe('useAuth — login', () => {
   };
 
   const mockLoginPostResponse = (ok: boolean) => ({
+    ok,
+    status: ok ? 200 : 401,
+    json: jest.fn().mockResolvedValue({}),
+    headers: {
+      get: (h: string) => (h === 'set-cookie' ? 'csrftoken=csrf-abc; Path=/' : null),
+    },
+  });
+
+  it('returns true when credentials are accepted', async () => {
+    mockGet.mockResolvedValueOnce({ csrftoken: { value: 'csrf-abc' } });
+
+    mockFetch
+      .mockResolvedValueOnce(mockCsrfGetResponse)
+      .mockResolvedValueOnce(mockLoginPostResponse(true));
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    let loginResult: boolean | undefined;
+    await act(async () => {
+      loginResult = await result.current.login('testuser', 'password123');
+    });
+
+    expect(loginResult).toBe(true);
+  });
+
+  it('returns false when server responds with error', async () => {
+    mockGet.mockResolvedValueOnce(noCookies);
+
+    mockFetch.mockResolvedValueOnce(mockCsrfGetResponse).mockResolvedValueOnce({
+      ...mockLoginPostResponse(false),
+      json: jest.fn().mockResolvedValue({}),
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    let loginResult: boolean | undefined;
+    await act(async () => {
+      loginResult = await result.current.login('testuser', 'wrongpass');
+    });
+
+    expect(loginResult).toBe(false);
+  });
+
+  it('returns false on network error', async () => {
+    mockGet.mockResolvedValueOnce(noCookies);
+    mockFetch
+      .mockResolvedValueOnce(mockCsrfGetResponse)
+      .mockRejectedValueOnce(new Error('Network error'));
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    let loginResult: boolean | undefined;
+    await act(async () => {
+      loginResult = await result.current.login('testuser', 'pass');
+    });
+
+    expect(loginResult).toBe(false);
+  });
+});
+
+describe('useAuth — totpValid', () => {
+  const mockCsrfGetResponse = {
+    ok: true,
+    status: 200,
+    headers: { get: (h: string) => (h === 'set-cookie' ? 'csrftoken=csrf-abc; Path=/' : null) },
+  };
+
+  const mockTotpPostResponse = (ok: boolean) => ({
     ok,
     status: ok ? 200 : 401,
     json: jest.fn().mockResolvedValue({ user_data: { role: 'medico' } }),
@@ -143,10 +216,21 @@ describe('useAuth — login', () => {
     headers: { get: () => null },
   };
 
-  it('returns role and personalId on successful login', async () => {
+  it('returns null without pending credentials', async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    let totpResult: any;
+    await act(async () => {
+      totpResult = await result.current.totpValid('123456');
+    });
+
+    expect(totpResult).toBeNull();
+  });
+
+  it('returns role and personalId on successful verification', async () => {
     // Call order for CookieManager.get:
     //  #1 — fetchCsrfToken: needs csrftoken after GET response
-    //  #2 — login POST: needs sessionid + csrftoken after POST response
+    //  #2 — totpValid POST: needs sessionid + csrftoken after POST response
     //  #3+ — fetchConSesion (personal): any session cookies
     mockGet
       .mockResolvedValueOnce({ csrftoken: { value: 'csrf-abc' } })
@@ -155,18 +239,22 @@ describe('useAuth — login', () => {
 
     mockFetch
       .mockResolvedValueOnce(mockCsrfGetResponse)
-      .mockResolvedValueOnce(mockLoginPostResponse(true))
+      .mockResolvedValueOnce(mockTotpPostResponse(true))
       .mockResolvedValueOnce(mockPersonalResponse);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    let loginResult: any;
-    await act(async () => {
-      loginResult = await result.current.login('testuser', 'password123');
+    act(() => {
+      result.current.setPendingCredentials({ username: 'testuser', password: 'password123' });
     });
 
-    expect(loginResult).not.toBeNull();
-    expect(loginResult?.role).toBe('medic');
+    let totpResult: any;
+    await act(async () => {
+      totpResult = await result.current.totpValid('123456');
+    });
+
+    expect(totpResult).not.toBeNull();
+    expect(totpResult?.role).toBe('medic');
     expect(AsyncStorage.setItem).toHaveBeenCalledWith('sessionid', 'sess-abc');
   });
 
@@ -176,34 +264,22 @@ describe('useAuth — login', () => {
       .mockResolvedValueOnce({ csrftoken: { value: 'csrf-abc' } });
 
     mockFetch.mockResolvedValueOnce(mockCsrfGetResponse).mockResolvedValueOnce({
-      ...mockLoginPostResponse(false),
+      ...mockTotpPostResponse(false),
       json: jest.fn().mockResolvedValue({}),
     });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    let loginResult: any;
-    await act(async () => {
-      loginResult = await result.current.login('testuser', 'wrongpass');
+    act(() => {
+      result.current.setPendingCredentials({ username: 'testuser', password: 'password123' });
     });
 
-    expect(loginResult).toBeNull();
-  });
-
-  it('returns null on network error', async () => {
-    mockGet.mockResolvedValueOnce(noCookies).mockResolvedValueOnce({ csrftoken: { value: 'x' } });
-    mockFetch
-      .mockResolvedValueOnce(mockCsrfGetResponse)
-      .mockRejectedValueOnce(new Error('Network error'));
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    let loginResult: any;
+    let totpResult: any;
     await act(async () => {
-      loginResult = await result.current.login('testuser', 'pass');
+      totpResult = await result.current.totpValid('000000');
     });
 
-    expect(loginResult).toBeNull();
+    expect(totpResult).toBeNull();
   });
 });
 

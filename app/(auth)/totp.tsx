@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 export default function TOTPScreen() {
   const router = useRouter();
-  const { login, pendingCredentials, setPendingCredentials } = useAuth();
+  const { totpValid, pendingCredentials, setPendingCredentials } = useAuth();
   const [totpCode, setTotpCode] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,11 +24,7 @@ export default function TOTPScreen() {
     setCargando(true);
     setError(null);
     try {
-      const result = await login(
-        pendingCredentials.username,
-        pendingCredentials.password,
-        codeToUse,
-      );
+      const result = await totpValid(codeToUse);
       setPendingCredentials(null);
       if (!result) {
         setError('Error de autenticación');
