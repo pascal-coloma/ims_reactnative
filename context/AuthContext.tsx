@@ -22,11 +22,8 @@ type User = {
 
 type AuthContextType = {
   user: User;
-  login: (
-    username: string,
-    password: string,
-    totpCode?: string,
-  ) => Promise<{ role: Role; personalId: string } | null>;
+  login: (username: string, password: string) => Promise<boolean>;
+  totpValid: (totpCode?: string) => Promise<{ role: Role; personalId: string } | null>;
   logout: () => Promise<void>;
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
@@ -131,10 +128,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  async function login(username: string, password: string, totpCode?: string) {
+  async function login(username: string, password: string): Promise<boolean> {
     try {
       const csrftoken = await fetchCsrfToken();
 
+      const response = await fetch(`${BASE_URL}/ims/api/auth/`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: BASE_URL,
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        console.log('login error:', response.status, JSON.stringify(errorBody));
+        return false;
+      }
+
+      const setCookiePost = response.headers.get('set-cookie');
+      if (setCookiePost) await CookieManager.setFromResponse(BASE_URL, setCookiePost);
+
+      return true;
+    } catch (e) {
+      console.error('Error login:', e);
+      return false;
+    }
+  }
+
+  async function totpValid(totpCode?: string) {
+    if (!pendingCredentials) return null;
+
+    try {
+      const csrftoken = await fetchCsrfToken();
+
+      // TODO: reemplazar por el endpoint real cuando esté disponible en el backend.
       const response = await fetch(`${BASE_URL}/ims/api/login/`, {
         method: 'POST',
         credentials: 'include',
@@ -143,16 +174,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           Origin: BASE_URL,
           'X-CSRFToken': csrftoken,
         },
-        body: JSON.stringify({
-          username,
-          password,
-          totp_code: totpCode ?? '',
-        }),
+        body: JSON.stringify({ totp_code: totpCode ?? '' }),
       });
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
-        console.log('login error:', response.status, JSON.stringify(errorBody));
+        console.log('totpValid error:', response.status, JSON.stringify(errorBody));
         return null;
       }
 
@@ -174,6 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem('sessionid', sessionId);
       await AsyncStorage.setItem('csrftoken', csrftokenPost ?? '');
 
+      const { username } = pendingCredentials;
       let first_name = '';
       let last_name = '';
       let personalId = '';
@@ -215,7 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       registerFcmToken().catch((e) => console.warn('FCM token registration failed:', e));
       return { role: loggedUser.role, personalId: loggedUser.personalId };
     } catch (e) {
-      console.error('Error login:', e);
+      console.error('Error totpValid:', e);
       return null;
     }
   }
@@ -258,6 +286,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         login,
         logout,
+        totpValid,
         loading,
         pendingCredentials,
         setPendingCredentials,

@@ -18,6 +18,7 @@ const RegistrarDespacho = () => {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormCompleta>({
     defaultValues: DEFAULT_VALUES_ADMIN,
@@ -46,7 +47,7 @@ const RegistrarDespacho = () => {
     <>
       <AppHeader title="Registrar Despacho" />
       <ScrollView>
-        <FormPaciente control={control} errors={errors} />
+        <FormPaciente control={control} errors={errors} setValue={setValue} />
         <FormDespacho control={control} errors={errors} />
         <View style={style.rowBotones}>
           <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
