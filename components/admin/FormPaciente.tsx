@@ -1,6 +1,8 @@
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { useEffect } from 'react';
+import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormCompleta } from '@/data/types';
+import { usePacientes } from '@/context/PacienteContext';
 import AppHeader from '../AppHeader';
 import {
   formatearRut,
@@ -13,12 +15,83 @@ import {
 type FormPacienteProps = {
   control: Control<FormCompleta>;
   errors: FieldErrors<FormCompleta>;
+  setValue: UseFormSetValue<FormCompleta>;
 };
 
-const FormPaciente = ({ control, errors }: FormPacienteProps) => {
+const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
+  const { buscarPaciente } = usePacientes();
+  const rut = useWatch({ control, name: 'rut' });
+
+  useEffect(() => {
+    if (!rut || !validarRut(rut)) return;
+
+    const rutLimpio = rut.replace(/\./g, '');
+    const paciente = buscarPaciente(rutLimpio);
+    if (!paciente) return;
+
+    const partes = paciente.nombre_completo.trim().split(/\s+/);
+    const [primerNombre, segundoNombre, apellidoPaterno, apellidoMaterno] =
+      partes.length >= 4
+        ? [partes[0], partes[1], partes[2], partes.slice(3).join(' ')]
+        : [partes[0] ?? '', '', partes[1] ?? '', partes.slice(2).join(' ')];
+
+    setValue('primerNombre', primerNombre);
+    setValue('segundoNombre', segundoNombre);
+    setValue('apellidoPaterno', apellidoPaterno);
+    setValue('apellidoMaterno', apellidoMaterno);
+    setValue('fechaNacimiento', paciente.fecha_nacimiento.split('-').reverse().join('-'));
+    setValue('telefono', formatearTelefono(paciente.telefono));
+    setValue('condicionPaciente', paciente.condicion_paciente);
+    setValue('direccionOrigen', paciente.direccion);
+    setValue('comuna', paciente.comuna);
+  }, [rut, buscarPaciente, setValue]);
+
   return (
     <>
       <View style={style.formulario}>
+        <Text style={style.title}>Datos del Paciente</Text>
+        <View>
+          <Controller
+            control={control}
+            name="rut"
+            rules={{
+              required: true,
+              validate: (value) => validarRut(value) || 'RUT inválido',
+            }}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const rutCompleto = value?.replace(/[^0-9kK]/g, '').length >= 8;
+              const rutValido = !rutCompleto || validarRut(value);
+              return (
+                <>
+                  <Text style={style.label}>RUT</Text>
+                  <TextInput
+                    placeholder="12.345.678-9"
+                    onBlur={onBlur}
+                    onChangeText={(text) => onChange(formatearRut(text))}
+                    value={value}
+                    style={[
+                      style.input,
+                      rutCompleto && !rutValido && { borderColor: '#E53935' },
+                      rutCompleto && rutValido && { borderColor: '#22c55e' },
+                    ]}
+                    keyboardType="default"
+                  />
+                  {rutCompleto && !rutValido && (
+                    <Text style={style.campoRequerido}>RUT inválido</Text>
+                  )}
+                  {errors.rut && !rutCompleto && (
+                    <Text style={style.campoRequerido}>
+                      {errors.rut.message || 'Campo requerido'}
+                    </Text>
+                  )}
+                </>
+              );
+            }}
+          />
+          {errors.rut && (
+            <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
+          )}
+        </View>
         <Controller
           control={control}
           rules={{
@@ -26,7 +99,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Text style={style.title}>Datos del Paciente</Text>
               <Text style={style.label}>Primer Nombre</Text>
               <TextInput
                 placeholder="Ingrese primer nombre"
@@ -101,48 +173,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
         />
         {errors.apellidoMaterno && <Text style={style.campoRequerido}>Campo requerido</Text>}
         <View style={[{ flexDirection: 'row', gap: 10 }]}>
-          <View style={{ flex: 2 }}>
-            <Controller
-              control={control}
-              name="rut"
-              rules={{
-                required: true,
-                validate: (value) => validarRut(value) || 'RUT inválido',
-              }}
-              render={({ field: { onChange, onBlur, value } }) => {
-                const rutCompleto = value?.replace(/[^0-9kK]/g, '').length >= 8;
-                const rutValido = !rutCompleto || validarRut(value);
-                return (
-                  <>
-                    <Text style={style.label}>RUT</Text>
-                    <TextInput
-                      placeholder="12.345.678-9"
-                      onBlur={onBlur}
-                      onChangeText={(text) => onChange(formatearRut(text))}
-                      value={value}
-                      style={[
-                        style.input,
-                        rutCompleto && !rutValido && { borderColor: '#E53935' },
-                        rutCompleto && rutValido && { borderColor: '#22c55e' },
-                      ]}
-                      keyboardType="default"
-                    />
-                    {rutCompleto && !rutValido && (
-                      <Text style={style.campoRequerido}>RUT inválido</Text>
-                    )}
-                    {errors.rut && !rutCompleto && (
-                      <Text style={style.campoRequerido}>
-                        {errors.rut.message || 'Campo requerido'}
-                      </Text>
-                    )}
-                  </>
-                );
-              }}
-            />
-            {errors.rut && (
-              <Text style={style.campoRequerido}>{errors.rut.message || 'Campo requerido'}</Text>
-            )}
-          </View>
           <View style={{ flex: 2 }}>
             <Controller
               control={control}
