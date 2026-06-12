@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 export default function LoginForm() {
   const router = useRouter();
-  const { setPendingCredentials } = useAuth();
+  const { login, setPendingCredentials } = useAuth();
   const [username, setUsername] = useState('');
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -19,14 +19,14 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      // TODO: /ims/api/verify-password/
-      // const ok = await verifyPassword(username.replace(/\./g, ''), passw);
-      // if (!ok) {
-      //   setError('Credenciales incorrectas');
-      //   return;
-      // }
+      const cleanUsername = username.replace(/\./g, '');
+      const ok = await login(cleanUsername, passw);
+      if (!ok) {
+        setError('Credenciales incorrectas');
+        return;
+      }
 
-      setPendingCredentials({ username: username.replace(/\./g, ''), password: passw });
+      setPendingCredentials({ username: cleanUsername, password: passw });
       router.push('/(auth)/totp');
     } finally {
       setCargando(false);
