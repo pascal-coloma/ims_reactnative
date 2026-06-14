@@ -1,20 +1,24 @@
+import AddressAutocomplete from '@/components/AddressAutocomplete';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { fetchConSesion } from '@/context/AuthContext';
 import { FormCompleta, Grupo } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import { Picker } from '@react-native-picker/picker';
 import { useEffect, useState } from 'react';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from 'react-hook-form';
 import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 type FormDespachoProps = {
   control: Control<FormCompleta>;
   errors: FieldErrors<FormCompleta>;
+  setValue: UseFormSetValue<FormCompleta>;
 };
 
-const FormDespacho = ({ control, errors }: FormDespachoProps) => {
+const FormDespacho = ({ control, errors, setValue }: FormDespachoProps) => {
   const { ambulancias } = useAmbulancias();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
+  const direccionOrigen = useWatch({ control, name: 'direccionOrigen' });
+  const direccionDestino = useWatch({ control, name: 'direccionDestino' });
 
   useEffect(() => {
     const fetchGrupos = async () => {
@@ -37,15 +41,16 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
         control={control}
         name="direccionOrigen"
         rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
+        render={({ field: { onChange } }) => (
           <>
             <Text style={style.label}>Dirección de origen</Text>
-            <TextInput
+            <AddressAutocomplete
               placeholder="Ingrese dirección de origen"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              style={styles.input}
+              defaultValue={direccionOrigen}
+              onSelect={(address, comuna) => {
+                onChange(address);
+                setValue('comuna', comuna);
+              }}
             />
           </>
         )}
@@ -56,15 +61,13 @@ const FormDespacho = ({ control, errors }: FormDespachoProps) => {
         control={control}
         name="direccionDestino"
         rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
+        render={({ field: { onChange } }) => (
           <>
             <Text style={style.label}>Dirección de destino</Text>
-            <TextInput
+            <AddressAutocomplete
               placeholder="Ingrese dirección de destino"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              style={styles.input}
+              defaultValue={direccionDestino}
+              onSelect={(address) => onChange(address)}
             />
           </>
         )}
