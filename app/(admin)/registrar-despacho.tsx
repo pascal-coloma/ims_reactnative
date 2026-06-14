@@ -48,7 +48,7 @@ const RegistrarDespacho = () => {
       <AppHeader title="Registrar Despacho" />
       <ScrollView>
         <FormPaciente control={control} errors={errors} setValue={setValue} />
-        <FormDespacho control={control} errors={errors} />
+        <FormDespacho control={control} errors={errors} setValue={setValue} />
         <View style={style.rowBotones}>
           <TouchableOpacity style={style.btnCancelar} onPress={() => router.back()}>
             <Text style={style.btnTextDark}>Cancelar</Text>
