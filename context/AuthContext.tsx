@@ -179,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
-        console.log('totpValid error:', response.status, JSON.stringify(errorBody));
+        console.log('totpValid error:', response.status, errorBody);
         return null;
       }
 
