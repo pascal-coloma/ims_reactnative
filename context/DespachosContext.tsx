@@ -12,8 +12,6 @@ import {
   useRef,
 } from 'react';
 import { FormCompleta } from '@/data/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAmbulancias } from './AmbulanciaContext';
 import { useNotifications } from './NotificationContext';
 
 type DespachosContextType = {
@@ -211,7 +209,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
 
         try {
           await fetchDespachos();
-        } catch (e) {
+        } catch {
           console.warn('fetchDespachos falló pero el despacho fue creado');
         }
       } catch (e: any) {
