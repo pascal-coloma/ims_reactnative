@@ -1,6 +1,5 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { Ambulancia } from '@/data/mock/mockAmbulancia';
-import { Insumo } from '@/data/types';
 import {
   createContext,
   useCallback,

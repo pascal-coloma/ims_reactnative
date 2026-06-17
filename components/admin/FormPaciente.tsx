@@ -3,7 +3,6 @@ import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from 'rea
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { FormCompleta } from '@/data/types';
 import { usePacientes } from '@/context/PacienteContext';
-import AppHeader from '../AppHeader';
 import {
   formatearRut,
   validarRut,

@@ -1,4 +1,4 @@
-import PERSONAL, { Personal } from '@/data/mock/mockPersonal';
+import { Personal } from '@/data/mock/mockPersonal';
 import {
   createContext,
   ReactNode,
