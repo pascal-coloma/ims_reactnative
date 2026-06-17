@@ -6,7 +6,7 @@ import CookieManager from '@preeternal/react-native-cookie-manager';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { registerFcmToken, setupTokenRefresh } from '@/utils/firebaseMessaging';
-import { BASE_URL, setSessionExpiredHandler, fetchConSesion } from '@/utils/api';
+import { BASE_URL, setSessionExpiredHandler, fetchConSesion, clearSession } from '@/utils/api';
 
 export { fetchConSesion, setSessionExpiredHandler };
 
@@ -249,8 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function logout(): Promise<void> {
     try {
-      await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
-      await CookieManager.clearAll();
+      await clearSession();
       setUser(null);
     } catch (e) {
       console.error('Error logout:', e);
