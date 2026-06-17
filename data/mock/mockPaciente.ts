@@ -8,8 +8,6 @@ export type Paciente = {
   comuna: string;
 };
 
-const prefijo = '+569';
-
 const mockPacientes: Paciente[] = [];
 
 export default mockPacientes;
