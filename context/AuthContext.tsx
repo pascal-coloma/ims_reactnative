@@ -28,7 +28,6 @@ type AuthContextType = {
   loading: boolean;
   pendingCredentials: { username: string; password: string } | null;
   setPendingCredentials: (creds: { username: string; password: string } | null) => void;
-  verifyPassword: (username: string, password: string) => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -248,28 +247,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function verifyPassword(username: string, password: string): Promise<boolean> {
-    try {
-      const csrftoken = await fetchCsrfToken();
-
-      const response = await fetch(`${BASE_URL}/ims/api/verify-password/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Origin: BASE_URL,
-          'X-CSRFToken': csrftoken,
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      return response.ok;
-    } catch (e) {
-      console.error('Error verifyPassword:', e);
-      return false;
-    }
-  }
-
   async function logout(): Promise<void> {
     try {
       await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
@@ -290,7 +267,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         pendingCredentials,
         setPendingCredentials,
-        verifyPassword,
       }}
     >
       {children}
