@@ -168,7 +168,12 @@ const InventarioProvider = ({ children }: { children: ReactNode }) => {
           cantidad,
         }),
       });
-      if (!response.ok) throw new Error(`Error ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error('No hay suficiente stock en la ambulancia de origen');
+        }
+        throw new Error(`Error ${response.status}`);
+      }
       recargar();
     },
     [recargar],
