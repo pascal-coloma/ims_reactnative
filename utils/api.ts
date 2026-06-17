@@ -9,6 +9,11 @@ export const setSessionExpiredHandler = (fn: () => void) => {
   _onSessionExpired = fn;
 };
 
+export const clearSession = async () => {
+  await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
+  await CookieManager.clearAll();
+};
+
 export const fetchConSesion = async (url: string, options: RequestInit = {}) => {
   const cookies = await CookieManager.get(BASE_URL);
   const sessionid = cookies['sessionid']?.value;
@@ -32,8 +37,7 @@ export const fetchConSesion = async (url: string, options: RequestInit = {}) => 
   if (setCookie) await CookieManager.setFromResponse(BASE_URL, setCookie);
 
   if (response.status === 401) {
-    await AsyncStorage.multiRemove(['user', 'sessionid', 'csrftoken']);
-    await CookieManager.clearAll();
+    await clearSession();
     _onSessionExpired?.();
   }
 
