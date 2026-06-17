@@ -108,6 +108,11 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       if (!atencionResp.ok) {
         const errorBody = await atencionResp.json().catch(() => ({}));
         console.log('Error atención:', JSON.stringify(errorBody, null, 2));
+        if (atencionResp.status === 409) {
+          throw new Error(
+            'Este despacho ya fue finalizado o no hay stock suficiente de los insumos utilizados',
+          );
+        }
         throw new Error(`Error registrando atención: ${atencionResp.status}`);
       }
       const result = await atencionResp.json();
