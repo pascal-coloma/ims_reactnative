@@ -63,9 +63,9 @@ const MisDespachos = () => {
             <Text style={styles.subtitle}>Sin despachos activos asignados</Text>
           </View>
         }
-        renderItem={({ item: d }) => (
+        renderItem={({ item: d, index }) => (
           <TouchableOpacity
-            style={styles.container}
+            style={[styles.container, index % 2 === 1 && local.filaAlterna]}
             onPress={() => {
               seleccionarDespacho(d.id);
               router.push({
@@ -93,6 +93,9 @@ const MisDespachos = () => {
 };
 
 const local = StyleSheet.create({
+  filaAlterna: {
+    backgroundColor: '#F3F4F6',
+  },
   buscador: {
     borderWidth: 1,
     borderColor: '#ccc',
