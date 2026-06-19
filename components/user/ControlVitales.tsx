@@ -307,7 +307,7 @@ function ControlVitales({ control, errors }: ControlVitalesProps) {
 const style = StyleSheet.create({
   formulario: {
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#F5F5F5',
   },
   headerRow: {
     flexDirection: 'row',
