@@ -235,16 +235,18 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     [despachos],
   );
 
+  const esDespachoActivo = (d: Despacho) => d.estado === 'activo' || d.estado === 'emergencia';
+
   const despachosPorPersonal = useCallback(
     (personalId: string) =>
-      despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo'),
+      despachos.filter((d) => d.personalIds?.includes(personalId) && esDespachoActivo(d)),
     [despachos],
   );
 
   const setDespachoActivoPorUsuario = useCallback(
     (personalId: string) => {
       setDespachoActivo(
-        despachos.find((d) => d.personalIds?.includes(personalId) && d.estado === 'activo') ?? null,
+        despachos.find((d) => d.personalIds?.includes(personalId) && esDespachoActivo(d)) ?? null,
       );
     },
     [despachos],
