@@ -6,16 +6,16 @@ Mobile application for prehospital emergency management. Enables control operato
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Mobile | React Native 0.76 + Expo Router 4 + TypeScript |
-| State | React Context API + react-hook-form |
-| Backend | Django 5 + Django REST Framework |
-| Database | PostgreSQL |
-| Storage | AWS S3 (presigned URLs) |
-| Authentication | Django sessions + TOTP (RFC 6238) |
-| PDF | expo-print + expo-sharing |
-| Signature | SHA-256 hash integrity |
+| Layer          | Technology                                     |
+| -------------- | ---------------------------------------------- |
+| Mobile         | React Native 0.76 + Expo Router 4 + TypeScript |
+| State          | React Context API + react-hook-form            |
+| Backend        | Django 5 + Django REST Framework               |
+| Database       | PostgreSQL                                     |
+| Storage        | AWS S3 (presigned URLs)                        |
+| Authentication | Django sessions + TOTP (RFC 6238)              |
+| PDF            | expo-print + expo-sharing                      |
+| Signature      | SHA-256 hash integrity                         |
 
 ---
 
@@ -51,12 +51,12 @@ All authenticated requests go through `fetchConSesion`, which reads `sessionid` 
 
 ## Roles
 
-| Role | Access |
-|---|---|
+| Role      | Access                                                                                 |
+| --------- | -------------------------------------------------------------------------------------- |
 | `control` | Full admin module: dispatch registration, personnel, ambulances, inventory, attentions |
-| `medic` | User module: assigned dispatches, attention registration |
-| `nurse` | User module: assigned dispatches, attention registration |
-| `driver` | User module: assigned dispatches, attention registration |
+| `medic`   | User module: assigned dispatches, attention registration                               |
+| `nurse`   | User module: assigned dispatches, attention registration                               |
+| `driver`  | User module: assigned dispatches, attention registration                               |
 
 ---
 
@@ -93,23 +93,23 @@ Stored to AWS S3 with SHA-256 hash for document integrity.
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/ims/api/login/` | Obtain CSRF token |
-| POST | `/ims/api/login/` | Authenticate — username + password + totp\_code |
-| GET | `/ims/api/personal/` | List personnel |
-| POST | `/ims/api/personal/` | Register worker — returns totp\_uri and generated password |
-| GET | `/ims/api/pacientes/` | List patients or search by `?rut=XX` |
-| POST | `/ims/api/pacientes/` | Create patient |
-| GET | `/ims/api/grupo/` | List groups |
-| POST | `/ims/api/grupo/suscribir/` | Subscribe personnel to group |
-| POST | `/ims/api/despachos/add/` | Create dispatch |
-| PATCH | `/ims/api/despachos/asignar/` | Assign ambulance and group to dispatch |
-| GET | `/ims/api/despachos/get/` | Active dispatches for authenticated worker |
-| GET | `/ims/api/despachos/getall/` | All dispatches (control only) |
-| GET | `/ims/api/ambulancias/` | List ambulances |
-| GET | `/ims/api/atenciones/` | Attention summary or `?id=N` for S3 presigned URL |
-| POST | `/ims/api/atenciones/add/` | Register attention |
+| Method | Endpoint                      | Description                                               |
+| ------ | ----------------------------- | --------------------------------------------------------- |
+| GET    | `/ims/api/login/`             | Obtain CSRF token                                         |
+| POST   | `/ims/api/login/`             | Authenticate — username + password + totp_code            |
+| GET    | `/ims/api/personal/`          | List personnel                                            |
+| POST   | `/ims/api/personal/`          | Register worker — returns totp_uri and generated password |
+| GET    | `/ims/api/pacientes/`         | List patients or search by `?rut=XX`                      |
+| POST   | `/ims/api/pacientes/`         | Create patient                                            |
+| GET    | `/ims/api/grupo/`             | List groups                                               |
+| POST   | `/ims/api/grupo/suscribir/`   | Subscribe personnel to group                              |
+| POST   | `/ims/api/despachos/add/`     | Create dispatch                                           |
+| PATCH  | `/ims/api/despachos/asignar/` | Assign ambulance and group to dispatch                    |
+| GET    | `/ims/api/despachos/get/`     | Active dispatches for authenticated worker                |
+| GET    | `/ims/api/despachos/getall/`  | All dispatches (control only)                             |
+| GET    | `/ims/api/ambulancias/`       | List ambulances                                           |
+| GET    | `/ims/api/atenciones/`        | Attention summary or `?id=N` for S3 presigned URL         |
+| POST   | `/ims/api/atenciones/add/`    | Register attention                                        |
 
 Base URL: configured via `EXPO_PUBLIC_API_URL` environment variable (see `.env.example`)
 

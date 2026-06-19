@@ -183,7 +183,15 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
     }),
-    [atenciones, resumenAtenciones, agregarAtencion, fetchAtenciones, fetchAtencionDetalle, loading, error],
+    [
+      atenciones,
+      resumenAtenciones,
+      agregarAtencion,
+      fetchAtenciones,
+      fetchAtencionDetalle,
+      loading,
+      error,
+    ],
   );
 
   return <AtencionContext.Provider value={value}>{children}</AtencionContext.Provider>;

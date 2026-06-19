@@ -5,7 +5,9 @@ import { useDespachos } from '@/context/DespachosContext';
 const DispatchCard = () => {
   const { despachos } = useDespachos();
 
-  const enCurso = despachos.filter((d) => d.estado === 'activo' || d.estado === 'emergencia').length;
+  const enCurso = despachos.filter(
+    (d) => d.estado === 'activo' || d.estado === 'emergencia',
+  ).length;
   const recibidos = despachos.filter((d) => d.estado === 'recibido').length;
   const activos = recibidos + enCurso;
 
