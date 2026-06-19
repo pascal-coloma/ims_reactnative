@@ -2,6 +2,7 @@ import AppHeader from '@/components/AppHeader';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { usePersonal } from '@/context/PersonalContext';
+import { AMBULANCIA_ESTADO } from '@/data/constants/ambulanciaEstados';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -11,7 +12,9 @@ const Panel = () => {
   const { personal } = usePersonal();
   const { ambulancias } = useAmbulancias();
   const totalDespachos = despachos.length;
-  const movilesActivos = ambulancias.filter((p) => p.estado === 'disponible').length;
+  const movilesActivos = ambulancias.filter(
+    (p) => p.estado === AMBULANCIA_ESTADO.DISPONIBLE,
+  ).length;
   const personalActivo = personal.filter((p) => p.is_active).length;
 
   return (
