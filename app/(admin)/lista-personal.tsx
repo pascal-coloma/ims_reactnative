@@ -61,8 +61,8 @@ const ListaPersonal = () => {
                   <Text style={local.grupoTitulo}>{traducirRol(rol)}</Text>
                   <Text style={local.grupoConteo}>{grupo.length}</Text>
                 </View>
-                {grupo.map((p) => (
-                  <View key={p.id} style={local.card}>
+                {grupo.map((p, index) => (
+                  <View key={p.id} style={[local.card, index % 2 === 1 && local.cardAlterna]}>
                     <View style={local.cardLeft}>
                       <View
                         style={[
@@ -126,6 +126,9 @@ const local = StyleSheet.create({
     padding: 12,
     gap: 12,
     elevation: 1,
+  },
+  cardAlterna: {
+    backgroundColor: '#F3F4F6',
   },
   cardLeft: {
     justifyContent: 'center',

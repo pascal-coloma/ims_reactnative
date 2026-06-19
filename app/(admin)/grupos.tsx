@@ -25,10 +25,10 @@ const Grupos = () => {
           {grupos.length === 0 ? (
             <Text style={local.empty}>No hay grupos registrados</Text>
           ) : (
-            grupos.map((g) => (
+            grupos.map((g, index) => (
               <TouchableOpacity
                 key={g.grupo_id}
-                style={local.card}
+                style={[local.card, index % 2 === 1 && local.cardAlterna]}
                 onPress={() => router.push(`/(admin)/(grupo)/${g.grupo_id}`)}
               >
                 <View style={local.cardIcon}>
@@ -75,6 +75,9 @@ const local = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     elevation: 1,
+  },
+  cardAlterna: {
+    backgroundColor: '#F3F4F6',
   },
   cardIcon: {
     width: 44,

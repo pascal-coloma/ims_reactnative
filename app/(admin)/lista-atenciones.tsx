@@ -58,8 +58,8 @@ const ListaAtenciones = () => {
           </View>
         )}
 
-        {resumenAtenciones.map((a) => (
-          <View key={a.id} style={styles.container}>
+        {resumenAtenciones.map((a, index) => (
+          <View key={a.id} style={[styles.container, index % 2 === 1 && local.filaAlterna]}>
             <View style={local.rowHeader}>
               <Text style={styles.title}>Atención #{a.id} </Text>
               <View
@@ -117,6 +117,9 @@ const ListaAtenciones = () => {
 };
 
 const local = StyleSheet.create({
+  filaAlterna: {
+    backgroundColor: '#F3F4F6',
+  },
   rowHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
