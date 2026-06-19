@@ -10,7 +10,7 @@ type PreInformeProps = {
 
 const PreInformeForm = ({ control, errors }: PreInformeProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: '#F5F5F5' }]}>
       <Text style={local.title}>Pre Informe</Text>
 
       <Text style={local.label}>Pre informe de rescate</Text>
