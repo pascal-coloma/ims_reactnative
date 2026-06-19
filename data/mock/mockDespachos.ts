@@ -10,7 +10,14 @@ export type Despacho = {
   direccionOrigen: string;
   direccionDestino: string;
   descripcionLlamado: string;
-  estado: 'recibido' | 'asignado' | 'finalizado' | 'cancelado' | 'activo' | 'emergencia' | 'programado';
+  estado:
+    | 'recibido'
+    | 'asignado'
+    | 'finalizado'
+    | 'cancelado'
+    | 'activo'
+    | 'emergencia'
+    | 'programado';
   fechaLlamado?: string;
   fechaAsignacion?: string;
   ambulancia?: Ambulancia;
