@@ -24,7 +24,8 @@ const UserActions = () => {
 
   const ultimaAmbulancia = misDespachos[misDespachos.length - 1]?.ambulancia;
   const miAmbulanciaId = ambulanciaSeleccionadaId ?? ultimaAmbulancia?.id;
-  const miAmbulancia = ambulanciasAsignadas.find((a) => a.id === miAmbulanciaId) ?? ultimaAmbulancia;
+  const miAmbulancia =
+    ambulanciasAsignadas.find((a) => a.id === miAmbulanciaId) ?? ultimaAmbulancia;
 
   const handleRegistrarAtencion = () => {
     if (misDespachos.length === 0) {
@@ -39,7 +40,10 @@ const UserActions = () => {
 
   const handleCambiarEstadoAmbulancia = async (estado: AmbulanciaEstado) => {
     if (!miAmbulanciaId) {
-      Alert.alert('Sin ambulancia asignada', 'No tienes un despacho activo con ambulancia asignada.');
+      Alert.alert(
+        'Sin ambulancia asignada',
+        'No tienes un despacho activo con ambulancia asignada.',
+      );
       return;
     }
     try {
