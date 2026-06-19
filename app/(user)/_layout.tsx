@@ -60,11 +60,6 @@ const UserLayout = () => {
                 ),
               }}
             />
-            <Tabs.Screen name="mis-atenciones" options={{ href: null, title: 'Mis Atenciones' }} />
-            <Tabs.Screen
-              name="modificar-atencion"
-              options={{ href: null, title: 'Modificar Atencion' }}
-            />
           </Tabs>
         </AtencionProvider>
       </DespachosProvider>
