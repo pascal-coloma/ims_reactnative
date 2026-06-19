@@ -1,3 +1,5 @@
+import { AMBULANCIA_ESTADO, AmbulanciaEstado } from '../constants/ambulanciaEstados';
+
 export type AmbulanciaStock = {
   presentacion_id: number;
   insumo_nombre: string;
@@ -10,14 +12,14 @@ export type AmbulanciaStock = {
 export type Ambulancia = {
   id: string;
   patente: string;
-  estado: 'disponible' | 'en_despacho' | 'mantencion' | 'fuera_servicio';
+  estado: AmbulanciaEstado;
 };
 
 export const mockAmbulancias: Ambulancia[] = [
-  { id: '1', patente: 'AMB-001', estado: 'disponible' },
-  { id: '2', patente: 'AMB-002', estado: 'disponible' },
-  { id: '3', patente: 'AMB-003', estado: 'mantencion' },
-  { id: '4', patente: 'AMB-004', estado: 'disponible' },
+  { id: '1', patente: 'AMB-001', estado: AMBULANCIA_ESTADO.DISPONIBLE },
+  { id: '2', patente: 'AMB-002', estado: AMBULANCIA_ESTADO.DISPONIBLE },
+  { id: '3', patente: 'AMB-003', estado: AMBULANCIA_ESTADO.MANTENCION },
+  { id: '4', patente: 'AMB-004', estado: AMBULANCIA_ESTADO.DISPONIBLE },
 ];
 
 export const CATEGORIAS_EMERGENCIA = [

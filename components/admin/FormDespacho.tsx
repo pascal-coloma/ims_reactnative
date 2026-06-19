@@ -1,6 +1,7 @@
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { fetchConSesion } from '@/context/AuthContext';
+import { AMBULANCIA_ESTADO } from '@/data/constants/ambulanciaEstados';
 import { FormCompleta, Grupo } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import { Picker } from '@react-native-picker/picker';
@@ -104,7 +105,7 @@ const FormDespacho = ({ control, errors, setValue }: FormDespachoProps) => {
               <Picker selectedValue={value} onValueChange={onChange}>
                 <Picker.Item label="Seleccione ambulancia" value="" enabled={false} />
                 {ambulancias
-                  .filter((a) => a.estado === 'disponible')
+                  .filter((a) => a.estado === AMBULANCIA_ESTADO.DISPONIBLE)
                   .map((a) => (
                     <Picker.Item key={a.id} label={a.patente} value={a.id} />
                   ))}

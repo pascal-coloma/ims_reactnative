@@ -1,5 +1,6 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { Ambulancia } from '@/data/mock/mockAmbulancia';
+import { AmbulanciaEstado } from '@/data/constants/ambulanciaEstados';
 import {
   createContext,
   useCallback,
@@ -12,6 +13,7 @@ import {
 
 type AmbulanciaContextType = {
   ambulancias: Ambulancia[];
+  cambiarEstado: (ambulanciaId: string, estado: AmbulanciaEstado) => Promise<void>;
   loading: boolean;
   error: string | null;
 };
@@ -52,7 +54,26 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user?.role]);
 
-  const value = useMemo(() => ({ ambulancias, loading, error }), [ambulancias, loading, error]);
+  const cambiarEstado = useCallback(
+    async (ambulanciaId: string, estado: AmbulanciaEstado) => {
+      const params = new URLSearchParams({
+        ambid: ambulanciaId,
+        conid: user?.personalId ?? '',
+        estado,
+      });
+      const response = await fetchConSesion(`/ims/api/ambulancias/estados/?${params}`, {
+        method: 'PATCH',
+      });
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      await fetchAmbulancias();
+    },
+    [user?.personalId, fetchAmbulancias],
+  );
+
+  const value = useMemo(
+    () => ({ ambulancias, cambiarEstado, loading, error }),
+    [ambulancias, cambiarEstado, loading, error],
+  );
 
   return <AmbulanciaContext.Provider value={value}>{children}</AmbulanciaContext.Provider>;
 };
