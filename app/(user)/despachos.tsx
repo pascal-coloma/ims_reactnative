@@ -68,7 +68,10 @@ const MisDespachos = () => {
             style={styles.container}
             onPress={() => {
               seleccionarDespacho(d.id);
-              router.push('/(user)/registrar-atencion');
+              router.push({
+                pathname: '/(user)/registrar-atencion',
+                params: { despachoId: d.id },
+              });
             }}
           >
             <View style={local.rowHeader}>

@@ -1,4 +1,5 @@
 import mockDespachos, { Despacho } from '@/data/mock/mockDespachos';
+import { AMBULANCIA_ESTADO } from '@/data/constants/ambulanciaEstados';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import {
@@ -75,6 +76,11 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       const endpoint = esControl ? '/ims/api/despachos/getall/' : '/ims/api/despachos/get/';
 
       const response = await fetchConSesion(endpoint);
+      if (response.status === 404) {
+        // Sin grupo asignado todavía: no es un error, simplemente no hay despachos que mostrar.
+        setDespachos([]);
+        return;
+      }
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
 
@@ -93,7 +99,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
           ? {
               id: String(d.ambulancia_id),
               patente: '',
-              estado: 'disponible' as const,
+              estado: AMBULANCIA_ESTADO.DISPONIBLE,
             }
           : undefined,
       });
@@ -235,16 +241,18 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     [despachos],
   );
 
+  const esDespachoActivo = (d: Despacho) => d.estado === 'activo' || d.estado === 'emergencia';
+
   const despachosPorPersonal = useCallback(
     (personalId: string) =>
-      despachos.filter((d) => d.personalIds?.includes(personalId) && d.estado === 'activo'),
+      despachos.filter((d) => d.personalIds?.includes(personalId) && esDespachoActivo(d)),
     [despachos],
   );
 
   const setDespachoActivoPorUsuario = useCallback(
     (personalId: string) => {
       setDespachoActivo(
-        despachos.find((d) => d.personalIds?.includes(personalId) && d.estado === 'activo') ?? null,
+        despachos.find((d) => d.personalIds?.includes(personalId) && esDespachoActivo(d)) ?? null,
       );
     },
     [despachos],

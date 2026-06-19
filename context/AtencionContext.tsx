@@ -2,7 +2,6 @@ import { fetchConSesion } from '@/context/AuthContext';
 import { OFFLINE_MODE } from '@/data/constants/defaultValues';
 import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from 'react';
 import { Atencion } from '@/data/types';
-import { SignosVitales, PreInforme, Cronologia } from '@/data/types';
 
 type AtencionResumen = {
   id: number;
@@ -19,17 +18,8 @@ type AtencionContextType = {
   agregarAtencion: (atencion: Atencion, ambulanciaId: string) => Promise<any>;
   fetchAtenciones: () => Promise<void>;
   fetchAtencionDetalle: (id: number) => Promise<any>;
-  fetchAtencionDetalleLocal: (id: number) => Promise<any>;
-  modificarAtencion: (atencionId: number, data: ModificacionPayload) => Promise<void>;
-  buscarPorDespacho: (despachoId: string) => Atencion | undefined;
   loading: boolean;
   error: string | null;
-};
-
-type ModificacionPayload = {
-  controlSignos: SignosVitales[];
-  preInforme: PreInforme;
-  cronologia: Cronologia;
 };
 
 const AtencionContext = createContext<AtencionContextType | null>(null);
@@ -183,86 +173,6 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
     [resumenAtenciones],
   );
 
-  const fetchAtencionDetalleLocal = useCallback(async (id: number) => {
-    try {
-      const response = await fetchConSesion(`/ims/api/atenciones/?id=${id}`);
-      if (!response.ok) throw new Error(`Error ${response.status}`);
-      const data = await response.json();
-      const s3Url = data.success;
-
-      const s3Resp = await fetch(s3Url);
-      if (!s3Resp.ok) {
-        const body = await s3Resp.text().catch(() => '');
-        throw new Error(`Error descargando documento de S3 (${s3Resp.status}): ${body}`);
-      }
-      return await s3Resp.json();
-    } catch (e: any) {
-      setError(e.message ?? 'Error desconocido');
-      return null;
-    }
-  }, []);
-
-  const modificarAtencion = useCallback(async (atencionId: number, data: ModificacionPayload) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const formatearHora = (hora: string) => {
-        const nums = hora.replace(/[^0-9]/g, '');
-        return nums.padStart(4, '0').slice(0, 4);
-      };
-
-      const payload = {
-        atencion_id: atencionId,
-        signos_vitales: data.controlSignos.map((s) => ({
-          presion_sistolica: s.pas,
-          presion_diastolica: s.pad,
-          frecuencia_cardiaca: s.fc,
-          saturacion_oxigeno: s.satO2,
-          temperatura: s.temperatura,
-          fr: s.fr,
-          fio2: s.fio2,
-          hgt: s.hgt,
-          gcs: s.gcs,
-          eva: s.eva,
-          hora: formatearHora(s.hora),
-        })),
-        preinforme: {
-          pre_informe: data.preInforme.preInforme,
-          motivo_llamado: data.preInforme.motivoLlamado,
-          estado_paciente: data.preInforme.estadoPaciente,
-        },
-        cronologia: {
-          hora_llamada: formatearHora(data.cronologia.horaLlamada),
-          despacho_movil: formatearHora(data.cronologia.despachoMovil),
-          llegada_qth1: formatearHora(data.cronologia.llegadaQTH1),
-          salida_qth1: formatearHora(data.cronologia.salidaQTH1),
-          llegada_qth2: formatearHora(data.cronologia.llegadaQTH2),
-          salida_qth2: formatearHora(data.cronologia.salidaQTH2),
-          categoria: data.cronologia.categoria,
-        },
-      };
-
-      const resp = await fetchConSesion('/ims/api/atenciones/update/', {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      });
-      if (!resp.ok) {
-        const errorBody = await resp.json().catch(() => ({}));
-        throw new Error(`Error modificando atención: ${resp.status} ${JSON.stringify(errorBody)}`);
-      }
-    } catch (e: any) {
-      setError(e.message ?? 'Error desconocido');
-      throw e;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const buscarPorDespacho = useCallback(
-    (despachoId: string) => atenciones.find((a) => a.despachoId === despachoId),
-    [atenciones],
-  );
-
   const value = useMemo(
     () => ({
       atenciones,
@@ -270,9 +180,6 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       agregarAtencion,
       fetchAtenciones,
       fetchAtencionDetalle,
-      fetchAtencionDetalleLocal,
-      modificarAtencion,
-      buscarPorDespacho,
       loading,
       error,
     }),
@@ -282,9 +189,6 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       agregarAtencion,
       fetchAtenciones,
       fetchAtencionDetalle,
-      fetchAtencionDetalleLocal,
-      modificarAtencion,
-      buscarPorDespacho,
       loading,
       error,
     ],

@@ -4,12 +4,14 @@ import FormPaciente from '@/components/user/FormPaciente';
 import InsumosForm from '@/components/user/InsumosForm';
 import PreInformeForm from '@/components/user/PreInforme';
 import { useAtenciones } from '@/context/AtencionContext';
+import { useAuth } from '@/context/AuthContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { useInventario } from '@/context/InventoryContext';
 import { DEFAULT_VALUES_USUARIO } from '@/data/constants/defaultValues';
 import { FormUsuario } from '@/data/types';
 import styles from '@/styles/globalStyles';
 import { formatearRut, validarRut } from '@/utils/format';
+import { Picker } from '@react-native-picker/picker';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import {
   Alert,
@@ -23,17 +25,27 @@ import {
   Modal,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
-import { router } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import AppHeader from '@/components/AppHeader';
 
 const RegistrarAtencion = () => {
+  const { despachoId } = useLocalSearchParams<{ despachoId?: string }>();
+  const { user } = useAuth();
   const { agregarAtencion } = useAtenciones();
-  const { despachoActivo } = useDespachos();
+  const { despachoActivo, despachosPorPersonal, seleccionarDespacho } = useDespachos();
   const { recargar: recargarInventario, loading: loadingInventario } = useInventario();
   const [exito, setExito] = useState(false);
   const [firmado, setFirmado] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const misDespachos = despachosPorPersonal(user?.personalId ?? '');
+
+  // El id viaja como param de navegación: evita depender únicamente del
+  // singleton `despachoActivo`, que puede haber sido pisado por otra pantalla.
+  useEffect(() => {
+    if (despachoId) seleccionarDespacho(despachoId);
+  }, [despachoId, seleccionarDespacho]);
 
   const refrescarSwipe = () => {
     setRefreshing(true);
@@ -102,6 +114,21 @@ const RegistrarAtencion = () => {
       <FormProvider {...methods}>
         <View style={{ flex: 1 }} key={despachoActivo?.id ?? 'sin-despacho'}>
           <AppHeader title="Registrar Atención" />
+
+          {misDespachos.length > 1 && (
+            <View style={local.pickerContainer}>
+              <Text style={local.rutLabel}>Despacho</Text>
+              <Picker selectedValue={despachoActivo?.id} onValueChange={seleccionarDespacho}>
+                {misDespachos.map((d) => (
+                  <Picker.Item
+                    key={d.id}
+                    label={`${d.id} · ${d.direccionOrigen} → ${d.direccionDestino}`}
+                    value={d.id}
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
 
           <ScrollView
             contentContainerStyle={{ paddingBottom: 90 }}
@@ -214,6 +241,15 @@ const local = StyleSheet.create({
     borderTopWidth: 1,
   },
   botonEnviar: { flex: 2 },
+  pickerContainer: {
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    margin: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+  },
   botonLimpiar: {
     flex: 1,
     padding: 16,
@@ -255,7 +291,7 @@ const local = StyleSheet.create({
   },
   rutReceptorContainer: {
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#F5F5F5',
     marginTop: 8,
   },
   rutLabel: {
