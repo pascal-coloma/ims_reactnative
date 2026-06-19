@@ -15,6 +15,46 @@ import {
 import { FormCompleta } from '@/data/types';
 import { useNotifications } from './NotificationContext';
 
+const mapearControl = (d: any): Despacho => ({
+  id: String(d.id),
+  direccionOrigen: d.direccion_origen,
+  direccionDestino: d.direccion_destino,
+  descripcionLlamado: d.descripcion_llamado,
+  estado: d.estado === 'asignado' ? 'activo' : d.estado,
+  fechaLlamado: d.fecha_llamado,
+  fechaAsignacion: d.fecha_asignacion,
+  paciente: d.paciente ?? undefined,
+  rutPaciente: d.paciente?.rut ?? undefined,
+  personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
+  ambulancia: d.ambulancia_id
+    ? {
+        id: String(d.ambulancia_id),
+        patente: '',
+        estado: AMBULANCIA_ESTADO.DISPONIBLE,
+      }
+    : undefined,
+});
+
+const mapearWorker = (d: any): Despacho => ({
+  id: String(d.id),
+  direccionOrigen: d.direccionOrigen,
+  direccionDestino: d.direccionDestino,
+  descripcionLlamado: d.descripcionLlamado,
+  estado: d.estado === 'asignado' ? 'activo' : d.estado,
+  fechaLlamado: d.fechaLlamado,
+  personalIds: d.personalIds ?? [],
+  grupoNombre: d.grupoNombre ?? undefined,
+  paciente: d.paciente ?? undefined,
+  rutPaciente: d.paciente?.rut ?? undefined,
+  ambulancia: d.ambulancia
+    ? {
+        id: String(d.ambulancia.id),
+        patente: d.ambulancia.patente ?? '',
+        estado: d.ambulancia.estado ?? 'disponible',
+      }
+    : undefined,
+});
+
 type DespachosContextType = {
   despachos: Despacho[];
   despachoActivo: Despacho | null;
@@ -25,6 +65,9 @@ type DespachosContextType = {
   setDespachoActivoPorUsuario: (personalId: string) => void;
   limpiarDespachoActivo: () => void;
   loading: boolean;
+  loadingMore: boolean;
+  tieneMas: boolean;
+  cargarMas: () => Promise<void>;
   error: string | null;
   fetchDespachos: () => Promise<void>;
   recargar: () => void;
@@ -43,6 +86,8 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const [despachos, setDespachos] = useState<Despacho[]>([]);
   const [despachoActivo, setDespachoActivo] = useState<Despacho | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const recargar = useCallback(() => setRefreshKey((prev) => prev + 1), []);
@@ -73,67 +118,53 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const esControl = user?.role === 'control';
-      const endpoint = esControl ? '/ims/api/despachos/getall/' : '/ims/api/despachos/get/';
+      const endpoint = esControl ? '/ims/api/despachos/all/' : '/ims/api/despachos/get/';
 
       const response = await fetchConSesion(endpoint);
       if (response.status === 404) {
         // Sin grupo asignado todavía: no es un error, simplemente no hay despachos que mostrar.
         setDespachos([]);
+        setNextCursor(null);
         return;
       }
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
 
-      const mapearControl = (d: any): Despacho => ({
-        id: String(d.id),
-        direccionOrigen: d.direccion_origen,
-        direccionDestino: d.direccion_destino,
-        descripcionLlamado: d.descripcion_llamado,
-        estado: d.estado === 'asignado' ? 'activo' : d.estado,
-        fechaLlamado: d.fecha_llamado,
-        fechaAsignacion: d.fecha_asignacion,
-        paciente: d.paciente ?? undefined,
-        rutPaciente: d.paciente?.rut ?? undefined,
-        personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
-        ambulancia: d.ambulancia_id
-          ? {
-              id: String(d.ambulancia_id),
-              patente: '',
-              estado: AMBULANCIA_ESTADO.DISPONIBLE,
-            }
-          : undefined,
-      });
-
-      const mapearWorker = (d: any): Despacho => ({
-        id: String(d.id),
-        direccionOrigen: d.direccionOrigen,
-        direccionDestino: d.direccionDestino,
-        descripcionLlamado: d.descripcionLlamado,
-        estado: d.estado === 'asignado' ? 'activo' : d.estado,
-        fechaLlamado: d.fechaLlamado,
-        personalIds: d.personalIds ?? [],
-        grupoNombre: d.grupoNombre ?? undefined,
-        paciente: d.paciente ?? undefined,
-        rutPaciente: d.paciente?.rut ?? undefined,
-        ambulancia: d.ambulancia
-          ? {
-              id: String(d.ambulancia.id),
-              patente: d.ambulancia.patente ?? '',
-              estado: d.ambulancia.estado ?? 'disponible',
-            }
-          : undefined,
-      });
-      const mapped: Despacho[] = data.map(esControl ? mapearControl : mapearWorker);
-
-      setDespachos(mapped);
+      if (esControl) {
+        setDespachos(data.results.map(mapearControl));
+        setNextCursor(data.next);
+      } else {
+        setDespachos(data.map(mapearWorker));
+        setNextCursor(null);
+      }
     } catch (e: any) {
       console.error('Error fetching despachos:', e);
       setError(e.message ?? 'Error desconocido');
       setDespachos([]);
+      setNextCursor(null);
     } finally {
       setLoading(false);
     }
   }, [user?.role, refreshKey]);
+
+  const cargarMas = useCallback(async () => {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      // nextCursor llega como URL absoluta (DRF la construye con build_absolute_uri);
+      // fetchConSesion espera solo el path, así que se descarta el origin.
+      const path = nextCursor.replace(/^https?:\/\/[^/]+/, '');
+      const response = await fetchConSesion(path);
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      const data = await response.json();
+      setDespachos((prev) => [...prev, ...data.results.map(mapearControl)]);
+      setNextCursor(data.next);
+    } catch (e: any) {
+      console.error('Error cargando más despachos:', e);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [nextCursor, loadingMore]);
 
   const agregarDespacho = useCallback(
     async (data: FormCompleta): Promise<void> => {
@@ -271,6 +302,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       setDespachoActivoPorUsuario,
       limpiarDespachoActivo,
       loading,
+      loadingMore,
+      tieneMas: nextCursor !== null,
+      cargarMas,
       error,
       fetchDespachos,
       recargar,
@@ -285,6 +319,9 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       setDespachoActivoPorUsuario,
       limpiarDespachoActivo,
       loading,
+      loadingMore,
+      nextCursor,
+      cargarMas,
       error,
       fetchDespachos,
       recargar,

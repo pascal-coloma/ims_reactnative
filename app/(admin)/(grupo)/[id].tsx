@@ -176,8 +176,8 @@ const DetalleGrupo = () => {
           {grupo.miembros.length === 0 ? (
             <Text style={local.vacio}>Sin miembros</Text>
           ) : (
-            grupo.miembros.map((m) => (
-              <View key={m.rut} style={local.card}>
+            grupo.miembros.map((m, index) => (
+              <View key={m.rut} style={[local.card, index % 2 === 1 && local.cardAlterna]}>
                 <View style={[local.avatar, { backgroundColor: ROL_COLOR[m.rol] ?? '#999' }]}>
                   <Text style={local.avatarText}>{m.nombre[0]?.toUpperCase()}</Text>
                 </View>
@@ -205,13 +205,17 @@ const DetalleGrupo = () => {
             <Text style={local.vacio}>Todo el personal activo ya está en el grupo</Text>
           ) : (
             <>
-              {noSuscritos.map((p) => {
+              {noSuscritos.map((p, index) => {
                 const pid = parseInt(p.id, 10);
                 const seleccionado = personalSeleccionado === pid;
                 return (
                   <TouchableOpacity
                     key={p.id}
-                    style={[local.selectorItem, seleccionado && local.selectorItemActivo]}
+                    style={[
+                      local.selectorItem,
+                      index % 2 === 1 && local.selectorItemAlterna,
+                      seleccionado && local.selectorItemActivo,
+                    ]}
                     onPress={() => setPersonalSeleccionado(seleccionado ? null : pid)}
                   >
                     <View style={[local.radio, seleccionado && local.radioActivo]}>
@@ -283,6 +287,9 @@ const local = StyleSheet.create({
     marginBottom: 8,
     elevation: 1,
   },
+  cardAlterna: {
+    backgroundColor: '#F3F4F6',
+  },
   avatar: {
     width: 40,
     height: 40,
@@ -332,6 +339,9 @@ const local = StyleSheet.create({
     elevation: 1,
     borderWidth: 2,
     borderColor: 'transparent',
+  },
+  selectorItemAlterna: {
+    backgroundColor: '#F3F4F6',
   },
   selectorItemActivo: {
     borderColor: '#E53935',

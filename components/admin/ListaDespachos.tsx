@@ -3,6 +3,7 @@ import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -22,7 +23,7 @@ const FILTROS: { icon: keyof typeof MaterialIcons.glyphMap; value: string }[] = 
 ];
 
 const ListaDespachos = () => {
-  const { despachos, recargar } = useDespachos();
+  const { despachos, recargar, cargarMas, loadingMore, tieneMas } = useDespachos();
   const [filtroActivo, setFiltroActivo] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -52,7 +53,9 @@ const ListaDespachos = () => {
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: (typeof despachosFiltrados)[0] }) => <DetalleDespacho despacho={item} />,
+    ({ item, index }: { item: (typeof despachosFiltrados)[0]; index: number }) => (
+      <DetalleDespacho despacho={item} index={index} />
+    ),
     [],
   );
 
@@ -92,6 +95,11 @@ const ListaDespachos = () => {
             <Text style={styles.subtitle}>Sin despachos</Text>
           </View>
         }
+        ListFooterComponent={
+          loadingMore ? <ActivityIndicator style={local.footer} color="#E53935" /> : null
+        }
+        onEndReached={() => tieneMas && cargarMas()}
+        onEndReachedThreshold={0.5}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refrescarSwipe} />}
       />
     </>
@@ -130,6 +138,9 @@ const local = StyleSheet.create({
     backgroundColor: '#E53935',
     borderRadius: 2,
     marginTop: 4,
+  },
+  footer: {
+    paddingVertical: 16,
   },
 });
 

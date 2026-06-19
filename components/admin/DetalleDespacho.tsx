@@ -7,13 +7,13 @@ import { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import EstadoBadge from '../EstadoBadge';
 
-const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
+const DetalleDespacho = ({ despacho, index }: { despacho: Despacho; index: number }) => {
   const { ambulancias } = useAmbulancias();
   const ambulancia = ambulancias.find((a) => a.id === despacho.ambulancia?.id);
 
   return (
     <TouchableOpacity onPress={() => router.push(`/(admin)/detalledespacho/${despacho.id}`)}>
-      <View style={styles.container}>
+      <View style={[styles.container, index % 2 === 1 && local.filaAlterna]}>
         <View style={local.headerRow}>
           <Text style={local.idTexto}>Despacho {despacho.id}</Text>
           <EstadoBadge estado={despacho.estado} />
@@ -62,6 +62,9 @@ const DetalleDespacho = ({ despacho }: { despacho: Despacho }) => {
 };
 
 const local = StyleSheet.create({
+  filaAlterna: {
+    backgroundColor: '#F3F4F6',
+  },
   headerRow: {
     flexDirection: 'row',
     width: '100%',

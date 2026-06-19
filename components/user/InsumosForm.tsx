@@ -101,7 +101,7 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
             insumosFiltrados.map((insumo, i) => (
               <TouchableOpacity
                 key={i}
-                style={local.resultadoItem}
+                style={[local.resultadoItem, i % 2 === 1 && local.resultadoItemAlterna]}
                 onPress={() => agregarInsumo(insumo)}
               >
                 <View style={local.resultadoTextos}>
@@ -127,7 +127,10 @@ const InsumosForm = ({ control, errors }: InsumosProps) => {
           {fields.map((field, index) => {
             const insumo = insumosAmbulancia.find((i) => i.id === field.insumoId);
             return (
-              <View key={field.id} style={local.insumoItem}>
+              <View
+                key={field.id}
+                style={[local.insumoItem, index % 2 === 1 && local.insumoItemAlterna]}
+              >
                 <View style={local.insumoRow}>
                   <View style={local.insumoTextos}>
                     <Text style={local.insumoNombre}>{insumo?.nombre}</Text>
@@ -211,6 +214,7 @@ const local = StyleSheet.create({
     borderBottomColor: '#eee',
     width: '100%',
   },
+  resultadoItemAlterna: { backgroundColor: '#F3F4F6' },
   resultadoTextos: { flex: 1, marginRight: 8 },
   resultadoNombre: { fontSize: 15, fontWeight: '500', color: '#111' },
   resultadoDetalle: { fontSize: 12, color: '#888', marginTop: 2 },
@@ -226,6 +230,7 @@ const local = StyleSheet.create({
     borderBottomColor: '#eee',
     width: '100%',
   },
+  insumoItemAlterna: { backgroundColor: '#F3F4F6' },
   insumoRow: {
     flexDirection: 'row',
     alignItems: 'center',
