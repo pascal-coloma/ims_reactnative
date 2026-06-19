@@ -3,6 +3,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useDespachos } from '@/context/DespachosContext';
 import { AMBULANCIA_ESTADO, AmbulanciaEstado } from '@/data/constants/ambulanciaEstados';
+import { Picker } from '@react-native-picker/picker';
+import { useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,10 +13,18 @@ const UserActions = () => {
   const { user } = useAuth();
   const { despachosPorPersonal, seleccionarDespacho } = useDespachos();
   const { cambiarEstado } = useAmbulancias();
+  const [ambulanciaSeleccionadaId, setAmbulanciaSeleccionadaId] = useState<string | null>(null);
 
   const misDespachos = despachosPorPersonal(user?.personalId ?? '');
-  const miAmbulancia = misDespachos[misDespachos.length - 1]?.ambulancia;
-  const miAmbulanciaId = miAmbulancia?.id;
+
+  const ambulanciasAsignadas = misDespachos.reduce<{ id: string; patente: string }[]>((acc, d) => {
+    if (d.ambulancia && !acc.some((a) => a.id === d.ambulancia!.id)) acc.push(d.ambulancia);
+    return acc;
+  }, []);
+
+  const ultimaAmbulancia = misDespachos[misDespachos.length - 1]?.ambulancia;
+  const miAmbulanciaId = ambulanciaSeleccionadaId ?? ultimaAmbulancia?.id;
+  const miAmbulancia = ambulanciasAsignadas.find((a) => a.id === miAmbulanciaId) ?? ultimaAmbulancia;
 
   const handleRegistrarAtencion = () => {
     if (misDespachos.length === 0) {
@@ -70,15 +80,27 @@ const UserActions = () => {
 
       {user?.role === 'driver' && (
         <>
-          <Text style={style.ambulanciaLabel}>
-            {miAmbulancia ? (
-              <>
-                Cambiando estado de <Text style={style.ambulanciaPatente}>{miAmbulancia.patente}</Text>
-              </>
-            ) : (
-              'Sin ambulancia asignada'
-            )}
-          </Text>
+          {ambulanciasAsignadas.length > 1 ? (
+            <View style={style.pickerContainer}>
+              <Text style={style.ambulanciaLabel}>Selecciona la ambulancia a actualizar</Text>
+              <Picker selectedValue={miAmbulanciaId} onValueChange={setAmbulanciaSeleccionadaId}>
+                {ambulanciasAsignadas.map((a) => (
+                  <Picker.Item key={a.id} label={a.patente} value={a.id} />
+                ))}
+              </Picker>
+            </View>
+          ) : (
+            <Text style={style.ambulanciaLabel}>
+              {miAmbulancia ? (
+                <>
+                  Cambiando estado de{' '}
+                  <Text style={style.ambulanciaPatente}>{miAmbulancia.patente}</Text>
+                </>
+              ) : (
+                'Sin ambulancia asignada'
+              )}
+            </Text>
+          )}
           <View style={style.cardsRow}>
             <TouchableOpacity
               style={style.linkStyle}
@@ -126,6 +148,15 @@ const style = StyleSheet.create({
     color: '#333',
     marginTop: 10,
     marginBottom: 6,
+  },
+  pickerContainer: {
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
+    marginTop: 8,
+    marginBottom: 6,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
   },
   ambulanciaPatente: {
     fontWeight: 'bold',
