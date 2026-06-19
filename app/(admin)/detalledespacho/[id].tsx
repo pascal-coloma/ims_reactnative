@@ -67,8 +67,11 @@ const DetalleDespachoScreen = () => {
         {equipoDespacho.length === 0 ? (
           <Text style={{ color: '#888', fontStyle: 'italic' }}>Sin personal asignado</Text>
         ) : (
-          equipoDespacho.map((p) => (
-            <View key={p.id} style={style.personalItem}>
+          equipoDespacho.map((p, index) => (
+            <View
+              key={p.id}
+              style={[style.personalItem, index % 2 === 1 && style.personalItemAlterna]}
+            >
               <View>
                 <Text style={style.personalNombre}>
                   {p.first_name} {p.last_name}
@@ -139,6 +142,9 @@ const style = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+  },
+  personalItemAlterna: {
+    backgroundColor: '#F3F4F6',
   },
   personalNombre: {
     fontWeight: 'bold',
