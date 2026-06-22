@@ -52,10 +52,7 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user?.role]);
 
-  const value = useMemo(
-    () => ({ ambulancias, loading, error }),
-    [ambulancias, loading, error],
-  );
+  const value = useMemo(() => ({ ambulancias, loading, error }), [ambulancias, loading, error]);
 
   return <AmbulanciaContext.Provider value={value}>{children}</AmbulanciaContext.Provider>;
 };

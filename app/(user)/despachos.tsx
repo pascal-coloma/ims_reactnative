@@ -70,9 +70,7 @@ const MisDespachos = () => {
               seleccionarDespacho(d.id);
               router.push({
                 pathname:
-                  user?.role === 'driver'
-                    ? '/(user)/enviar-senal'
-                    : '/(user)/registrar-atencion',
+                  user?.role === 'driver' ? '/(user)/enviar-senal' : '/(user)/registrar-atencion',
                 params: { despachoId: d.id },
               });
             }}
