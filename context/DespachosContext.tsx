@@ -93,6 +93,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   const recargar = useCallback(() => setRefreshKey((prev) => prev + 1), []);
   const { lastMessageId } = useNotifications();
   const primerMensajeRef = useRef(true);
+  const cargandoMasRef = useRef(false);
 
   useEffect(() => {
     if (user) fetchDespachos();
@@ -148,7 +149,11 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
   }, [user?.role, refreshKey]);
 
   const cargarMas = useCallback(async () => {
-    if (!nextCursor || loadingMore) return;
+    // Guard por ref (no por estado): onEndReached y el auto-fill de la lista
+    // pueden llamar a cargarMas en el mismo tick, antes de que loadingMore
+    // (estado de React) se actualice, duplicando el pedido del mismo cursor.
+    if (!nextCursor || cargandoMasRef.current) return;
+    cargandoMasRef.current = true;
     setLoadingMore(true);
     try {
       // nextCursor llega como URL absoluta (DRF la construye con build_absolute_uri);
@@ -162,9 +167,10 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     } catch (e: any) {
       console.error('Error cargando más despachos:', e);
     } finally {
+      cargandoMasRef.current = false;
       setLoadingMore(false);
     }
-  }, [nextCursor, loadingMore]);
+  }, [nextCursor]);
 
   const agregarDespacho = useCallback(
     async (data: FormCompleta): Promise<void> => {

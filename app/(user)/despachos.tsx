@@ -69,7 +69,10 @@ const MisDespachos = () => {
             onPress={() => {
               seleccionarDespacho(d.id);
               router.push({
-                pathname: '/(user)/registrar-atencion',
+                pathname:
+                  user?.role === 'driver'
+                    ? '/(user)/enviar-senal'
+                    : '/(user)/registrar-atencion',
                 params: { despachoId: d.id },
               });
             }}
