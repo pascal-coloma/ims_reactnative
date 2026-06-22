@@ -231,13 +231,11 @@ describe('AtencionContext', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ success: 'https://s3.example.com/doc/1' }),
       });
-      global.fetch = jest
-        .fn()
-        .mockResolvedValue({
-          ok: false,
-          status: 403,
-          text: jest.fn().mockResolvedValue('Forbidden'),
-        });
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        text: jest.fn().mockResolvedValue('Forbidden'),
+      });
 
       const { result } = renderHook(() => useAtenciones(), { wrapper });
       let documento: any;
