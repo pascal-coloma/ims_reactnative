@@ -6,6 +6,7 @@ export type Despacho = {
   paciente?: {
     nombre_completo: string;
     rut: string;
+    fecha_nacimiento: string;
   };
   direccionOrigen: string;
   direccionDestino: string;
@@ -20,6 +21,7 @@ export type Despacho = {
     | 'programado';
   fechaLlamado?: string;
   fechaAsignacion?: string;
+  fechaProgramada?: string;
   ambulancia?: Ambulancia;
   personalIds: string[];
   grupoNombre?: string;
