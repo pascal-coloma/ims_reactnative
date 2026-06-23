@@ -83,6 +83,11 @@ const MisDespachos = () => {
               {d.direccionOrigen} → {d.direccionDestino}
             </Text>
             <Text style={styles.subtitle}>Descripción: {d.descripcionLlamado}</Text>
+            {d.estado === 'programado' && d.fechaProgramada && (
+              <Text style={styles.subtitle}>
+                Programado para: {new Date(d.fechaProgramada).toLocaleString('es-CL')}
+              </Text>
+            )}
             {d.ambulancia && <Text style={styles.subtitle}>Unidad: {d.ambulancia.patente}</Text>}
             <View style={local.divisor} />
           </TouchableOpacity>
