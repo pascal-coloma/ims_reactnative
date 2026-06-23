@@ -84,7 +84,7 @@ describe('AtencionContext', () => {
         despacho_id: 5,
         ambulancia_id: 7,
         hora_salida: '2024-01-15T10:30:00',
-        hora_llegada: '2024-01-15T10:15:00',
+        hora_llegada: new Date('2024-01-15T10:15:00').toISOString(),
       });
       expect(body.signos_vitales[0].hora).toBe('1030');
       expect(body.insumos_utilizados[0]).toEqual({
