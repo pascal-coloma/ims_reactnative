@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 export default function LoginForm() {
   const router = useRouter();
   const { login, setPendingCredentials } = useAuth();
@@ -9,6 +10,7 @@ export default function LoginForm() {
   const [passw, setPassw] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mostrarPassw, setMostrarPassw] = useState(false);
 
   async function handleLogin() {
     if (!username || !passw) {
@@ -52,14 +54,23 @@ export default function LoginForm() {
         editable={!cargando}
         keyboardType="default"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={passw}
-        onChangeText={setPassw}
-        secureTextEntry
-        editable={!cargando}
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Contraseña"
+          value={passw}
+          onChangeText={setPassw}
+          secureTextEntry={!mostrarPassw}
+          editable={!cargando}
+        />
+        <TouchableOpacity onPress={() => setMostrarPassw((v) => !v)}>
+          <MaterialIcons
+            name={mostrarPassw ? 'visibility-off' : 'visibility'}
+            size={22}
+            color="#666"
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity onPress={() => router.navigate('/(auth)/recuperacion')}>
         <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
@@ -109,6 +120,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
+    fontSize: 16,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 12,
     fontSize: 16,
   },
   forgotPassword: {

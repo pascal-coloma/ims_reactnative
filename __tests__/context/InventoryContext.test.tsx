@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import InventarioProvider, { useInventario } from '@/context/InventoryContext';
-import { Insumo } from '@/data/types';
+import { Insumo, NuevoInsumo } from '@/data/types';
 
 jest.mock('@/context/AuthContext', () => ({
   useAuth: jest.fn(() => ({
@@ -89,25 +89,39 @@ describe('InventarioContext', () => {
     });
   });
 
-  describe.skip('agregarInsumo', () => {
-    it('appends a new item to local state', async () => {
+  describe('agregarInsumos', () => {
+    it('POSTs the items and refetches on success', async () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
-      const newInsumo: Insumo = {
-        id: '99',
-        nombre: 'Test Item',
-        categoria: 'Test',
+      mockFetchConSesion.mockClear();
+      const nuevo: NuevoInsumo = {
+        nombre_insumo: 'Test Item',
+        categoria_id: 1,
         cantidad: 1,
-        unidadMedida: 'unidades',
-        ambulanciaPatente: 'XYZ-001',
-        ambulanciaId: 0,
+        unidad_medida_id: 1,
         stock: 3,
+        ambulancia_id: 0,
       };
-      act(() => {
-        (result.current as any).agregarInsumo(newInsumo);
+      await act(async () => {
+        await result.current.agregarInsumos([nuevo]);
       });
-      expect(result.current.insumos).toContainEqual(newInsumo);
-      expect(result.current.insumos.length).toBe(mappedInsumos.length + 1);
+      expect(mockFetchConSesion).toHaveBeenCalledWith('/ims/api/inv/add/', {
+        method: 'POST',
+        body: JSON.stringify({ items: [nuevo] }),
+      });
+      // recargar() dispara un refetch
+      expect(mockFetchConSesion).toHaveBeenCalledWith('/ims/api/inv/');
+    });
+
+    it('throws when the request fails', async () => {
+      const { result } = renderHook(() => useInventario(), { wrapper });
+      await act(async () => {});
+      mockFetchConSesion.mockResolvedValueOnce({ ok: false, status: 400 });
+      await expect(
+        act(async () => {
+          await result.current.agregarInsumos([]);
+        }),
+      ).rejects.toThrow('Error 400');
     });
   });
 
@@ -127,48 +141,73 @@ describe('InventarioContext', () => {
     });
   });
 
-  describe.skip('editarInsumo', () => {
-    it('updates only the target insumo', async () => {
+  describe('actualizarStock', () => {
+    it('PATCHes the delta and refetches on success', async () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
-      const target = mappedInsumos[0];
-      act(() => {
-        (result.current as any).editarInsumo(target.id, {
-          ...target,
-          nombre: 'Actualizado',
-          stock: 99,
-        });
+      mockFetchConSesion.mockClear();
+      await act(async () => {
+        await result.current.actualizarStock(1, 0, -2);
       });
-      const updated = result.current.insumos.find((i) => i.id === target.id);
-      expect(updated?.nombre).toBe('Actualizado');
-      expect(updated?.stock).toBe(99);
+      expect(mockFetchConSesion).toHaveBeenCalledWith('/ims/api/inv/update/', {
+        method: 'PATCH',
+        body: JSON.stringify({ presentacion_id: 1, ambulancia_id: 0, cantidad: -2 }),
+      });
+      expect(mockFetchConSesion).toHaveBeenCalledWith('/ims/api/inv/');
     });
 
-    it('does not affect other items', async () => {
+    it('throws when the request fails', async () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
-      act(() => {
-        (result.current as any).editarInsumo(mappedInsumos[0].id, {
-          ...mappedInsumos[0],
-          nombre: 'Cambiado',
-        });
-      });
-      expect(result.current.insumos.find((i) => i.id === mappedInsumos[1].id)).toEqual(
-        mappedInsumos[1],
-      );
+      mockFetchConSesion.mockResolvedValueOnce({ ok: false, status: 500 });
+      await expect(
+        act(async () => {
+          await result.current.actualizarStock(1, 0, -2);
+        }),
+      ).rejects.toThrow('Error 500');
     });
   });
 
-  describe.skip('eliminarInsumo', () => {
-    it('removes the item from local state', async () => {
+  describe('moverInsumo', () => {
+    it('PATCHes the move and refetches on success', async () => {
       const { result } = renderHook(() => useInventario(), { wrapper });
       await act(async () => {});
-      const targetId = mappedInsumos[0].id;
-      act(() => {
-        (result.current as any).eliminarInsumo(targetId);
+      mockFetchConSesion.mockClear();
+      await act(async () => {
+        await result.current.moverInsumo(1, 0, 2, 5);
       });
-      expect(result.current.insumos.find((i) => i.id === targetId)).toBeUndefined();
-      expect(result.current.insumos.length).toBe(mappedInsumos.length - 1);
+      expect(mockFetchConSesion).toHaveBeenCalledWith('/ims/api/inv/move/', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          presentacion_id: 1,
+          ambulancia_from_id: 0,
+          ambulancia_to_id: 2,
+          cantidad: 5,
+        }),
+      });
+      expect(mockFetchConSesion).toHaveBeenCalledWith('/ims/api/inv/');
+    });
+
+    it('throws a specific message on 409 (insufficient stock)', async () => {
+      const { result } = renderHook(() => useInventario(), { wrapper });
+      await act(async () => {});
+      mockFetchConSesion.mockResolvedValueOnce({ ok: false, status: 409 });
+      await expect(
+        act(async () => {
+          await result.current.moverInsumo(1, 0, 2, 5);
+        }),
+      ).rejects.toThrow('No hay suficiente stock en la ambulancia de origen');
+    });
+
+    it('throws a generic error on other failures', async () => {
+      const { result } = renderHook(() => useInventario(), { wrapper });
+      await act(async () => {});
+      mockFetchConSesion.mockResolvedValueOnce({ ok: false, status: 500 });
+      await expect(
+        act(async () => {
+          await result.current.moverInsumo(1, 0, 2, 5);
+        }),
+      ).rejects.toThrow('Error 500');
     });
   });
 

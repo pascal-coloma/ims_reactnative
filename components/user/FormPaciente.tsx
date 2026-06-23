@@ -120,18 +120,23 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
         </View>
         <View style={style.separador} />
         <View style={{ flex: 2 }}>
-          <CampoEditable label="Fecha de nacimiento">
+          {/* El despacho nunca trae la fecha de nacimiento del paciente
+              (DespachoListSerializer.get_paciente solo expone nombre_completo
+              y rut), así que este campo siempre queda libre. */}
+          <CampoEditable
+            label="Fecha de nacimiento"
+            error={errors.fechaNacimiento && 'Campo requerido'}
+          >
             <Controller
               control={control}
               name="fechaNacimiento"
-              rules={{ required: !paciente }}
+              rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   placeholder="AAAA-MM-DD"
                   onChangeText={onChange}
                   value={value}
-                  style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
-                  editable={!paciente}
+                  style={style.input}
                   keyboardType="numeric"
                 />
               )}
@@ -150,8 +155,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
-              editable={!paciente}
+              style={style.input}
               keyboardType="numeric"
             />
           )}
@@ -168,12 +172,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              style={[
-                style.input,
-                { height: 80, textAlignVertical: 'top' },
-                paciente && { backgroundColor: '#F7F7F7' },
-              ]}
-              editable={!paciente}
+              style={[style.input, { height: 80, textAlignVertical: 'top' }]}
               multiline
             />
           )}

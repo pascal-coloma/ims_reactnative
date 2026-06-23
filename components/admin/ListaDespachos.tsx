@@ -1,7 +1,7 @@
 import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import DetalleDespacho from './DetalleDespacho';
 import { useFocusEffect } from 'expo-router';
+
+const TAMANO_PAGINA = 10;
 
 const FILTROS: { icon: keyof typeof MaterialIcons.glyphMap; value: string }[] = [
   { icon: 'format-list-bulleted', value: 'todos' },
@@ -51,6 +53,20 @@ const ListaDespachos = () => {
         }),
     [despachos, filtroActivo, busqueda],
   );
+
+  // El filtrado es client-side sobre páginas de cursor sin filtrar por estado,
+  // así que una página puede no traer coincidencias. Se sigue pidiendo más
+  // páginas hasta llenar la vista o agotar el cursor, en vez de depender de
+  // onEndReached (no es confiable con listas vacías/cortas).
+  // cargarMas se difiere a requestAnimationFrame: si se encadenan los pedidos
+  // sin ceder el frame, RN nunca llega a pintar las coincidencias ya cargadas
+  // y todo aparece junto al final del recorrido.
+  useEffect(() => {
+    if (despachosFiltrados.length < TAMANO_PAGINA && tieneMas && !loadingMore) {
+      const id = requestAnimationFrame(() => cargarMas());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [despachosFiltrados.length, tieneMas, loadingMore, cargarMas]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: (typeof despachosFiltrados)[0]; index: number }) => (
