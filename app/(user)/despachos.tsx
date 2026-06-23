@@ -20,6 +20,7 @@ const MisDespachos = () => {
   const { despachosPorPersonal, seleccionarDespacho, recargar } = useDespachos();
   const [busqueda, setBusqueda] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [vista, setVista] = useState<'actuales' | 'programados'>('actuales');
 
   useFocusEffect(
     useCallback(() => {
@@ -35,13 +36,21 @@ const MisDespachos = () => {
 
   const misDespachos = despachosPorPersonal(user?.personalId ?? '');
 
-  const despachosFiltrados = busqueda.trim()
-    ? misDespachos.filter(
-        (d) =>
-          d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
-          d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
-      )
-    : misDespachos;
+  const despachosPorVista = misDespachos.filter((d) =>
+    vista === 'programados' ? !!d.fechaProgramada : !d.fechaProgramada,
+  );
+
+  const despachosFiltrados = (
+    busqueda.trim()
+      ? despachosPorVista.filter(
+          (d) =>
+            d.descripcionLlamado.toLowerCase().includes(busqueda.toLowerCase()) ||
+            d.direccionOrigen.toLowerCase().includes(busqueda.toLowerCase()),
+        )
+      : despachosPorVista
+  ).sort(
+    (a, b) => new Date(b.fechaLlamado ?? 0).getTime() - new Date(a.fechaLlamado ?? 0).getTime(),
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -51,12 +60,32 @@ const MisDespachos = () => {
         data={despachosFiltrados}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
-          <TextInput
-            style={local.buscador}
-            placeholder="Buscar por descripción o dirección..."
-            value={busqueda}
-            onChangeText={setBusqueda}
-          />
+          <>
+            <View style={local.tabs}>
+              <TouchableOpacity
+                style={[local.tab, vista === 'actuales' && local.tabActiva]}
+                onPress={() => setVista('actuales')}
+              >
+                <Text style={[local.tabTexto, vista === 'actuales' && local.tabTextoActiva]}>
+                  Actuales
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[local.tab, vista === 'programados' && local.tabActiva]}
+                onPress={() => setVista('programados')}
+              >
+                <Text style={[local.tabTexto, vista === 'programados' && local.tabTextoActiva]}>
+                  Programados
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={local.buscador}
+              placeholder="Buscar por descripción o dirección..."
+              value={busqueda}
+              onChangeText={setBusqueda}
+            />
+          </>
         }
         ListEmptyComponent={
           <View style={styles.container}>
@@ -82,7 +111,7 @@ const MisDespachos = () => {
             <Text style={styles.subtitle}>
               {d.direccionOrigen} → {d.direccionDestino}
             </Text>
-            {d.estado === 'programado' && d.fechaProgramada && (
+            {d.fechaProgramada && (
               <Text style={styles.subtitle}>
                 Programado para: {new Date(d.fechaProgramada).toLocaleString('es-CL')}
               </Text>
@@ -112,6 +141,30 @@ const local = StyleSheet.create({
     marginBottom: 8,
     marginHorizontal: 16,
     backgroundColor: '#fff',
+  },
+  tabs: {
+    flexDirection: 'row',
+    marginTop: 8,
+    marginHorizontal: 16,
+    gap: 8,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+  },
+  tabActiva: {
+    backgroundColor: '#1976D2',
+  },
+  tabTexto: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#555',
+  },
+  tabTextoActiva: {
+    color: '#fff',
   },
   rowHeader: {
     flexDirection: 'row',
