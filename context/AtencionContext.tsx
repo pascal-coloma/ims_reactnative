@@ -46,7 +46,9 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       const horaAISO = (hora: string) => {
         const hhmm = formatearHora(hora);
         const fecha = atencion.fechaRegistro.split('T')[0];
-        return `${fecha}T${hhmm.slice(0, 2)}:${hhmm.slice(2, 4)}:00`;
+        // new Date(...) sin offset se interpreta en hora local; toISOString() la
+        // convierte a UTC real para que el backend no la desplace al guardarla.
+        return new Date(`${fecha}T${hhmm.slice(0, 2)}:${hhmm.slice(2, 4)}:00`).toISOString();
       };
 
       const paciente = atencion.paciente;
