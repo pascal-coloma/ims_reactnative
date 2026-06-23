@@ -45,8 +45,15 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
     setValue('primerNombre', primerNombre ?? '');
     setValue('apellidoPaterno', apellidoPaterno ?? '');
     setValue('rut', paciente.rut);
+    setValue('fechaNacimiento', paciente.fecha_nacimiento ?? '');
     setValue('direccionOrigen', despachoActivo?.direccionOrigen ?? '');
-  }, [paciente?.rut, paciente?.nombre_completo, despachoActivo?.direccionOrigen, setValue]);
+  }, [
+    paciente?.rut,
+    paciente?.nombre_completo,
+    paciente?.fecha_nacimiento,
+    despachoActivo?.direccionOrigen,
+    setValue,
+  ]);
 
   return (
     <View style={style.formulario}>
@@ -120,9 +127,6 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
         </View>
         <View style={style.separador} />
         <View style={{ flex: 2 }}>
-          {/* El despacho nunca trae la fecha de nacimiento del paciente
-              (DespachoListSerializer.get_paciente solo expone nombre_completo
-              y rut), así que este campo siempre queda libre. */}
           <CampoEditable
             label="Fecha de nacimiento"
             error={errors.fechaNacimiento && 'Campo requerido'}
@@ -136,7 +140,8 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
                   placeholder="AAAA-MM-DD"
                   onChangeText={onChange}
                   value={value}
-                  style={style.input}
+                  style={[style.input, paciente && { backgroundColor: '#F7F7F7' }]}
+                  editable={!paciente}
                   keyboardType="numeric"
                 />
               )}
@@ -157,6 +162,23 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               value={value}
               style={style.input}
               keyboardType="numeric"
+            />
+          )}
+        />
+      </CampoEditable>
+
+      <CampoEditable label="Comuna" error={errors.comuna && 'Campo requerido'}>
+        <Controller
+          control={control}
+          name="comuna"
+          rules={{ required: true }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              placeholder="Ingrese comuna"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={style.input}
             />
           )}
         />

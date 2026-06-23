@@ -49,7 +49,24 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         return `${fecha}T${hhmm.slice(0, 2)}:${hhmm.slice(2, 4)}:00`;
       };
 
+      const paciente = atencion.paciente;
       const payload = {
+        paciente: {
+          rut: paciente.rut.replace(/\./g, ''),
+          nombre_completo: [
+            paciente.primerNombre,
+            paciente.segundoNombre ?? '',
+            paciente.apellidoPaterno,
+            paciente.apellidoMaterno,
+          ]
+            .filter(Boolean)
+            .join(' '),
+          fecha_nacimiento: paciente.fechaNacimiento,
+          direccion: paciente.direccionOrigen,
+          condicion_paciente: paciente.condicionPaciente,
+          telefono: (paciente.telefono ?? '').replace(/\s/g, '').slice(0, 12),
+          comuna: paciente.comuna ?? '',
+        },
         despacho: {
           despacho_id: Number(atencion.despachoId),
           ambulancia_id: Number(ambulanciaId),

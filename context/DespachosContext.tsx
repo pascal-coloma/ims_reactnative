@@ -23,6 +23,7 @@ const mapearControl = (d: any): Despacho => ({
   estado: d.estado === 'asignado' ? 'activo' : d.estado,
   fechaLlamado: d.fecha_llamado,
   fechaAsignacion: d.fecha_asignacion,
+  fechaProgramada: d.fecha_programada,
   paciente: d.paciente ?? undefined,
   rutPaciente: d.paciente?.rut ?? undefined,
   personalIds: d.personal ? d.personal.map((p: any) => String(p.personal__id)) : [],
@@ -42,6 +43,7 @@ const mapearWorker = (d: any): Despacho => ({
   descripcionLlamado: d.descripcionLlamado,
   estado: d.estado === 'asignado' ? 'activo' : d.estado,
   fechaLlamado: d.fechaLlamado,
+  fechaProgramada: d.fechaProgramada,
   personalIds: d.personalIds ?? [],
   grupoNombre: d.grupoNombre ?? undefined,
   paciente: d.paciente ?? undefined,
@@ -130,7 +132,6 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
       }
       if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
-
       if (esControl) {
         setDespachos(data.results.map(mapearControl));
         setNextCursor(data.next);
@@ -197,7 +198,7 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
             ]
               .filter(Boolean)
               .join(' '),
-            fecha_nacimiento: data.fechaNacimiento.split('-').reverse().join('-'),
+            fecha_nacimiento: data.fechaNacimiento,
             direccion: data.direccionOrigen,
             condicion_paciente: data.condicionPaciente,
             telefono: (data.telefono ?? '').replace(/\s/g, '').slice(0, 12),
@@ -278,7 +279,10 @@ const DespachosProvider = ({ children }: { children: ReactNode }) => {
     [despachos],
   );
 
-  const esDespachoActivo = (d: Despacho) => d.estado === 'activo' || d.estado === 'emergencia';
+  // El backend ya excluye finalizado/cancelado en /despachos/get/ (solicitud_usuario.py);
+  // replicamos esa misma regla en vez de listar a mano los demás estados (asignado→activo,
+  // emergencia, programado), para no volver a desincronizarnos si se agrega un estado nuevo.
+  const esDespachoActivo = (d: Despacho) => d.estado !== 'finalizado' && d.estado !== 'cancelado';
 
   const despachosPorPersonal = useCallback(
     (personalId: string) =>
