@@ -45,6 +45,9 @@ GoogleService-Info.plist
 # test coverage
 /coverage
 
+# internal docs
+/docs
+
 app-example
 
 # generated native folders
@@ -52,3 +55,4 @@ app-example
 /android
 
 .watchmanconfig
+
