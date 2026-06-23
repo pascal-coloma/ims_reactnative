@@ -94,6 +94,16 @@ const EnviarSenal = () => {
 
           <TouchableOpacity
             style={local.linkStyle}
+            onPress={() => handleEnviarSenal(SENAL_EQUIPO.OPERANDO)}
+          >
+            <View style={[local.card, local.operandoCard]}>
+              <MaterialIcons name="medical-services" size={50} color="white" />
+              <Text style={local.cardTitle}>{SENAL_EQUIPO_LABEL[SENAL_EQUIPO.OPERANDO]}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={local.linkStyle}
             onPress={() => handleEnviarSenal(SENAL_EQUIPO.REGRESANDO)}
           >
             <View style={[local.card, local.regresandoCard]}>
@@ -172,6 +182,9 @@ const local = StyleSheet.create({
   },
   enDestinoCard: {
     backgroundColor: '#FB8C00',
+  },
+  operandoCard: {
+    backgroundColor: '#00897B',
   },
   regresandoCard: {
     backgroundColor: '#8E24AA',
