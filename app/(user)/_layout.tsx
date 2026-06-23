@@ -38,7 +38,7 @@ const UserLayout = () => {
               <Tabs.Screen
                 name="dashboard"
                 options={{
-                  title: 'Home',
+                  title: 'Inicio',
                   tabBarIcon: ({ color, size }) => (
                     <MaterialIcons name="home" size={size} color={color} />
                   ),
@@ -63,6 +63,7 @@ const UserLayout = () => {
                   ),
                 }}
               />
+              <Tabs.Screen name="enviar-senal" options={{ href: null }} />
             </Tabs>
           </AtencionProvider>
         </DespachosProvider>
