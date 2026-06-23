@@ -4,7 +4,7 @@
     "slug": "ims",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/bootsplash/logo.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "ims",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
