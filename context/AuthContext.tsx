@@ -86,7 +86,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     restore();
 
-    const unsubTokenRefresh = setupTokenRefresh();
     const sub = AppState.addEventListener('change', async (state) => {
       if (state !== 'active') return;
 
@@ -122,10 +121,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       sub.remove();
-      unsubTokenRefresh();
       setSessionExpiredHandler(() => {});
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    return setupTokenRefresh();
+  }, [user]);
 
   async function login(username: string, password: string): Promise<boolean> {
     try {

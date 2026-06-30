@@ -42,7 +42,7 @@ export async function registerFcmToken(): Promise<void> {
 }
 
 export function setupTokenRefresh(): () => void {
-  return onTokenRefresh(getMessaging(), async (token) => {
-    await postToken(token);
+  return onTokenRefresh(getMessaging(), (token) => {
+    postToken(token).catch((e) => console.warn('FCM token refresh failed:', e));
   });
 }

@@ -8,6 +8,7 @@ import {
 } from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export type FcmNotification = {
   id: string;
@@ -28,9 +29,21 @@ type NotificationContextType = {
 const NotificationContext = createContext<NotificationContextType | null>(null);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<FcmNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [lastMessageId, setLastMessageId] = useState<string | null>(null);
+
+  // ponytail: NotificationProvider lives above the role-gated layouts and never
+  // unmounts on logout, so clear it manually when the session ends to avoid
+  // leaking the previous user's notifications into the next login.
+  useEffect(() => {
+    if (!user) {
+      setNotifications([]);
+      setUnreadCount(0);
+      setLastMessageId(null);
+    }
+  }, [user]);
 
   const dismissNotification = useCallback(
     (id: string) => setNotifications((prev) => prev.filter((n) => n.id !== id)),
