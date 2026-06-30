@@ -1,7 +1,9 @@
 import React from 'react';
 import { Alert } from 'react-native';
 import { renderHook, act } from '@testing-library/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NotificationProvider, useNotifications } from '@/context/NotificationContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 let onMessageHandler: (message: any) => void;
 
@@ -13,8 +15,25 @@ jest.mock('@react-native-firebase/messaging', () => ({
   }),
 }));
 
+jest.mock('@preeternal/react-native-cookie-manager', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn().mockResolvedValue({}),
+    set: jest.fn().mockResolvedValue(undefined),
+    setFromResponse: jest.fn().mockResolvedValue(undefined),
+    clearAll: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+jest.mock('@/utils/firebaseMessaging', () => ({
+  registerFcmToken: jest.fn().mockResolvedValue(undefined),
+  setupTokenRefresh: jest.fn(() => () => {}),
+}));
+
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <NotificationProvider>{children}</NotificationProvider>
+  <AuthProvider>
+    <NotificationProvider>{children}</NotificationProvider>
+  </AuthProvider>
 );
 
 beforeEach(() => {
@@ -93,5 +112,30 @@ describe('NotificationContext', () => {
 
   it('throws when used outside provider', () => {
     expect(() => renderHook(() => useNotifications())).toThrow();
+  });
+
+  it('clears stale notifications when the session ends, so the next user starts clean', async () => {
+    // Seed a restored session so `user` starts non-null and logout() causes a real transition.
+    await AsyncStorage.setItem('user', JSON.stringify({ username: 'a' }));
+    await AsyncStorage.setItem('sessionid', 'sess-a');
+
+    const { result } = renderHook(() => ({ notifications: useNotifications(), auth: useAuth() }), {
+      wrapper,
+    });
+    await act(async () => {});
+    expect(result.current.auth.user).not.toBeNull();
+
+    act(() => {
+      onMessageHandler({ messageId: 'a', notification: { title: 'A', body: '' } });
+    });
+    expect(result.current.notifications.notifications).toHaveLength(1);
+
+    await act(async () => {
+      await result.current.auth.logout();
+    });
+
+    expect(result.current.notifications.notifications).toEqual([]);
+    expect(result.current.notifications.unreadCount).toBe(0);
+    expect(result.current.notifications.lastMessageId).toBeNull();
   });
 });
