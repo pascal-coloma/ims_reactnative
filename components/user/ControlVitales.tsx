@@ -159,9 +159,15 @@ function PaginaControl({
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             placeholder="36.5"
-            onBlur={onBlur}
-            onChangeText={(v) => onChange(Number(v))}
-            value={value > 0 ? value.toString() : ''}
+            onBlur={() => {
+              onChange(Number(value) || 0);
+              onBlur();
+            }}
+            onChangeText={(v) => {
+              const normalizado = v.replace(',', '.');
+              if (/^\d*\.?\d*$/.test(normalizado)) onChange(normalizado === '' ? 0 : normalizado);
+            }}
+            value={value ? String(value) : ''}
             style={style.input}
             keyboardType="decimal-pad"
           />
@@ -197,6 +203,7 @@ function PaginaControl({
             value={value > 0 ? value.toString() : ''}
             style={style.input}
             keyboardType="numeric"
+            maxLength={2}
           />
         )}
       />
