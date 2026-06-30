@@ -276,7 +276,12 @@ const local = StyleSheet.create({
   removeBtn: { padding: 4 },
   cantidadInputError: { borderColor: '#E53935' },
   errorText: { fontSize: 11, color: '#E53935', textAlign: 'center' },
-  observacionesErrorText: { textAlign: 'left', marginHorizontal: 12, marginTop: -6, marginBottom: 8 },
+  observacionesErrorText: {
+    textAlign: 'left',
+    marginHorizontal: 12,
+    marginTop: -6,
+    marginBottom: 8,
+  },
 });
 
 export default InsumosForm;
