@@ -60,6 +60,15 @@ const Panel = () => {
             </View>
           </View>
         </Link>
+        <Link href={'/(admin)/registrar-ambulancia'}>
+          <View style={style.patientCard}>
+            <MaterialIcons name="airport-shuttle" size={40} color="#372121" />
+            <View style={{ padding: 5 }}>
+              <Text style={[style.cardTitle, { color: '#372121' }]}>Registrar Ambulancia</Text>
+              <Text>Agregar nueva unidad a la flota</Text>
+            </View>
+          </View>
+        </Link>
         <Link href={'/(admin)/lista-personal'}>
           <View style={style.patientCard}>
             <MaterialIcons name="person" size={40} color="#372121" />

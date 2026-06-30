@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { formatearRut, validarRut } from '../utils/format';
 export default function LoginForm() {
   const router = useRouter();
   const { login, setPendingCredentials } = useAuth();
@@ -15,6 +16,10 @@ export default function LoginForm() {
   async function handleLogin() {
     if (!username || !passw) {
       setError('Ingresa tus credenciales');
+      return;
+    }
+    if (!validarRut(username)) {
+      setError('RUT inválido');
       return;
     }
     setCargando(true);
@@ -50,7 +55,7 @@ export default function LoginForm() {
         placeholder="RUT (12.345.678-9)"
         value={username}
         autoCapitalize="none"
-        onChangeText={(text) => setUsername(text)}
+        onChangeText={(text) => setUsername(formatearRut(text))}
         editable={!cargando}
         keyboardType="default"
       />

@@ -1,4 +1,5 @@
 import AppHeader from '@/components/AppHeader';
+import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useInventario } from '@/context/InventoryContext';
 import { Insumo } from '@/data/types';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -68,6 +69,7 @@ const InsumoCard = memo(function InsumoCard({
 
 const Inventario = () => {
   const { insumos } = useInventario();
+  const { ambulancias } = useAmbulancias();
   const router = useRouter();
   const [ambulanciaSeleccionada, setAmbulanciaSeleccionada] = useState('');
   const [busqueda, setBusqueda] = useState('');
@@ -102,7 +104,9 @@ const Inventario = () => {
     [router],
   );
   const patentes = useMemo(() => {
-    const unique = Array.from(new Set(insumos.map((i) => i.ambulanciaPatente)));
+    const fromInsumos = insumos.map((i) => i.ambulanciaPatente);
+    const fromAmbulancias = ambulancias.map((a) => a.patente);
+    const unique = Array.from(new Set([...fromInsumos, ...fromAmbulancias]));
     return unique.sort((a, b) => {
       const aIsBodega = /bodega/i.test(a);
       const bIsBodega = /bodega/i.test(b);
@@ -110,7 +114,7 @@ const Inventario = () => {
       if (!aIsBodega && bIsBodega) return 1;
       return 0;
     });
-  }, [insumos]);
+  }, [insumos, ambulancias]);
 
   const seleccion = useMemo(
     () => ambulanciaSeleccionada || patentes[0],
@@ -182,6 +186,11 @@ const Inventario = () => {
         renderItem={renderInsumo}
         ListHeaderComponent={chipSelector}
         stickyHeaderIndices={[0]}
+        ListEmptyComponent={
+          <Text style={{ color: '#aaa', textAlign: 'center', marginTop: 32 }}>
+            Sin insumos registrados
+          </Text>
+        }
       />
     </>
   );

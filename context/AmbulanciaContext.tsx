@@ -1,5 +1,6 @@
 import { fetchConSesion, useAuth } from '@/context/AuthContext';
 import { Ambulancia } from '@/data/mock/mockAmbulancia';
+import { AmbulanciaEstado } from '@/data/constants/ambulanciaEstados';
 import {
   createContext,
   useCallback,
@@ -14,6 +15,11 @@ type AmbulanciaContextType = {
   ambulancias: Ambulancia[];
   loading: boolean;
   error: string | null;
+  registrarAmbulancia: (data: {
+    patente: string;
+    modelo: string;
+    estado_disponibilidad?: AmbulanciaEstado;
+  }) => Promise<{ success: string; ambulancia_id: number }>;
 };
 
 const AmbulanciaContext = createContext<AmbulanciaContextType | null>(null);
@@ -52,7 +58,24 @@ export const AmbulanciaProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user?.role]);
 
-  const value = useMemo(() => ({ ambulancias, loading, error }), [ambulancias, loading, error]);
+  const registrarAmbulancia = useCallback(
+    async (data: { patente: string; modelo: string; estado_disponibilidad?: AmbulanciaEstado }) => {
+      const response = await fetchConSesion('/ims/api/ambulancias/add/', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error ?? `Error ${response.status}`);
+      await fetchAmbulancias();
+      return json as { success: string; ambulancia_id: number };
+    },
+    [fetchAmbulancias],
+  );
+
+  const value = useMemo(
+    () => ({ ambulancias, loading, error, registrarAmbulancia }),
+    [ambulancias, loading, error, registrarAmbulancia],
+  );
 
   return <AmbulanciaContext.Provider value={value}>{children}</AmbulanciaContext.Provider>;
 };
