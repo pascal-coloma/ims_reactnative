@@ -5,17 +5,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Modal,
-  Pressable,
-  FlatList,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, Pressable, FlatList } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import QRCode from 'react-native-qrcode-svg';
 import { formatearRut, validarRut } from '@/utils/format';
 
@@ -83,7 +74,7 @@ const RegistrarWorker = () => {
 
           <Text style={style.resultadoLabel}>Contraseña</Text>
           <View style={style.resultadoValor}>
-            <TextInput
+            <AppTextInput
               value={resultado.password}
               editable={true}
               selectTextOnFocus
@@ -134,7 +125,7 @@ const RegistrarWorker = () => {
             name="first_name"
             rules={{ required: true }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
+              <AppTextInput
                 placeholder="Ingrese nombre"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -151,7 +142,7 @@ const RegistrarWorker = () => {
             name="last_name"
             rules={{ required: true }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
+              <AppTextInput
                 placeholder="Ingrese apellido"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -171,7 +162,7 @@ const RegistrarWorker = () => {
               return (
                 <>
                   <Text style={style.label}>RUT</Text>
-                  <TextInput
+                  <AppTextInput
                     placeholder="12.345.678-9"
                     onBlur={onBlur}
                     onChangeText={(text) => onChange(formatearRut(text))}

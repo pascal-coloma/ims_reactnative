@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Control, Controller, FieldErrors, useFormContext } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { FormUsuario } from '@/data/types';
 import { useDespachos } from '@/context/DespachosContext';
 import { useEffect } from 'react';
@@ -71,7 +72,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           name="primerNombre"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Ingrese primer nombre"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -89,7 +90,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           name="apellidoPaterno"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Ingrese apellido paterno"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -112,7 +113,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               name="rut"
               rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
+                <AppTextInput
                   placeholder="12.345.678-9"
                   onBlur={onBlur}
                   onChangeText={(text) => onChange(formatearRut(text))}
@@ -136,7 +137,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
               name="fechaNacimiento"
               rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
-                <TextInput
+                <AppTextInput
                   placeholder="AAAA-MM-DD"
                   onChangeText={onChange}
                   value={value}
@@ -155,7 +156,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           control={control}
           name="telefono"
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Teléfono de contacto"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -173,7 +174,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           name="comuna"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Ingrese comuna"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -189,7 +190,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           control={control}
           name="condicionPaciente"
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Describe la condición del paciente"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -210,7 +211,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           name="direccionOrigen"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Ingrese dirección de origen"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -231,7 +232,7 @@ const FormPaciente = ({ control, errors }: FormPacienteProps) => {
           name="direccionDestino"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Ingrese dirección de destino"
               onBlur={onBlur}
               onChangeText={onChange}

@@ -2,16 +2,8 @@ import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import DetalleDespacho from './DetalleDespacho';
 import { useFocusEffect } from 'expo-router';
 
@@ -80,7 +72,7 @@ const ListaDespachos = () => {
       <FlatList
         ListHeaderComponent={
           <View style={styles.container}>
-            <TextInput
+            <AppTextInput
               style={local.buscador}
               placeholder="Buscar por RUT, nombre o ID..."
               value={busqueda}

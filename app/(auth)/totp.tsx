@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
 
@@ -55,7 +56,7 @@ export default function TOTPScreen() {
         </View>
       )}
 
-      <TextInput
+      <AppTextInput
         style={styles.totpInput}
         placeholder="000000"
         value={totpCode}

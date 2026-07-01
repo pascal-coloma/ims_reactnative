@@ -3,7 +3,8 @@ import AppHeader from '@/components/AppHeader';
 import styles from '@/styles/globalStyles';
 import { traducirRol } from '@/utils/labels';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 
 const ROL_COLOR: Record<string, string> = {
   control: '#1976D2',
@@ -37,7 +38,7 @@ const ListaPersonal = () => {
       <AppHeader title="Personal" />
 
       <View style={local.searchContainer}>
-        <TextInput
+        <AppTextInput
           style={local.buscador}
           placeholder="Buscar por nombre o RUT..."
           value={busqueda}

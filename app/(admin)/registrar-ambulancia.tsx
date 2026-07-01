@@ -10,17 +10,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  FlatList,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 
 const ESTADOS_INICIALES: { label: string; value: AmbulanciaEstado }[] = [
   { label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.DISPONIBLE], value: AMBULANCIA_ESTADO.DISPONIBLE },
@@ -115,7 +106,7 @@ const RegistrarAmbulancia = () => {
             name="patente"
             rules={{ required: true, maxLength: 10 }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
+              <AppTextInput
                 placeholder="Ej: ABCD12"
                 onBlur={onBlur}
                 onChangeText={(t) => onChange(t.toUpperCase())}
@@ -134,7 +125,7 @@ const RegistrarAmbulancia = () => {
             name="modelo"
             rules={{ required: true, maxLength: 100 }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
+              <AppTextInput
                 placeholder="Ej: Mercedes Sprinter 2023"
                 onBlur={onBlur}
                 onChangeText={onChange}

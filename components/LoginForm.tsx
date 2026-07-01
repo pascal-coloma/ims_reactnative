@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -50,7 +51,7 @@ export default function LoginForm() {
         </View>
       )}
 
-      <TextInput
+      <AppTextInput
         style={styles.input}
         placeholder="RUT (12.345.678-9)"
         value={username}
@@ -60,7 +61,7 @@ export default function LoginForm() {
         keyboardType="default"
       />
       <View style={styles.passwordContainer}>
-        <TextInput
+        <AppTextInput
           style={styles.passwordInput}
           placeholder="Contraseña"
           value={passw}

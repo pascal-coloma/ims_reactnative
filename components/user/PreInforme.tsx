@@ -1,5 +1,6 @@
 import { Controller, Control, FieldErrors } from 'react-hook-form';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import styles from '@/styles/globalStyles';
 import { FormUsuario } from '@/data/types';
 
@@ -19,7 +20,7 @@ const PreInformeForm = ({ control, errors }: PreInformeProps) => {
         name="preInforme.preInforme"
         render={({ field: { onChange, value } }) => (
           <>
-            <TextInput
+            <AppTextInput
               style={local.textoInput}
               multiline
               maxLength={650}
@@ -41,7 +42,7 @@ const PreInformeForm = ({ control, errors }: PreInformeProps) => {
         name="preInforme.motivoLlamado"
         render={({ field: { onChange, value } }) => (
           <>
-            <TextInput
+            <AppTextInput
               style={local.textoInput}
               multiline
               maxLength={650}

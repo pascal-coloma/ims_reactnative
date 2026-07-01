@@ -3,15 +3,8 @@ import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useInventario } from '@/context/InventoryContext';
 import { Insumo } from '@/data/types';
 import { memo, useCallback, useMemo, useState } from 'react';
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { useRouter } from 'expo-router';
 
 type InsumoCardProps = {
@@ -154,7 +147,7 @@ const Inventario = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <TextInput
+      <AppTextInput
         style={style.buscador}
         placeholder="Buscar insumo o categoría..."
         placeholderTextColor="#aaa"

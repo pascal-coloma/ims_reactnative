@@ -7,7 +7,8 @@ import styles from '@/styles/globalStyles';
 import { Picker } from '@react-native-picker/picker';
 import { useEffect, useState } from 'react';
 import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from 'react-hook-form';
-import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 
 type FormDespachoProps = {
   control: Control<FormCompleta>;
@@ -81,7 +82,7 @@ const FormDespacho = ({ control, errors, setValue }: FormDespachoProps) => {
         render={({ field: { onChange, onBlur, value } }) => (
           <>
             <Text style={style.label}>Descripción del llamado</Text>
-            <TextInput
+            <AppTextInput
               placeholder="Describe el motivo del llamado"
               onBlur={onBlur}
               onChangeText={onChange}

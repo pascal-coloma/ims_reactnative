@@ -2,16 +2,8 @@ import AppHeader from '@/components/AppHeader';
 import { useInventario } from '@/context/InventoryContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 
 const ActualizarStock = () => {
   const router = useRouter();
@@ -73,7 +65,7 @@ const ActualizarStock = () => {
 
         <Text style={style.label}>Delta de stock</Text>
         <Text style={style.hint}>Positivo para sumar, negativo para restar</Text>
-        <TextInput
+        <AppTextInput
           style={style.input}
           value={delta}
           onChangeText={setDelta}

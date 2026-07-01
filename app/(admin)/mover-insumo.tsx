@@ -3,16 +3,8 @@ import { useAmbulancias } from '@/context/AmbulanciaContext';
 import { useInventario } from '@/context/InventoryContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 
 const MoverInsumo = () => {
   const router = useRouter();
@@ -103,7 +95,7 @@ const MoverInsumo = () => {
         )}
 
         <Text style={style.label}>Cantidad a mover</Text>
-        <TextInput
+        <AppTextInput
           style={style.input}
           value={cantidad}
           onChangeText={setCantidad}

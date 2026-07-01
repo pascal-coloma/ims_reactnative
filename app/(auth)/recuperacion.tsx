@@ -1,6 +1,7 @@
 import RecoverConfirm from '@/components/RecoverConfirm';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 
 const RecuperarContrasena = () => {
   const [email, setEmail] = useState('');
@@ -28,7 +29,7 @@ const RecuperarContrasena = () => {
         Ingresa el correo registrado y recibirás una nueva contraseña para recuperar tu acceso.
       </Text>
 
-      <TextInput
+      <AppTextInput
         style={styles.input}
         placeholder="Ingresa tu correo"
         value={email}
