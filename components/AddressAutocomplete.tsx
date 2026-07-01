@@ -5,10 +5,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { formatearSugerencia, useAddressAutocomplete } from '@/hooks/useAddressAutocomplete';
 
 type AddressAutocompleteProps = {
@@ -31,7 +31,7 @@ export default function AddressAutocomplete({
       style={styles.container}
     >
       <View style={styles.inputRow}>
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder={placeholder ?? 'Ingresa una dirección'}
           value={query}

@@ -19,11 +19,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   Modal,
 } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -160,7 +160,7 @@ const RegistrarAtencion = () => {
                   return (
                     <>
                       <Text style={local.rutLabel}>RUT de quien recibe al paciente</Text>
-                      <TextInput
+                      <AppTextInput
                         placeholder="12.345.678-9"
                         onBlur={onBlur}
                         onChangeText={(t) => onChange(formatearRut(t))}

@@ -4,15 +4,8 @@ import { useDespachos } from '@/context/DespachosContext';
 import styles from '@/styles/globalStyles';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import EstadoBadge from '@/components/EstadoBadge';
 
 const MisDespachos = () => {
@@ -79,7 +72,7 @@ const MisDespachos = () => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <TextInput
+            <AppTextInput
               style={local.buscador}
               placeholder="Buscar por descripción o dirección..."
               value={busqueda}

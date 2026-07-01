@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { formatearRut, validarRut } from '../utils/format';
 export default function LoginForm() {
   const router = useRouter();
   const { login, setPendingCredentials } = useAuth();
@@ -15,6 +17,10 @@ export default function LoginForm() {
   async function handleLogin() {
     if (!username || !passw) {
       setError('Ingresa tus credenciales');
+      return;
+    }
+    if (!validarRut(username)) {
+      setError('RUT inválido');
       return;
     }
     setCargando(true);
@@ -45,17 +51,17 @@ export default function LoginForm() {
         </View>
       )}
 
-      <TextInput
+      <AppTextInput
         style={styles.input}
         placeholder="RUT (12.345.678-9)"
         value={username}
         autoCapitalize="none"
-        onChangeText={(text) => setUsername(text)}
+        onChangeText={(text) => setUsername(formatearRut(text))}
         editable={!cargando}
         keyboardType="default"
       />
       <View style={styles.passwordContainer}>
-        <TextInput
+        <AppTextInput
           style={styles.passwordInput}
           placeholder="Contraseña"
           value={passw}

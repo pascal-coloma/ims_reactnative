@@ -7,7 +7,8 @@ import {
   useWatch,
   useFormContext,
 } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { FormUsuario } from '@/data/types';
 
 type ControlVitalesProps = {
@@ -46,7 +47,7 @@ function PaginaControl({
         name={`controlSignos.${index}.pas`}
         rules={{ required: true, min: { value: 0, message: 'Valor inválido' } }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="120"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -66,7 +67,7 @@ function PaginaControl({
         name={`controlSignos.${index}.pad`}
         rules={{ required: true, min: { value: 0, message: 'Valor inválido' } }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="80"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -90,7 +91,7 @@ function PaginaControl({
         name={`controlSignos.${index}.fc`}
         rules={{ required: true }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="80"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -107,7 +108,7 @@ function PaginaControl({
         name={`controlSignos.${index}.fr`}
         rules={{ required: true }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="16"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -124,7 +125,7 @@ function PaginaControl({
         name={`controlSignos.${index}.satO2`}
         rules={{ required: true, max: { value: 100, message: 'Máximo 100%' } }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="98"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -140,7 +141,7 @@ function PaginaControl({
         control={control}
         name={`controlSignos.${index}.fio2`}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="21"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -157,7 +158,7 @@ function PaginaControl({
         name={`controlSignos.${index}.temperatura`}
         rules={{ min: { value: 30, message: 'Inválida' }, max: { value: 45, message: 'Inválida' } }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="36.5"
             onBlur={() => {
               onChange(Number(value) || 0);
@@ -179,7 +180,7 @@ function PaginaControl({
         control={control}
         name={`controlSignos.${index}.hgt`}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="100"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -196,7 +197,7 @@ function PaginaControl({
         name={`controlSignos.${index}.gcs`}
         rules={{ min: { value: 3, message: 'Mínimo 3' }, max: { value: 15, message: 'Máximo 15' } }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="15"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}
@@ -217,7 +218,7 @@ function PaginaControl({
         name={`controlSignos.${index}.eva`}
         rules={{ min: { value: 0, message: 'Mínimo 0' }, max: { value: 10, message: 'Máximo 10' } }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <AppTextInput
             placeholder="0"
             onBlur={onBlur}
             onChangeText={(v) => onChange(Number(v))}

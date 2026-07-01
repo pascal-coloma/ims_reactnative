@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import AppTextInput from '@/components/AppTextInput';
 import { FormCompleta } from '@/data/types';
 import { usePacientes } from '@/context/PacienteContext';
 import {
@@ -63,7 +64,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
               return (
                 <>
                   <Text style={style.label}>RUT</Text>
-                  <TextInput
+                  <AppTextInput
                     placeholder="12.345.678-9"
                     onBlur={onBlur}
                     onChangeText={(text) => onChange(formatearRut(text))}
@@ -99,7 +100,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
           render={({ field: { onChange, onBlur, value } }) => (
             <>
               <Text style={style.label}>Primer Nombre</Text>
-              <TextInput
+              <AppTextInput
                 placeholder="Ingrese primer nombre"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -117,7 +118,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
           render={({ field: { onChange, onBlur, value } }) => (
             <>
               <Text style={style.label}>{`Segundo nombre (opcional)`}</Text>
-              <TextInput
+              <AppTextInput
                 placeholder="Ingrese segundo nombre"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -138,7 +139,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
           render={({ field: { onChange, onBlur, value } }) => (
             <>
               <Text style={style.label}>Apellido Paterno</Text>
-              <TextInput
+              <AppTextInput
                 placeholder="Ingrese primer apellido"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -159,7 +160,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
           render={({ field: { onChange, onBlur, value } }) => (
             <>
               <Text style={style.label}>Apellido materno</Text>
-              <TextInput
+              <AppTextInput
                 placeholder="Ingrese segundo apellido"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -187,7 +188,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
                 return (
                   <>
                     <Text style={style.label}>Fecha de nacimiento</Text>
-                    <TextInput
+                    <AppTextInput
                       placeholder="DD-MM-AAAA"
                       onChangeText={(text) => onChange(formatearFecha(text))}
                       value={value}
@@ -223,7 +224,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
           render={({ field: { onChange, onBlur, value } }) => (
             <>
               <Text style={style.label}>Número de teléfono</Text>
-              <TextInput
+              <AppTextInput
                 placeholder="+569"
                 onBlur={onBlur}
                 onChangeText={(text) => onChange(formatearTelefono(text))}
@@ -241,7 +242,7 @@ const FormPaciente = ({ control, errors, setValue }: FormPacienteProps) => {
           name="condicionPaciente"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
+            <AppTextInput
               placeholder="Describe la condición del paciente"
               onBlur={onBlur}
               onChangeText={onChange}

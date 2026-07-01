@@ -1,42 +1,52 @@
 import AppHeader from '@/components/AppHeader';
-import { usePersonal } from '@/context/PersonalContext';
+import { useAmbulancias } from '@/context/AmbulanciaContext';
+import {
+  AMBULANCIA_ESTADO,
+  AMBULANCIA_ESTADO_LABEL,
+  AmbulanciaEstado,
+} from '@/data/constants/ambulanciaEstados';
 import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import {
+  FlatList,
+  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Modal,
-  Pressable,
-  FlatList,
 } from 'react-native';
 import AppTextInput from '@/components/AppTextInput';
-import QRCode from 'react-native-qrcode-svg';
-import { formatearRut, validarRut } from '@/utils/format';
 
-const ROLES = [
-  { label: 'Médico', value: 2 },
-  { label: 'TENS', value: 3 },
-  { label: 'Chofer', value: 4 },
-  { label: 'Control', value: 1 },
+const ESTADOS_INICIALES: { label: string; value: AmbulanciaEstado }[] = [
+  {
+    label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.DISPONIBLE],
+    value: AMBULANCIA_ESTADO.DISPONIBLE,
+  },
+  {
+    label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.ENPREPARACION],
+    value: AMBULANCIA_ESTADO.ENPREPARACION,
+  },
+  {
+    label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.MANTENCION],
+    value: AMBULANCIA_ESTADO.MANTENCION,
+  },
 ];
 
-type FormWorker = {
-  first_name: string;
-  last_name: string;
-  rut: string;
-  rol_id: number;
+type FormAmbulancia = {
+  patente: string;
+  modelo: string;
+  estado_disponibilidad: AmbulanciaEstado;
 };
 
-const RegistrarWorker = () => {
-  const { registrarWorker } = usePersonal();
-  const [rolModalVisible, setRolModalVisible] = useState(false);
-  const [resultado, setResultado] = useState<{ totp_uri: string; password: string } | null>(null);
+const RegistrarAmbulancia = () => {
+  const { registrarAmbulancia } = useAmbulancias();
+  const [estadoModalVisible, setEstadoModalVisible] = useState(false);
+  const [resultado, setResultado] = useState<{ ambulancia_id: number } | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,22 +55,22 @@ const RegistrarWorker = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormWorker>({
-    defaultValues: { first_name: '', last_name: '', rut: '', rol_id: 0 },
+  } = useForm<FormAmbulancia>({
+    defaultValues: {
+      patente: '',
+      modelo: '',
+      estado_disponibilidad: AMBULANCIA_ESTADO.DISPONIBLE,
+    },
   });
 
-  const onSubmit = async (data: FormWorker) => {
+  const onSubmit = async (data: FormAmbulancia) => {
     setCargando(true);
     setError(null);
     try {
-      const rutLimpio = data.rut.replace(/\./g, '');
-      const result = await registrarWorker({ ...data, rut: rutLimpio });
-      if (!result) throw new Error('Error al registrar trabajador');
+      const result = await registrarAmbulancia(data);
       setResultado(result);
       reset();
     } catch (e: any) {
-      console.log('[RegistrarWorker] backend error:', e.message);
-      console.log(e);
       setError(e.message ?? 'Error desconocido');
     } finally {
       setCargando(false);
@@ -70,8 +80,7 @@ const RegistrarWorker = () => {
   if (resultado) {
     return (
       <View style={style.container}>
-        <AppHeader title="Trabajador Registrado" onBack={() => setResultado(null)} />
-
+        <AppHeader title="Ambulancia Registrada" onBack={() => setResultado(null)} />
         <View style={style.resultadoCard}>
           <MaterialIcons
             name="check-circle"
@@ -79,30 +88,11 @@ const RegistrarWorker = () => {
             color="#22c55e"
             style={{ alignSelf: 'center', marginBottom: 16 }}
           />
-          <Text style={style.resultadoTitulo}>¡Trabajador creado exitosamente!</Text>
-
-          <Text style={style.resultadoLabel}>Contraseña</Text>
+          <Text style={style.resultadoTitulo}>¡Ambulancia registrada!</Text>
+          <Text style={style.resultadoLabel}>ID de ambulancia</Text>
           <View style={style.resultadoValor}>
-            <AppTextInput
-              value={resultado.password}
-              editable={true}
-              selectTextOnFocus
-              contextMenuHidden={false}
-              caretHidden={true}
-              showSoftInputOnFocus={false}
-              style={style.resultadoCodigo}
-            />
+            <Text style={style.resultadoCodigo}>#{resultado.ambulancia_id}</Text>
           </View>
-
-          <Text style={style.resultadoLabel}>QR para Google Authenticator</Text>
-          <Text style={style.resultadoSubtitulo}>
-            El trabajador debe escanear este código con Google Authenticator antes de iniciar
-            sesión.
-          </Text>
-          <View style={{ alignItems: 'center', marginBottom: 24 }}>
-            <QRCode value={resultado.totp_uri} size={200} color="#000" backgroundColor="#fff" />
-          </View>
-
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
@@ -119,7 +109,7 @@ const RegistrarWorker = () => {
 
   return (
     <>
-      <AppHeader title="Registrar Trabajador" />
+      <AppHeader title="Registrar Ambulancia" />
       <ScrollView>
         <View style={style.formulario}>
           {error && (
@@ -128,101 +118,73 @@ const RegistrarWorker = () => {
             </View>
           )}
 
-          <Text style={style.label}>Nombre</Text>
+          <Text style={style.label}>Patente</Text>
           <Controller
             control={control}
-            name="first_name"
-            rules={{ required: true }}
+            name="patente"
+            rules={{ required: true, maxLength: 10 }}
             render={({ field: { onChange, onBlur, value } }) => (
               <AppTextInput
-                placeholder="Ingrese nombre"
+                placeholder="Ej: ABCD12"
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(t) => onChange(t.toUpperCase())}
                 value={value}
+                autoCapitalize="characters"
+                maxLength={10}
                 style={style.input}
               />
             )}
           />
-          {errors.first_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
+          {errors.patente && (
+            <Text style={style.campoRequerido}>Campo requerido (máx. 10 caracteres)</Text>
+          )}
 
-          <Text style={style.label}>Apellido</Text>
+          <Text style={style.label}>Modelo</Text>
           <Controller
             control={control}
-            name="last_name"
-            rules={{ required: true }}
+            name="modelo"
+            rules={{ required: true, maxLength: 100 }}
             render={({ field: { onChange, onBlur, value } }) => (
               <AppTextInput
-                placeholder="Ingrese apellido"
+                placeholder="Ej: Mercedes Sprinter 2023"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                maxLength={100}
                 style={style.input}
               />
             )}
           />
-          {errors.last_name && <Text style={style.campoRequerido}>Campo requerido</Text>}
-          <Controller
-            control={control}
-            name="rut"
-            rules={{ required: true }}
-            render={({ field: { onChange, onBlur, value } }) => {
-              const rutCompleto = value?.replace(/[^0-9kK]/g, '').length >= 8;
-              const rutValido = !rutCompleto || validarRut(value);
-              return (
-                <>
-                  <Text style={style.label}>RUT</Text>
-                  <AppTextInput
-                    placeholder="12.345.678-9"
-                    onBlur={onBlur}
-                    onChangeText={(text) => onChange(formatearRut(text))}
-                    value={value}
-                    style={[
-                      style.input,
-                      rutCompleto && !rutValido && { borderColor: '#E53935' },
-                      rutCompleto && rutValido && { borderColor: '#22c55e' },
-                    ]}
-                    keyboardType="default"
-                  />
-                  {rutCompleto && !rutValido && (
-                    <Text style={style.campoRequerido}>RUT inválido</Text>
-                  )}
-                  {errors.rut && !rutCompleto && (
-                    <Text style={style.campoRequerido}>
-                      {errors.rut.message || 'Campo requerido'}
-                    </Text>
-                  )}
-                </>
-              );
-            }}
-          />
-          {errors.rut && <Text style={style.campoRequerido}>Campo requerido</Text>}
+          {errors.modelo && <Text style={style.campoRequerido}>Campo requerido</Text>}
 
-          <Text style={style.label}>Cargo</Text>
+          <Text style={style.label}>Estado inicial</Text>
           <Controller
             control={control}
-            name="rol_id"
-            rules={{ required: true, validate: (v) => v !== 0 || 'Seleccione un rol' }}
+            name="estado_disponibilidad"
             render={({ field: { onChange, value } }) => {
-              const seleccionado = ROLES.find((r) => r.value === value);
+              const seleccionado = ESTADOS_INICIALES.find((e) => e.value === value);
               return (
                 <>
-                  <TouchableOpacity style={style.picker} onPress={() => setRolModalVisible(true)}>
-                    <Text style={seleccionado ? style.pickerTexto : style.pickerPlaceholder}>
-                      {seleccionado?.label ?? 'Seleccione un cargo'}
+                  <TouchableOpacity
+                    style={style.picker}
+                    onPress={() => setEstadoModalVisible(true)}
+                  >
+                    <Text style={style.pickerTexto}>
+                      {seleccionado?.label ?? 'Seleccione estado'}
                     </Text>
                     <MaterialIcons name="expand-more" size={20} color="#666" />
                   </TouchableOpacity>
 
-                  <Modal visible={rolModalVisible} transparent animationType="fade">
+                  <Modal visible={estadoModalVisible} transparent animationType="fade">
                     <Pressable
                       style={style.modalBackdrop}
-                      onPress={() => setRolModalVisible(false)}
+                      onPress={() => setEstadoModalVisible(false)}
                     >
                       <View style={style.modalCard}>
-                        <Text style={style.modalTitulo}>Seleccionar cargo</Text>
+                        <Text style={style.modalTitulo}>Estado inicial</Text>
                         <FlatList
-                          data={ROLES}
-                          keyExtractor={(item) => String(item.value)}
+                          data={ESTADOS_INICIALES}
+                          keyExtractor={(item) => item.value}
                           renderItem={({ item }) => (
                             <TouchableOpacity
                               style={[
@@ -231,7 +193,7 @@ const RegistrarWorker = () => {
                               ]}
                               onPress={() => {
                                 onChange(item.value);
-                                setRolModalVisible(false);
+                                setEstadoModalVisible(false);
                               }}
                             >
                               <Text
@@ -252,10 +214,9 @@ const RegistrarWorker = () => {
               );
             }}
           />
-          {errors.rol_id && <Text style={style.campoRequerido}>{errors.rol_id.message}</Text>}
 
           <TouchableOpacity
-            style={[styles.button, cargando && { opacity: 0.6 }]}
+            style={[styles.button, { marginTop: 8 }, cargando && { opacity: 0.6 }]}
             onPress={handleSubmit(onSubmit)}
             disabled={cargando}
           >
@@ -268,7 +229,7 @@ const RegistrarWorker = () => {
 };
 
 const style = StyleSheet.create({
-  container: { padding: 16, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff' },
   formulario: { padding: 20, backgroundColor: 'white' },
   label: { fontSize: 14, fontWeight: '500', marginBottom: 4, color: '#333' },
   input: {
@@ -300,7 +261,6 @@ const style = StyleSheet.create({
     marginBottom: 16,
   },
   pickerTexto: { fontSize: 16, color: '#111' },
-  pickerPlaceholder: { fontSize: 16, color: '#aaa' },
   modalBackdrop: { flex: 1, backgroundColor: '#00000055', justifyContent: 'center', padding: 24 },
   modalCard: { backgroundColor: 'white', borderRadius: 12, padding: 16 },
   modalTitulo: { fontSize: 16, fontWeight: 'bold', marginBottom: 12, color: '#333' },
@@ -323,15 +283,14 @@ const style = StyleSheet.create({
     letterSpacing: 0.4,
     marginBottom: 8,
   },
-  resultadoValor: { backgroundColor: '#F7F7F7', borderRadius: 8, padding: 12, marginBottom: 20 },
-  resultadoCodigo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111',
-    textAlign: 'center',
-    letterSpacing: 2,
+  resultadoValor: {
+    backgroundColor: '#F7F7F7',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
   },
-  resultadoSubtitulo: { fontSize: 13, color: '#666', marginBottom: 16 },
+  resultadoCodigo: { fontSize: 24, fontWeight: 'bold', color: '#111' },
 });
 
-export default RegistrarWorker;
+export default RegistrarAmbulancia;

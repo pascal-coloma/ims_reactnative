@@ -1,7 +1,7 @@
-import { Redirect, Tabs } from 'expo-router';
+import AdminProviders from '@/components/admin/AdminProviders';
 import { useAuth } from '@/context/AuthContext';
 import { MaterialIcons } from '@expo/vector-icons';
-import AdminProviders from '@/components/admin/AdminProviders';
+import { Redirect, Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AdminLayout() {
@@ -67,17 +67,13 @@ export default function AdminLayout() {
         <Tabs.Screen name="lista-personal" options={{ href: null, title: 'ListaPersonal' }} />
         <Tabs.Screen name="actualizar-stock" options={{ href: null, title: 'ActualizarStock' }} />
         <Tabs.Screen name="mover-insumo" options={{ href: null, title: 'MoverInsumo' }} />
-        <Tabs.Screen
-          name="grupos"
-          options={{
-            title: 'Grupos',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="group" size={size} color={color} />
-            ),
-          }}
-        />
+        <Tabs.Screen name="grupos" options={{ title: 'Grupos', href: null }} />
         <Tabs.Screen name="crear-grupo" options={{ href: null, title: 'CrearGrupo' }} />
         <Tabs.Screen name="(grupo)" options={{ href: null, title: 'grupo' }} />
+        <Tabs.Screen
+          name="registrar-ambulancia"
+          options={{ href: null, title: 'registrar-ambulancia' }}
+        />
       </Tabs>
     </AdminProviders>
   );
