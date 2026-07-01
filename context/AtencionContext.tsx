@@ -54,7 +54,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
       const paciente = atencion.paciente;
       const payload = {
         paciente: {
-          rut: paciente.rut.replace(/\./g, ''),
+          rut: paciente.rut,
           nombre_completo: [
             paciente.primerNombre,
             paciente.segundoNombre ?? '',
@@ -109,7 +109,7 @@ export const AtencionProvider = ({ children }: { children: ReactNode }) => {
         })),
         rut_receptor: atencion.rutReceptor,
       };
-
+      console.log(payload);
       const atencionResp = await fetchConSesion('/ims/api/atenciones/add/', {
         method: 'POST',
         body: JSON.stringify(payload),
