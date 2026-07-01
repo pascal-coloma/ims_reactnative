@@ -5,7 +5,16 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, Pressable, FlatList } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  Pressable,
+  FlatList,
+} from 'react-native';
 import AppTextInput from '@/components/AppTextInput';
 import QRCode from 'react-native-qrcode-svg';
 import { formatearRut, validarRut } from '@/utils/format';

@@ -5,7 +5,14 @@ import styles from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import AppTextInput from '@/components/AppTextInput';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

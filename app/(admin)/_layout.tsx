@@ -70,7 +70,10 @@ export default function AdminLayout() {
         <Tabs.Screen name="grupos" options={{ title: 'Grupos', href: null }} />
         <Tabs.Screen name="crear-grupo" options={{ href: null, title: 'CrearGrupo' }} />
         <Tabs.Screen name="(grupo)" options={{ href: null, title: 'grupo' }} />
-         <Tabs.Screen name="registrar-ambulancia" options={{ href: null, title: 'registrar-ambulancia' }} />
+        <Tabs.Screen
+          name="registrar-ambulancia"
+          options={{ href: null, title: 'registrar-ambulancia' }}
+        />
       </Tabs>
     </AdminProviders>
   );

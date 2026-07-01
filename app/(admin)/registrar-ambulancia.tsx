@@ -10,13 +10,31 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import AppTextInput from '@/components/AppTextInput';
 
 const ESTADOS_INICIALES: { label: string; value: AmbulanciaEstado }[] = [
-  { label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.DISPONIBLE], value: AMBULANCIA_ESTADO.DISPONIBLE },
-  { label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.ENPREPARACION], value: AMBULANCIA_ESTADO.ENPREPARACION },
-  { label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.MANTENCION], value: AMBULANCIA_ESTADO.MANTENCION },
+  {
+    label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.DISPONIBLE],
+    value: AMBULANCIA_ESTADO.DISPONIBLE,
+  },
+  {
+    label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.ENPREPARACION],
+    value: AMBULANCIA_ESTADO.ENPREPARACION,
+  },
+  {
+    label: AMBULANCIA_ESTADO_LABEL[AMBULANCIA_ESTADO.MANTENCION],
+    value: AMBULANCIA_ESTADO.MANTENCION,
+  },
 ];
 
 type FormAmbulancia = {
@@ -117,7 +135,9 @@ const RegistrarAmbulancia = () => {
               />
             )}
           />
-          {errors.patente && <Text style={style.campoRequerido}>Campo requerido (máx. 10 caracteres)</Text>}
+          {errors.patente && (
+            <Text style={style.campoRequerido}>Campo requerido (máx. 10 caracteres)</Text>
+          )}
 
           <Text style={style.label}>Modelo</Text>
           <Controller
@@ -149,7 +169,9 @@ const RegistrarAmbulancia = () => {
                     style={style.picker}
                     onPress={() => setEstadoModalVisible(true)}
                   >
-                    <Text style={style.pickerTexto}>{seleccionado?.label ?? 'Seleccione estado'}</Text>
+                    <Text style={style.pickerTexto}>
+                      {seleccionado?.label ?? 'Seleccione estado'}
+                    </Text>
                     <MaterialIcons name="expand-more" size={20} color="#666" />
                   </TouchableOpacity>
 

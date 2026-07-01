@@ -13,7 +13,16 @@ import styles from '@/styles/globalStyles';
 import { formatearRut, validarRut } from '@/utils/format';
 import { Picker } from '@react-native-picker/picker';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import {
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+} from 'react-native';
 import AppTextInput from '@/components/AppTextInput';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';

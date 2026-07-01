@@ -1,4 +1,13 @@
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import AppTextInput from '@/components/AppTextInput';
 import { formatearSugerencia, useAddressAutocomplete } from '@/hooks/useAddressAutocomplete';
 
