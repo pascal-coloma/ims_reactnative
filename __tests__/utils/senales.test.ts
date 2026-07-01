@@ -24,6 +24,17 @@ describe('enviarSenalEquipo', () => {
     );
   });
 
+  it('includes grupo_n when grupoNombre is provided', async () => {
+    mockFetchConSesion.mockResolvedValue({ ok: true });
+
+    await enviarSenalEquipo('54119', SENAL_EQUIPO.DISPONIBLE, 'Equipo A');
+
+    expect(mockFetchConSesion).toHaveBeenCalledWith(
+      '/ims/api/senales/?type=senal_disponible&despacho_id=54119&grupo_n=Equipo+A',
+      { method: 'POST' },
+    );
+  });
+
   it('throws when the response is not ok', async () => {
     mockFetchConSesion.mockResolvedValue({ ok: false, status: 403 });
 

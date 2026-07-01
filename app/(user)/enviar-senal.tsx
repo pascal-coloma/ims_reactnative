@@ -10,6 +10,14 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+const SENALES_POR_DESPACHO: SenalEquipo[] = [
+  SENAL_EQUIPO.EN_CAMINO,
+  SENAL_EQUIPO.EN_DESTINO,
+  SENAL_EQUIPO.OPERANDO,
+];
+
+const SENALES_POR_GRUPO: SenalEquipo[] = [SENAL_EQUIPO.REGRESANDO, SENAL_EQUIPO.DISPONIBLE];
+
 const EnviarSenal = () => {
   const { despachoId } = useLocalSearchParams<{ despachoId?: string }>();
   const { user } = useAuth();
@@ -19,14 +27,6 @@ const EnviarSenal = () => {
 
   const misDespachos = despachosPorPersonal(user?.personalId ?? '');
 
-  // Esta pantalla vive como tab oculto: no se desmonta entre visitas, así que
-  // un useState lazy no alcanza a recoger despachoId en la segunda vez que se
-  // entra desde la lista. Por eso se sincroniza con un efecto, pero SOLO
-  // atado a despachoId: despachosPorPersonal devuelve un array nuevo en cada
-  // render, así que si entrara en las dependencias el efecto se repetiría con
-  // cada re-render (incluido el que dispara el propio picker) y pisaría la
-  // selección manual del usuario. El fallback al último despacho activo se
-  // resuelve más abajo con "??", no acá.
   useEffect(() => {
     setDespachoSeleccionadoId(despachoId ?? null);
   }, [despachoId]);
@@ -36,12 +36,19 @@ const EnviarSenal = () => {
     misDespachos[misDespachos.length - 1];
 
   const handleEnviarSenal = async (tipo: SenalEquipo) => {
-    if (!despacho) {
+    const esPorGrupo = SENALES_POR_GRUPO.includes(tipo);
+
+    if (esPorGrupo && !despacho?.grupoNombre) {
+      Alert.alert('Sin grupo asignado', 'No perteneces a un grupo para reportar esta señal.');
+      return;
+    }
+    if (!esPorGrupo && !despacho) {
       Alert.alert('Sin despacho asignado', 'No tienes un despacho activo para reportar.');
       return;
     }
+
     try {
-      await enviarSenalEquipo(despacho.id, tipo);
+      await enviarSenalEquipo(despacho?.id ?? '', tipo, despacho?.grupoNombre);
       router.back();
     } catch {
       Alert.alert('Error', 'No se pudo enviar la señal.');
@@ -71,6 +78,7 @@ const EnviarSenal = () => {
           </View>
         )}
 
+        <Text style={local.sectionLabel}>Señales de despacho</Text>
         <View style={local.cardsRow}>
           <TouchableOpacity
             style={local.linkStyle}
@@ -101,7 +109,9 @@ const EnviarSenal = () => {
               <Text style={local.cardTitle}>{SENAL_EQUIPO_LABEL[SENAL_EQUIPO.OPERANDO]}</Text>
             </View>
           </TouchableOpacity>
-
+        </View>
+        <Text style={local.sectionLabel}>Señales de equipo</Text>
+        <View style={local.cardsRow}>
           <TouchableOpacity
             style={local.linkStyle}
             onPress={() => handleEnviarSenal(SENAL_EQUIPO.REGRESANDO)}
@@ -136,6 +146,14 @@ const local = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
+  sectionLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginTop: 8,
+    marginBottom: 6,
+  },
+
   despachoId: {
     fontWeight: 'bold',
   },
