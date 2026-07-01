@@ -1,6 +1,7 @@
 import AppHeader from '@/components/AppHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useDespachos } from '@/context/DespachosContext';
+import { useGrupos } from '@/context/GrupoContext';
 import { SENAL_EQUIPO, SENAL_EQUIPO_LABEL, SenalEquipo } from '@/data/constants/senales';
 import { enviarSenalEquipo } from '@/utils/senales';
 import styles from '@/styles/globalStyles';
@@ -22,6 +23,7 @@ const EnviarSenal = () => {
   const { despachoId } = useLocalSearchParams<{ despachoId?: string }>();
   const { user } = useAuth();
   const { despachosPorPersonal } = useDespachos();
+  const { grupos } = useGrupos();
 
   const [despachoSeleccionadoId, setDespachoSeleccionadoId] = useState<string | null>(null);
 
@@ -35,10 +37,17 @@ const EnviarSenal = () => {
     misDespachos.find((d) => d.id === despachoSeleccionadoId) ??
     misDespachos[misDespachos.length - 1];
 
+  // username == rut (así se crea la cuenta en el backend); permite ubicar el
+  // grupo del usuario aunque no tenga un despacho activo con grupoNombre.
+  const miGrupoNombre = grupos.find((g) =>
+    g.miembros.some((m) => m.rut === user?.username),
+  )?.grupo_nombre;
+  const grupoNombre = despacho?.grupoNombre ?? miGrupoNombre;
+
   const handleEnviarSenal = async (tipo: SenalEquipo) => {
     const esPorGrupo = SENALES_POR_GRUPO.includes(tipo);
 
-    if (esPorGrupo && !despacho?.grupoNombre) {
+    if (esPorGrupo && !grupoNombre) {
       Alert.alert('Sin grupo asignado', 'No perteneces a un grupo para reportar esta señal.');
       return;
     }
@@ -48,7 +57,7 @@ const EnviarSenal = () => {
     }
 
     try {
-      await enviarSenalEquipo(despacho?.id ?? '', tipo, despacho?.grupoNombre);
+      await enviarSenalEquipo(despacho?.id ?? '', tipo, grupoNombre);
       router.back();
     } catch {
       Alert.alert('Error', 'No se pudo enviar la señal.');
@@ -64,7 +73,10 @@ const EnviarSenal = () => {
             Reportando sobre el despacho <Text style={local.despachoId}>{despacho.id}</Text>
           </Text>
         ) : (
-          <Text style={local.despachoLabel}>Sin despacho asignado</Text>
+          <Text style={local.despachoLabel}>
+            Sin despacho asignado
+            {grupoNombre ? ` — grupo ${grupoNombre}` : ''}
+          </Text>
         )}
 
         {misDespachos.length > 1 && (

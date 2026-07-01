@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { AmbulanciaProvider } from '@/context/AmbulanciaContext';
 import { AtencionProvider } from '@/context/AtencionContext';
 import DespachosProvider from '@/context/DespachosContext';
+import GrupoProvider from '@/context/GrupoContext';
 import InventarioProvider from '@/context/InventoryContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -33,39 +34,41 @@ const UserLayout = () => {
     <AmbulanciaProvider>
       <InventarioProvider>
         <DespachosProvider>
-          <AtencionProvider>
-            <Tabs screenOptions={tabBarOptions}>
-              <Tabs.Screen
-                name="dashboard"
-                options={{
-                  title: 'Inicio',
-                  tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="home" size={size} color={color} />
-                  ),
-                }}
-              />
-              <Tabs.Screen
-                name="despachos"
-                options={{
-                  title: 'Despachos',
-                  tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="airport-shuttle" size={size} color={color} />
-                  ),
-                }}
-              />
-              <Tabs.Screen
-                name="registrar-atencion"
-                options={{
-                  title: 'Registrar Atencion',
-                  href: user.role === 'driver' ? null : undefined,
-                  tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="checklist" size={size} color={color} />
-                  ),
-                }}
-              />
-              <Tabs.Screen name="enviar-senal" options={{ href: null }} />
-            </Tabs>
-          </AtencionProvider>
+          <GrupoProvider>
+            <AtencionProvider>
+              <Tabs screenOptions={tabBarOptions}>
+                <Tabs.Screen
+                  name="dashboard"
+                  options={{
+                    title: 'Inicio',
+                    tabBarIcon: ({ color, size }) => (
+                      <MaterialIcons name="home" size={size} color={color} />
+                    ),
+                  }}
+                />
+                <Tabs.Screen
+                  name="despachos"
+                  options={{
+                    title: 'Despachos',
+                    tabBarIcon: ({ color, size }) => (
+                      <MaterialIcons name="airport-shuttle" size={size} color={color} />
+                    ),
+                  }}
+                />
+                <Tabs.Screen
+                  name="registrar-atencion"
+                  options={{
+                    title: 'Registrar Atencion',
+                    href: user.role === 'driver' ? null : undefined,
+                    tabBarIcon: ({ color, size }) => (
+                      <MaterialIcons name="checklist" size={size} color={color} />
+                    ),
+                  }}
+                />
+                <Tabs.Screen name="enviar-senal" options={{ href: null }} />
+              </Tabs>
+            </AtencionProvider>
+          </GrupoProvider>
         </DespachosProvider>
       </InventarioProvider>
     </AmbulanciaProvider>

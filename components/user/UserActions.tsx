@@ -23,13 +23,9 @@ const UserActions = () => {
   };
 
   const handleEnviarSenal = () => {
-    if (misDespachos.length === 0) {
-      Alert.alert('Sin despacho activo', 'No tienes un despacho activo asignado.');
-      return;
-    }
-
     // Sin despachoId: la pantalla ofrece un picker para elegir el despacho,
-    // a diferencia del acceso puntual desde la lista de despachos.
+    // a diferencia del acceso puntual desde la lista de despachos. Sin
+    // despacho activo igual se puede reportar una señal de grupo.
     router.push('/(user)/enviar-senal');
   };
 
